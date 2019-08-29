@@ -1,4 +1,5 @@
-const combine = functions => functions
+
+export const combine = functions => functions
   .reduce(
     (acc, func) => arg => {
       const result = acc(arg)
@@ -7,7 +8,3 @@ const combine = functions => functions
     },
     () => []
   )
-
-module.exports = {
-  combine
-}

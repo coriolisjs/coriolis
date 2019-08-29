@@ -1,12 +1,7 @@
-const { merge } = require('rxjs')
+import { merge } from 'rxjs'
 
-const parallel = combine => (...operators) => source => combine(
+export const parallel = combine => (...operators) => source => combine(
   ...operators.map(operator => source.pipe(operator))
 )
 
-const parallelMerge = parallel(merge)
-
-module.exports = {
-  parallel,
-  parallelMerge
-}
+export const parallelMerge = parallel(merge)

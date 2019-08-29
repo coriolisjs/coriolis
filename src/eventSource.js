@@ -1,22 +1,15 @@
-const { Subject, merge } = require('rxjs')
-const {
+import { Subject, merge } from 'rxjs'
+import {
   concat,
   map,
   share,
   tap
-} = require('rxjs/operators')
+} from 'rxjs/operators'
 
-const { lossless } = require('./lib/rx/operator/lossless')
+import { lossless } from './lib/rx/operator/lossless'
+import { remove } from './lib/object/remove'
 
 const unicityWarrentKey = Symbol(Math.random().toString(36).substring(2, 15))
-
-const remove = (obj, keys) => {
-  const newObj = { ...obj }
-
-  keys.forEach(key => delete newObj[key])
-
-  return newObj
-}
 
 const isValidEvent = event =>
   event &&
@@ -45,7 +38,7 @@ const validate = event => {
   }
 }
 
-const createEventSource = (initialSource, logObserver) => {
+export const createEventSource = (initialSource, logObserver) => {
   let newevent$
   const neweventSubject = newevent$ = new Subject()
 
@@ -67,8 +60,4 @@ const createEventSource = (initialSource, logObserver) => {
     )
 
   return Subject.create(neweventSubject, event$)
-}
-
-module.exports = {
-  createEventSource
 }

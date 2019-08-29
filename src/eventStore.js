@@ -1,11 +1,11 @@
-const { pipe } = require('rxjs')
-const { distinctUntilChanged, filter, map } = require('rxjs/operators')
+import { pipe } from 'rxjs'
+import { distinctUntilChanged, filter, map } from 'rxjs/operators'
 
-const { parallelMerge } = require('./lib/rx/operator/parallel')
-const { effect } = require('./lib/rx/operator/effect')
+import { parallelMerge } from './lib/rx/operator/parallel'
+import { effect } from './lib/rx/operator/effect'
 
-const { combine } = require('./lib/fp/combine')
-const { isDefined } = require('./lib/isDefined')
+import { combine } from './lib/function/combine'
+import { isDefined } from './lib/variable/isDefined'
 
 const createIndex = getValue => {
   const index = []
@@ -65,7 +65,7 @@ const combineAggregators = aggregators => {
   }
 }
 
-const createStore = eventSource => {
+export const createStore = eventSource => {
   const branches = []
   const getAggregator = createIndex(createAggregator)
 
@@ -98,8 +98,4 @@ const createStore = eventSource => {
   }
 
   return store
-}
-
-module.exports = {
-  createStore
 }

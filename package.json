@@ -6,11 +6,16 @@
   "scripts": {
     "clear": "rm -rf node_modules",
     "lint": "eslint .",
-    "test": "mocha"
+    "test": "mocha",
+    "build": "babel src -d dist"
   },
   "author": "Nicolas Deveaud",
   "license": "GPL-3.0",
   "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "eslint": "^6.2.2",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",

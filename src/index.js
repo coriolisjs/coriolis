@@ -1,7 +1,7 @@
-const { createEventSource } = require('./eventSource')
-const { createStore } = require('./eventStore')
+import { createEventSource } from './eventSource'
+import { createStore } from './eventStore'
 
-module.exports = {
+export {
   createEventSource,
   createStore
 }

@@ -1,6 +1,6 @@
-const { Observable } = require('rxjs')
+import { Observable } from 'rxjs'
 
-const lossless = source => {
+export const lossless = source => {
   const buffer = []
   let error
   let completed = false
@@ -56,8 +56,4 @@ const lossless = source => {
       }
     }
   })
-}
-
-module.exports = {
-  lossless
 }

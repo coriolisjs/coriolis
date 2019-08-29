@@ -1,6 +1,6 @@
-const { Observable } = require('rxjs')
+import { Observable } from 'rxjs'
 
-const createEffectOperator = subject => source =>
+export const createEffectOperator = subject => source =>
   Observable.create(observer => {
     const outSubscription = subject.subscribe(observer)
     const inSubscription = source.subscribe(subject)
@@ -11,6 +11,6 @@ const createEffectOperator = subject => source =>
     }
   })
 
-module.exports = {
-  effect: createEffectOperator
+export {
+  createEffectOperator as effect
 }
