@@ -27,47 +27,20 @@ const createIndex = getValue => {
   return get
 }
 
-const createUseReducerGetter = getAggregator => {
-  let usedAggregators
-
-  const firstUseReducer = event => reducer => {
-    const aggregator = getAggregator(reducer)
-    usedAggregators.push(aggregator)
-
-    return () => aggregator(event)
-  }
-
-  const reuseReducer = event => {
-    let count = 0
-    return () => {
-      const aggregator = usedAggregators[count]
-      count += 1
-
-      return () => aggregator(event)
-    }
-  }
-
-  return event => {
-    if (usedAggregators) {
-      return reuseReducer(event)
-    }
-
-    usedAggregators = []
-    return firstUseReducer(event)
-  }
-}
-
 const createAggregator = (reducer, getAggregator) => {
   let lastEvent
   let lastResult
-
-  const getUseReducer = createUseReducerGetter(getAggregator)
 
   return event => {
     if (!lastEvent || event !== lastEvent.value) {
       lastEvent = { value: event }
 
-      lastResult = reducer(lastResult, event, getUseReducer(event))
+      // useReducer will use getAggregator
+      // getAggregator uses a slow indexing solution
+      // If this causes latency, we can add local cache on this function call
+      const useReducer = reducer => () => getAggregator(reducer)(event)
+
+      lastResult = reducer(lastResult, event, useReducer)
     }
 
     return lastResult
