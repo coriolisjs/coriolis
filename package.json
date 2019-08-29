@@ -1,0 +1,24 @@
+{
+  "name": "coriolis",
+  "version": "1.0.0",
+  "description": "Event sourced effect management",
+  "main": "src/index.js",
+  "scripts": {
+    "clear": "rm -rf node_modules",
+    "lint": "eslint .",
+    "test": "mocha"
+  },
+  "author": "Nicolas Deveaud",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "eslint": "^6.2.2",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.2.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "dependencies": {
+    "rxjs": "^6.5.2"
+  }
+}
