@@ -2,7 +2,30 @@ const { pipe } = require('rxjs')
 const { distinctUntilChanged, filter, map } = require('rxjs/operators')
 
 const { parallelMerge } = require('./lib/rx/operator/parallel')
-const { effect } = require('./lib/operator/effect')
+const { effect } = require('./lib/rx/operator/effect')
+
+const { combine } = require('./lib/fp/combine')
+const { isDefined } = require('./lib/isDefined')
+
+const createIndex = getValue => {
+  const index = []
+
+  const get = key => {
+    const indexed = index.find(item => item.key === key)
+
+    if (indexed) {
+      return indexed.value
+    }
+
+    const value = getValue(key, get)
+
+    index.push({ key, value })
+
+    return value
+  }
+
+  return get
+}
 
 const createUseReducerGetter = getAggregator => {
   let usedAggregators
@@ -51,32 +74,6 @@ const createAggregator = (reducer, getAggregator) => {
   }
 }
 
-const createIndex = getValue => {
-  const index = []
-
-  const get = key => {
-    const indexed = index.find(item => item.key === key)
-
-    if (indexed) {
-      return indexed.value
-    }
-
-    const value = getValue(key, get)
-
-    index.push({ key, value })
-
-    return value
-  }
-
-  return get
-}
-
-const combine = functions => functions.reduce((acc, func) => arg => {
-  const result = acc(arg)
-  result.push(func(arg))
-  return result
-}, () => [])
-
 const combineAggregators = aggregators => {
   const getData = combine(aggregators)
   const initialState = aggregators.map(() => undefined)
@@ -94,8 +91,6 @@ const combineAggregators = aggregators => {
     return prev
   }
 }
-
-const isDefined = data => data !== undefined
 
 const createStore = eventSource => {
   const branches = []
@@ -118,10 +113,15 @@ const createStore = eventSource => {
       return store
     },
 
-    init: () =>
-      eventSource
+    init: () => {
+      if (!branches.length) {
+        throw new Error('No effect defined. This is useless')
+      }
+
+      return eventSource
         .pipe(parallelMerge(...branches))
         .subscribe(eventSource).unsubscribe
+    }
   }
 
   return store
