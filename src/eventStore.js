@@ -86,9 +86,9 @@ const combineAggregators = aggregators => {
 
     // if each aggregator returns the same data as previous call, we want to return the
     // exact same result, so === operator can be used to know something changed
-    prev = hasChanged ? newData : prev !== initialState ? prev : undefined
+    prev = hasChanged ? newData : prev
 
-    return prev
+    return prev !== initialState ? prev : undefined
   }
 }
 
