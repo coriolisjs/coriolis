@@ -1,4 +1,4 @@
-import { Subject, merge } from 'rxjs'
+import { Subject, merge, noop, EMPTY } from 'rxjs'
 import {
   concat,
   map,
@@ -38,10 +38,11 @@ const validate = event => {
   }
 }
 
-export const createEventSource = (initialSource, logObserver) => {
+export const createEventSource = (initialSource = EMPTY, logObserver = noop) => {
   let newevent$
   const neweventSubject = newevent$ = new Subject()
 
+  // log observer could emit events about log process (write error, log rotate events...)
   if (logObserver && logObserver instanceof Subject) {
     newevent$ = merge(neweventSubject, logObserver)
   }
