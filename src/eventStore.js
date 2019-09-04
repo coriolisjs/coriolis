@@ -88,6 +88,24 @@ export const createStore = eventSource => {
       return store
     },
 
+    dynamicEffect: effectWithReducersSubscriber => {
+      const effectSubscriber = effectSubject => {
+        const useReducer = reducer =>
+          effectSubject.pipe(
+            map(getAggregator(reducer)),
+            distinctUntilChanged()
+          )
+
+        effectWithReducersSubscriber(effectSubject, useReducer)
+      }
+
+      branches.push(pipe(
+        effect(effectSubscriber)
+      ))
+
+      return store
+    },
+
     init: () => {
       if (!branches.length) {
         throw new Error('No effect defined. This is useless')
