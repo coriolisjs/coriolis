@@ -1,7 +1,2 @@
-import { createEventSource } from './eventSource'
-import { createStore } from './eventStore'
-
-export {
-  createEventSource,
-  createStore
-}
+export { createEventSource } from './eventSource'
+export { createStore } from './eventStore'

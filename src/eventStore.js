@@ -1,8 +1,9 @@
 import { pipe } from 'rxjs'
-import { distinctUntilChanged, map } from 'rxjs/operators'
+import { distinctUntilChanged, map, tap } from 'rxjs/operators'
 
 import { parallelMerge } from './lib/rx/operator/parallel'
 import { effect } from './lib/rx/operator/effect'
+import { startWithGetter } from './lib/rx/operator/startWithGetter'
 
 import { createIndex } from './lib/objectIndex'
 
@@ -30,17 +31,23 @@ const createAggregator = (reducer, getAggregator) => {
 export const createStore = eventSource => {
   const branches = []
   const getAggregator = createIndex(createAggregator)
+  let lastEvent
 
   const store = {
+    get lastEvent () {
+      return lastEvent.value
+    },
+
     addEffect: effectWithReducersSubscriber => {
-      const effectSubscriber = effectSubject => {
-        const useReducer = reducer =>
-          effectSubject.pipe(
+      const effectSubscriber = eventSource => {
+        const pipeReducer = reducer =>
+          eventSource.pipe(
+            startWithGetter(() => lastEvent),
             map(getAggregator(reducer)),
             distinctUntilChanged()
           )
 
-        effectWithReducersSubscriber(effectSubject, useReducer)
+        effectWithReducersSubscriber(eventSource, pipeReducer)
       }
 
       branches.push(pipe(
@@ -56,7 +63,10 @@ export const createStore = eventSource => {
       }
 
       return eventSource
-        .pipe(parallelMerge(...branches))
+        .pipe(
+          tap(value => { lastEvent = { value } }),
+          parallelMerge(...branches)
+        )
         .subscribe(eventSource).unsubscribe
     }
   }
