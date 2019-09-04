@@ -5,6 +5,7 @@ import { parallelMerge } from './lib/rx/operator/parallel'
 import { effect } from './lib/rx/operator/effect'
 
 import { combine } from './lib/function/combine'
+import { flatten } from './lib/array/flatten'
 import { isDefined } from './lib/variable/isDefined'
 
 const createIndex = getValue => {
@@ -71,8 +72,9 @@ export const createStore = eventSource => {
 
   const store = {
     addEffect: (...args) => {
-      const effectOperator = effect(args.pop())
-      const aggregator = combineAggregators(args.map(getAggregator))
+      const inputs = flatten(args)
+      const effectOperator = effect(inputs.pop())
+      const aggregator = combineAggregators(inputs.map(getAggregator))
 
       const branch = pipe(
         map(aggregator),
