@@ -5,15 +5,24 @@ export const createEventBuilder = (type, payloadBuilder = identity, metaBuilder)
 
   const eventBuilder = (args = empty) => {
     const event = { type }
+    let payload
 
-    const payload = payloadBuilder(args)
-
-    if (payload !== empty) {
-      event.payload = payload
+    try {
+      payload = payloadBuilder(args)
+    } catch (error) {
+      payload = error
     }
 
     if (metaBuilder) {
-      event.meta = metaBuilder(args)
+      try {
+        event.meta = metaBuilder(args)
+      } catch (error) {
+        payload = error
+      }
+    }
+
+    if (payload !== empty) {
+      event.payload = payload
     }
 
     if (payload instanceof Error) {
