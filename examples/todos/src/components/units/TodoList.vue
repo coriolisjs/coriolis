@@ -1,9 +1,5 @@
 <template>
   <div>
-    <form @submit.prevent="addItem">
-      <input type="text" placeholder="Text" />
-      <button type="submit">Ajouter</button>
-    </form>
     <ol>
       <TodoItem
         v-for="item in todolist"
@@ -28,8 +24,7 @@ export default {
     TodoItem
   },
   inject: [
-    'pipeReducer',
-    'dispatch'
+    'pipeReducer'
   ],
   created () {
     this.pipeReducer(todolist).subscribe(todolist => {
@@ -41,12 +36,6 @@ export default {
   data () {
     return {
       todolist: []
-    }
-  },
-  methods: {
-    addItem ({ target }) {
-      this.dispatch(added({ text: target.elements[0].value }))
-      target.reset()
     }
   }
 }
