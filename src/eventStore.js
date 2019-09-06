@@ -1,5 +1,5 @@
 import { pipe } from 'rxjs'
-import { distinctUntilChanged, map, tap } from 'rxjs/operators'
+import { distinctUntilChanged, map, tap, startWith } from 'rxjs/operators'
 
 import { parallelMerge } from './lib/rx/operator/parallel'
 import { effect } from './lib/rx/operator/effect'
@@ -65,7 +65,8 @@ export const createStore = eventSource => {
       return eventSource
         .pipe(
           tap(value => { lastEvent = { value } }),
-          parallelMerge(...branches)
+          parallelMerge(...branches),
+          startWith({ type: 'INIT' })
         )
         .subscribe(eventSource).unsubscribe
     }
