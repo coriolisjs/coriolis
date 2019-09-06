@@ -20,8 +20,6 @@ export const lossless = source => {
   return Observable.create(observer => {
     let subscription
 
-    buffer.forEach(event => observer.next(event))
-
     if (error) {
       observer.error(error)
     } else if (completed) {
@@ -32,6 +30,7 @@ export const lossless = source => {
     }
 
     if (bufferSubscription) {
+      const eventsToReplay = buffer.slice()
       bufferSubscription.unsubscribe()
 
       // flushes initial subscription
@@ -40,6 +39,9 @@ export const lossless = source => {
       buffer.length = 0
       error = undefined
       completed = false
+
+      // ⚠ event playback must happen after observer subscription and buffer unsubscription are done
+      eventsToReplay.forEach(event => observer.next(event))
     }
 
     return () => {
