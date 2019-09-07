@@ -13,9 +13,13 @@ const setTodoDone = done => item => ({
   done
 })
 
-const hasId = id => item => item.id === id
-
 let nextItemId = 1
+const newTodoItem = item => ({
+  ...item,
+  id: nextItemId++
+})
+
+const hasId = id => item => item.id === id
 
 export const todolist = (state = [], { type, payload, error }) => {
   if (error) {
@@ -26,10 +30,7 @@ export const todolist = (state = [], { type, payload, error }) => {
     case added.toString():
       return [
         ...state,
-        {
-          ...payload,
-          id: nextItemId++
-        }
+        newTodoItem(payload)
       ]
 
     case edited.toString():
