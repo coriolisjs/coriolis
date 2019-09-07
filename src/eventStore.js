@@ -8,7 +8,6 @@ import { createIndex } from './lib/objectIndex'
 
 const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
 
-// TODO: Could be split in two: createMemoizedAggregator and withUseReducer
 const createAggregator = (reducer, getAggregator) => {
   let lastEvent
   let lastResult
