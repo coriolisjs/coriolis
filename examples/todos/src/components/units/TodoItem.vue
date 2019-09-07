@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <li :class="{ done }">
     <input type="text" :value="text" @change.prevent="editItem" />
     <input type="checkbox" :checked="done" @change.prevent="checkItem" />
     <button @click.prevent="removeItem">X</button>
@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { edited, removed, done } from '../../events/todo'
+import { edited, removed, done, reset } from '../../events/todo'
 
 export default {
   name: 'todo-item',
@@ -27,7 +27,8 @@ export default {
       this.dispatch(edited({ id: this.id, text: event.target.value }))
     },
     checkItem () {
-      this.dispatch(done({ id: this.id }))
+      const buildEvent = event.target.checked ? done : reset
+      this.dispatch(buildEvent({ id: this.id }))
     }
   }
 }
@@ -36,5 +37,9 @@ export default {
 <style lang="scss" scoped>
 input[type=text] {
   border: none;
+
+  .done & {
+    text-decoration: line-through;
+  }
 }
 </style>

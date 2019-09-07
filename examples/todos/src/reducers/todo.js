@@ -15,6 +15,8 @@ const setTodoDone = done => item => ({
 
 const hasId = id => item => item.id === id
 
+let nextItemId = 1
+
 export const todolist = (state = [], { type, payload, error }) => {
   if (error) {
     return state
@@ -24,7 +26,10 @@ export const todolist = (state = [], { type, payload, error }) => {
     case added.toString():
       return [
         ...state,
-        payload
+        {
+          ...payload,
+          id: nextItemId++
+        }
       ]
 
     case edited.toString():

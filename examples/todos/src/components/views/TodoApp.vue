@@ -3,18 +3,23 @@
     <h1>Ma liste de tâches</h1>
     <TodoControl />
     <TodoList />
+    <ViewLink view="About">
+      About
+    </ViewLink>
   </div>
 </template>
 
 <script>
 import TodoControl from '../units/TodoControl.vue'
 import TodoList from '../units/TodoList.vue'
+import ViewLink from '../units/ViewLink.vue'
 
 export default {
   name: 'todoApp',
   components: {
     TodoControl,
-    TodoList
+    TodoList,
+    ViewLink
   }
 }
 </script>

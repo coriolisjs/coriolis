@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import TodoApp from '../components/views/TodoApp'
+import ViewSwitch from '../components/ViewSwitch'
 
 export const createUi = () => {
   Vue.config.productionTip = false
@@ -12,7 +12,7 @@ export const createUi = () => {
         event$: eventSource.asObservable(),
         pipeReducer
       },
-      render: h => h(TodoApp)
+      render: createElement => createElement(ViewSwitch)
     })
       .$mount('#app')
 

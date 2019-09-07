@@ -1,6 +1,6 @@
 
 export const findreplace = (arr, search, mapper) => {
-  const idx = arr.indexOf(search)
+  const idx = arr.findIndex(search)
 
   if (idx === -1) {
     return arr

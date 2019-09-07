@@ -1,13 +1,11 @@
 import { createEventBuilder } from 'coriolis'
 
-const required = message => { throw new Error(message) }
+import { required } from '../libs/required'
 
-let nextItemId = 1
 export const added = createEventBuilder('Todo item has been added', ({
   text,
   done = false
 }) => ({
-  id: nextItemId++,
   text: text || required('Todo item text is mandatory'),
   done
 }))
