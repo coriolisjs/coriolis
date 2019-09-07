@@ -1,12 +1,14 @@
-import { pipe } from 'rxjs'
-import { distinctUntilChanged, map, tap, startWith } from 'rxjs/operators'
+import { ReplaySubject } from 'rxjs'
+import { distinctUntilChanged, filter, map, take, tap, startWith, skipUntil, shareReplay } from 'rxjs/operators'
 
 import { parallelMerge } from './lib/rx/operator/parallel'
 import { effect } from './lib/rx/operator/effect'
-import { startWithGetter } from './lib/rx/operator/startWithGetter'
 
 import { createIndex } from './lib/objectIndex'
 
+const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
+
+// TODO: Could be split in two: createMemoizedAggregator and withUseReducer
 const createAggregator = (reducer, getAggregator) => {
   let lastEvent
   let lastResult
@@ -28,31 +30,48 @@ const createAggregator = (reducer, getAggregator) => {
   }
 }
 
+const hasPayload = payload => event => event.payload === payload
+
+// TODO: Convert this builder pattern to a single subscribe pattern to avoid questions about multiple calls to init and so
 export const createStore = eventSource => {
+  const initialPayload = {}
   const branches = []
+
   const getAggregator = createIndex(createAggregator)
-  let lastEvent
+
+  const replayCaster = new ReplaySubject(1)
+
+  const initDone$ = replayCaster.pipe(
+    filter(hasPayload(initialPayload)),
+    take(1),
+    shareReplay(1)
+  )
+
+  const pipeReducer = reducer =>
+    replayCaster.pipe(
+      map(getAggregator(reducer)),
+
+      // while init is not finished (old events replaying), we expect reducers to
+      // catch all events, but we don't want any new state emited (it's not new states, it's old state re-reduced)
+      skipUntil(initDone$),
+      distinctUntilChanged()
+    )
 
   const store = {
-    get lastEvent () {
-      return lastEvent.value
+    addRootReducer: reducer => {
+      replayCaster.subscribe(getAggregator(reducer))
+
+      return store
     },
 
     addEffect: effectWithReducersSubscriber => {
-      const effectSubscriber = eventSource => {
-        const pipeReducer = reducer =>
-          eventSource.pipe(
-            startWithGetter(() => lastEvent),
-            map(getAggregator(reducer)),
-            distinctUntilChanged()
-          )
+      const effectSubscriber = effectEventSource => {
+        const afterInitEventSource = effectEventSource.pipe(skipUntil(initDone$))
 
-        effectWithReducersSubscriber(eventSource, pipeReducer)
+        return effectWithReducersSubscriber(afterInitEventSource, pipeReducer)
       }
 
-      branches.push(pipe(
-        effect(effectSubscriber)
-      ))
+      branches.push(effect(effectSubscriber))
 
       return store
     },
@@ -64,9 +83,9 @@ export const createStore = eventSource => {
 
       return eventSource
         .pipe(
-          tap(value => { lastEvent = { value } }),
+          tap(replayCaster),
           parallelMerge(...branches),
-          startWith({ type: 'INIT' })
+          startWith({ type: INITIAL_EVENT_TYPE, payload: initialPayload })
         )
         .subscribe(eventSource).unsubscribe
     }
