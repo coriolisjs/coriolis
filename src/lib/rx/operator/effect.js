@@ -7,9 +7,10 @@ const createEffectOperatorFromSubscriber = effectSubscriber => source =>
     // Doing this ensures source subscriptions will be unsubscribed, even if all effect subscriptions are not unsubscribed
     // TODO: a warning could be displayed in case of effect subscriptions not unsubscribed
     const fusible = new Subject()
+    const subscription = effectSubscriber(Subject.create(observer, fusible))
 
     return source.subscribe(fusible)
-      .add(effectSubscriber(Subject.create(observer, fusible)))
+      .add(subscription)
   })
 
 const createEffectOperatorFromSubject = subject => source =>
