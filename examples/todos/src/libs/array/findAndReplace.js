@@ -1,5 +1,5 @@
 
-export const findreplace = (arr, search, mapper) => {
+export const findAndReplace = (arr, search, mapper) => {
   const idx = arr.findIndex(search)
 
   if (idx === -1) {

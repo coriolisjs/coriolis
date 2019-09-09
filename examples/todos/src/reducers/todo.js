@@ -1,4 +1,4 @@
-import { findreplace } from '../libs/array/findreplace'
+import { findAndReplace } from '../libs/array/findAndReplace'
 import { not } from '../libs/function/not'
 
 import { added, removed, done, reset, edited } from '../events/todo'
@@ -34,7 +34,7 @@ export const todolist = (state = [], { type, payload, error }) => {
       ]
 
     case edited.toString():
-      return findreplace(
+      return findAndReplace(
         state,
         hasId(payload.id),
         setTodoText(payload.text)
@@ -42,7 +42,7 @@ export const todolist = (state = [], { type, payload, error }) => {
 
     case done.toString():
     case reset.toString():
-      return findreplace(
+      return findAndReplace(
         state,
         hasId(payload),
         setTodoDone(type === done.toString())
