@@ -1,7 +1,7 @@
 import { createEventSource, createStore } from 'coriolis'
 
 import { createUi } from './effects/ui'
-import { createUrlbar } from './effects/urlbar'
+import { urlbar } from './effects/urlbar'
 import { todolist } from './reducers/todo'
 
 const storageKey = 'storedEvents'
@@ -15,5 +15,5 @@ const logger = event => {
 createStore(createEventSource(getSource(), logger))
   .addRootReducer(todolist)
   .addEffect(createUi())
-  .addEffect(createUrlbar())
+  .addEffect(urlbar)
   .init()
