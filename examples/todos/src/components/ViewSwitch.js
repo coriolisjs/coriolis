@@ -1,24 +1,16 @@
-import TodoApp from './views/TodoApp.vue'
-import About from './views/About.vue'
+import { firstKey } from '../libs/object/firstKey'
 
 import { changed } from '../events/view'
 import { currentView as currentViewReducer } from '../reducers/currentView'
 
-const views = {
-  TodoApp,
-  About
-}
-
-const firstKey = obj => Object.keys(obj)[0]
-
-export default {
+export default views => ({
   name: 'viewSwitch',
   inject: [
     'dispatch',
     'pipeReducer'
   ],
   created () {
-    this.pipeReducer(currentViewReducer).subscribe(newView => {
+    this.reducerSubscription = this.pipeReducer(currentViewReducer).subscribe(newView => {
       if (!views[newView]) {
         const view = this.currentView || firstKey(views)
         this.dispatch(changed({ view }))
@@ -26,6 +18,9 @@ export default {
       }
       this.currentView = newView
     })
+  },
+  beforeDestroy () {
+    this.reducerSubscription.unsubscribe()
   },
   data () {
     return {
@@ -38,4 +33,4 @@ export default {
     }
     return createElement(views[this.currentView])
   }
-}
+})
