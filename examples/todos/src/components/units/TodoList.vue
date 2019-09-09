@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <ol>
-      <TodoItem
-        v-for="item in todolist"
-        :key="item.id"
-        :id="item.id"
-        :text="item.text"
-        :done="item.done"
-      />
-    </ol>
-  </div>
+  <ol>
+    <TodoItem
+      v-for="item in todolist"
+      :key="item.id"
+      :id="item.id"
+      :text="item.text"
+      :done="item.done"
+    />
+  </ol>
 </template>
 
 <script>
@@ -27,11 +25,14 @@ export default {
     'pipeReducer'
   ],
   created () {
-    this.pipeReducer(todolist).subscribe(todolist => {
+    this.reducerSubscription = this.pipeReducer(todolist).subscribe(todolist => {
       // kind of clone objects to avoid mutate reducer's state
       // TODO: find a better way to prevent vue from mutate the nested data
       this.todolist = todolist.map(item => ({ ...item }))
     })
+  },
+  beforeDestroy () {
+    this.reducerSubscription.unsubscribe()
   },
   data () {
     return {

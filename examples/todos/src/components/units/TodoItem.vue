@@ -1,8 +1,8 @@
 <template>
   <li :class="{ done }">
-    <input type="text" :value="text" @change.prevent="editItem" />
-    <input type="checkbox" :checked="done" @change.prevent="checkItem" />
-    <button @click.prevent="removeItem">X</button>
+    <input ref="textInput" type="text" :value="text" @change.prevent="editItem" />
+    <input ref="doneCheckbox" type="checkbox" :checked="done" @change.prevent="checkItem" />
+    <button @click.prevent="removeItem">Remove</button>
   </li>
 </template>
 
@@ -24,10 +24,10 @@ export default {
       this.dispatch(removed({ id: this.id }))
     },
     editItem () {
-      this.dispatch(edited({ id: this.id, text: event.target.value }))
+      this.dispatch(edited({ id: this.id, text: this.$refs.textInput.value() }))
     },
     checkItem () {
-      const buildEvent = event.target.checked ? done : reset
+      const buildEvent = this.$refs.doneCheckbox.checked ? done : reset
       this.dispatch(buildEvent({ id: this.id }))
     }
   }

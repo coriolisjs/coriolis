@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent="addItem">
-    <input type="text" placeholder="Text" />
-    <button type="submit">Ajouter</button>
+  <form ref="form" @submit.prevent="addItem">
+    <input ref="textInput" type="text" placeholder="What should I do ?" />
+    <button type="submit">Add</button>
   </form>
 </template>
 
@@ -14,11 +14,14 @@ export default {
     'dispatch'
   ],
   methods: {
-    addItem ({ target }) {
-      this.dispatch(added({ text: target.elements[0].value }))
-      target.reset()
-      target.elements[0].focus()
+    addItem () {
+      this.dispatch(added({ text: this.$refs.textInput.value }))
+      this.$refs.form.reset()
+      this.$refs.textInput.focus()
     }
+  },
+  mounted () {
+    this.$refs.textInput.focus()
   }
 }
 </script>
