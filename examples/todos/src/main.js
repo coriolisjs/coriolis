@@ -1,18 +1,14 @@
 import { createEventSource, createStore } from 'coriolis'
 
+import { getLocalStorageJSON, appendLocalStorage } from './libs/browser/localStorage'
+
 import { createUi } from './effects/ui'
 import { urlbar } from './effects/urlbar'
 import { todolist } from './reducers/todo'
 
-const storageKey = 'storedEvents'
+const storageKey = 'storedEventsForTodoListApp'
 
-const getSource = (initial = []) => (JSON.parse(localStorage.getItem(storageKey)) || initial)
-
-const logger = event => {
-  localStorage.setItem(storageKey, JSON.stringify([...getSource(), event]))
-}
-
-createStore(createEventSource(getSource(), logger))
+createStore(createEventSource(getLocalStorageJSON(storageKey, []), appendLocalStorage(storageKey)))
   .addRootReducer(todolist)
   .addEffect(createUi())
   .addEffect(urlbar)
