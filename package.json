@@ -7,6 +7,7 @@
     "clear": "rm -rf node_modules",
     "lint": "eslint .",
     "test": "mocha",
+    "start": "babel-node src/usage",
     "build": "babel src -d dist"
   },
   "author": "Nicolas Deveaud",
