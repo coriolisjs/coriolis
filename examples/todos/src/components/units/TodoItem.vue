@@ -24,7 +24,7 @@ export default {
       this.dispatch(removed({ id: this.id }))
     },
     editItem () {
-      this.dispatch(edited({ id: this.id, text: this.$refs.textInput.value() }))
+      this.dispatch(edited({ id: this.id, text: this.$refs.textInput.value }))
     },
     checkItem () {
       const buildEvent = this.$refs.doneCheckbox.checked ? done : reset
