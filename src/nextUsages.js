@@ -1,7 +1,6 @@
 import { interval } from 'rxjs'
 import { map, tap } from 'rxjs/operators'
 
-import { createEventSource } from './eventSource'
 import { createStore } from './eventStore'
 
 // reducers
@@ -16,8 +15,8 @@ const listEventNames = (_, __, useReducer) => {
   return getEventList().map(({ type }) => type)
 }
 
-createStore(createEventSource())
-  .addEffect((eventSource, pipeReducer) =>
+createStore(
+  ({ eventSource, pipeReducer }) =>
     pipeReducer(countEventsReducer)
       .subscribe(data => console.log('events count', data))
       .add(
@@ -27,9 +26,8 @@ createStore(createEventSource())
             tap(event => console.log('🎉 emits effect1 event', event))
           )
           .subscribe(eventSource)
-      )
-  )
-  .addEffect((eventSource, pipeReducer) =>
+      ),
+  ({ eventSource, pipeReducer }) =>
     pipeReducer(listEventNames)
       .subscribe(data => console.log('eventnames list', data))
       .add(
@@ -44,5 +42,4 @@ createStore(createEventSource())
           )
           .subscribe(eventSource)
       )
-  )
-  .init()
+)

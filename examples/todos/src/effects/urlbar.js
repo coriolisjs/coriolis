@@ -5,7 +5,7 @@ import { changed } from '../events/view'
 
 const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 
-export const urlbar = (eventSource, pipeReducer) =>
+export const urlbar = ({ eventSource, pipeReducer }) =>
   pipeReducer(currentView)
     .subscribe(newView => {
       if (newView === getCurrentUrlView()) {

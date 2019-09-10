@@ -5,6 +5,8 @@ import About from '../components/views/About.vue'
 
 import ViewSwitch from '../components/ViewSwitch'
 
+import { todolist } from '../reducers/todo'
+
 const views = {
   TodoApp,
   About
@@ -13,7 +15,9 @@ const views = {
 export const createUi = () => {
   // Vue.config.productionTip = false
 
-  return (eventSource, pipeReducer) => {
+  return ({ eventSource, pipeReducer, initReducer }) => {
+    initReducer(todolist)
+
     const vue = new Vue({
       provide: {
         dispatch: event => eventSource.next(event),
