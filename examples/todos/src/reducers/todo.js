@@ -1,7 +1,7 @@
 import { findAndReplace } from '../libs/array/findAndReplace'
 import { not } from '../libs/function/not'
 
-import { added, removed, done, reset, edited } from '../events/todo'
+import { added, removed, done, reset, edited, filter, filters } from '../events/todo'
 
 const setTodoText = text => item => ({
   ...item,
@@ -53,5 +53,29 @@ export const todolist = (state = [], { type, payload, error }) => {
 
     default:
       return state
+  }
+}
+
+export const todolistFilterName = (filterName = filters[0], { type, payload, error }) => {
+  if (error || type !== filter.toString()) {
+    return filterName
+  }
+
+  return payload
+}
+
+export const filteredTodolist = (_, __, useReducer) => {
+  const getList = useReducer(todolist)
+  const getFilterName = useReducer(todolistFilterName)
+
+  switch (getFilterName()) {
+    case 'active':
+      return getList().filter(({ done }) => !done)
+
+    case 'done':
+      return getList().filter(({ done }) => done)
+
+    default:
+      return getList()
   }
 }

@@ -35,3 +35,11 @@ export const reset = createEventBuilder(
   ({ id }) =>
     id || required('Unable to reset a todo item without an id')
 )
+
+export const filter = createEventBuilder(
+  'Todo-list filter has been changed',
+  ({ filterName }) =>
+    (filters.includes(filterName) && filterName) || required(`Filter must be one of [${filters.join(', ')}]`)
+)
+
+export const filters = ['all', 'active', 'done']

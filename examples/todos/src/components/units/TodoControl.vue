@@ -1,27 +1,63 @@
 <template>
-  <form ref="form" @submit.prevent="addItem">
-    <input ref="textInput" type="text" placeholder="What should I do ?" />
-    <button type="submit">Add</button>
-  </form>
+  <div>
+    <form ref="addForm" @submit.prevent="addItem">
+      <input ref="textInput" type="text" placeholder="What should I do ?" v-model="textInputValue" />
+      <button type="submit" :disabled="!textInputValue">Add</button>
+    </form>
+    <div>
+      Show :
+      <button
+        v-for="filter in filters"
+        :key="filter"
+        @click.prevent="setFilter(filter)"
+        :disabled="filter === filterName"
+      >
+        {{filter}}
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
-import { added } from '../../events/todo'
+import { added, filter, filters } from '../../events/todo'
+import { todolistFilterName } from '../../reducers/todo'
 
 export default {
   name: 'todoControl',
   inject: [
-    'dispatch'
+    'dispatch',
+    'pipeReducer'
   ],
+  data () {
+    return {
+      filters,
+      filterName: undefined,
+      textInputValue: ''
+    }
+  },
   methods: {
     addItem () {
+      if (!this.textInputValue) {
+        return
+      }
       this.dispatch(added({ text: this.$refs.textInput.value }))
-      this.$refs.form.reset()
+      this.textInputValue = ''
       this.$refs.textInput.focus()
+    },
+    setFilter (filterName) {
+      this.dispatch(filter({ filterName }))
     }
+  },
+  created () {
+    this.filterNameSubscription = this.pipeReducer(todolistFilterName).subscribe(filterName => {
+      this.filterName = filterName
+    })
   },
   mounted () {
     this.$refs.textInput.focus()
+  },
+  beforeDestroy () {
+    this.filterNameSubscription.unsubscribe()
   }
 }
 </script>
