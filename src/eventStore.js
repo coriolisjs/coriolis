@@ -4,7 +4,7 @@ import {
   Subject,
   Subscription,
   from,
-  merge
+  noop
 } from 'rxjs'
 import {
   distinctUntilChanged,
@@ -14,13 +14,13 @@ import {
   skipUntil,
   startWith,
   take,
+  takeUntil,
   tap
 } from 'rxjs/operators'
 
 import { createEventSource } from './eventSource'
 
-import { parallelMerge } from './lib/rx/operator/parallel'
-import { effect } from './lib/rx/operator/effect'
+import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 
 import { createIndex } from './lib/objectIndex'
 import { createFuse } from './lib/function/createFuse'
@@ -50,19 +50,23 @@ const createAggregator = (reducer, getAggregator) => {
 
 const payloadEquals = payload => event => event.payload === payload
 
-// TODO: Convert this builder pattern to a single subscribe pattern to avoid questions about multiple calls to init and so
 export const createStore = (...effects) => {
   if (!effects.length) {
     throw new Error('No effect defined. This is useless')
   }
 
-  let sources = []
-  const mainSource = Observable.create(observer => {
-    return merge(...sources).subscribe(observer)
-  })
+  const {
+    observable: mainSource,
+    add: _addSource
+  } = createExtensibleObservable()
 
-  const loggersOutput = new Subject()
+  const {
+    observable: loggersOutput2,
+    add: addLoggerOutput
+  } = createExtensibleObservable()
+
   const loggersInput = new Subject()
+  const loggersOutput = new Subject()
 
   const mainLogger = Subject.create(loggersInput, loggersOutput)
 
@@ -74,7 +78,7 @@ export const createStore = (...effects) => {
 
   const initialPayload = {}
 
-  const initDone$ = replayCaster.pipe(
+  const initDone = replayCaster.pipe(
     filter(payloadEquals(initialPayload)),
     take(1),
     shareReplay(1)
@@ -89,64 +93,88 @@ export const createStore = (...effects) => {
 
       // while init is not finished (old events replaying), we expect reducers to
       // catch all events, but we don't want any new state emited (it's not new states, it's old state re-reduced)
-      skipUntil(initDone$),
+      skipUntil(initDone),
+
+      // if event does not lead to a new aggregate, we don't want to emit
       distinctUntilChanged()
     )
 
-  const pipeLogger = logger => {
+  const addLogger = logger => {
     const subscription = loggersInput.subscribe(logger)
 
-    if (logger instanceof Subject) {
-      return subscription.add(logger.subscribe(loggersOutput))
+    if (logger instanceof Observable) {
+      const removeLoggerOutput = addLoggerOutput(logger)
+
+      return () => {
+        subscription.unsubscribe()
+        removeLoggerOutput()
+      }
     }
 
-    return subscription
+    return () => subscription.unsubscribe()
   }
 
-  const pipeSource = source => {
-    const source$ = from(source)
+  const {
+    pass: addSource,
+    cut: disableAddSource
+  } = createFuse(
+    source => _addSource(from(source)),
+    () => { throw new Error('addSource must be called before all sources completed') }
+  )
 
-    sources.push(source$)
+  const disableAddSourceSubscription = initDone.subscribe(disableAddSource)
 
-    return new Subscription(() => {
-      sources = sources.filter(src => src !== source$)
-    })
-  }
-
-  const setupEffect = effectWithReducersSubscriber => {
-    const effectSubscriber = effectEventSource => {
-      // event source emitting only after init finished, to avoid casting past events into effects
+  const setupEffects = source =>
+    Observable.create(observer => {
+      const eventCaster = new Subject()
       const afterInitEventSource = Subject.create(
-        effectEventSource,
-        effectEventSource.pipe(skipUntil(initDone$))
+        observer,
+        eventCaster.pipe(skipUntil(initDone))
       )
 
-      const {
-        pass: fusablePipeSource,
-        cut
-      } = createFuse(pipeSource, () => { throw new Error('pipeSource must be called synchronously or never') })
+      const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 
-      const subscription = effectWithReducersSubscriber({
-        eventSource: afterInitEventSource,
-        pipeReducer,
-        pipeSource: fusablePipeSource,
-        pipeLogger,
-        initReducer
-      })
+      const addEffect = effect => {
+        const removeEffect = effect({
+          initialEvent$,
+          eventSource: afterInitEventSource,
+          pipeReducer,
+          initReducer,
+          addSource,
+          addLogger,
+          addEffect
+        }) || noop
 
-      cut()
+        return removeEffect.unsubscribe ?
+          () => removeEffect.unsubscribe()
+          : removeEffect
+      }
 
-      return subscription
-    }
+      const removeEffects = effects
+        .map(addEffect)
+        .reduce(
+          (prev, removeEffect) => () => { prev(); removeEffect() },
+          noop
+        )
 
-    return effect(effectSubscriber)
-  }
+      const sourceSubscription = source.subscribe(eventCaster)
 
-  return eventSource
+      return () => {
+        sourceSubscription.unsubscribe()
+        removeEffects()
+      }
+    })
+
+  const storeSubscription = eventSource
     .pipe(
       tap(replayCaster),
-      parallelMerge(...effects.map(setupEffect)),
+      setupEffects,
       startWith({ type: INITIAL_EVENT_TYPE, payload: initialPayload })
     )
     .subscribe(eventSource)
+
+  return () => {
+    storeSubscription.unsubscribe()
+    disableAddSourceSubscription.unsubscribe()
+  }
 }

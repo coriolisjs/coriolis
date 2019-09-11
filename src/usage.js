@@ -3,6 +3,8 @@ import { map, take, tap, share } from 'rxjs/operators'
 
 import { createStore } from './eventStore'
 
+console.log('start')
+
 const initialSource = interval(100).pipe(
   take(3),
   map(event => ({ type: 'stored event', payload: event })),
@@ -38,11 +40,18 @@ const lastEvent = (_, event) => event
 
 // effects
 
-const effect0 = ({ pipeSource, pipeLogger }) =>
-  pipeSource(initialSource)
-    .add(pipeLogger(logObserver))
+const effect0 = ({ addSource, addLogger }) => {
+  console.log('setup effect0')
+  const removeLogger = addLogger(logObserver)
+  const removeSource = addSource(initialSource)
 
-const effect1 = ({ eventSource, pipeReducer }) =>
+  return () => {
+    removeLogger()
+    removeSource()
+  }
+}
+
+const effect1 = ({ eventSource, pipeReducer }) => console.log('setup effect1') ||
   zip(
     pipeReducer(lastEvent),
     pipeReducer(listEventsReducer)
@@ -57,7 +66,7 @@ const effect1 = ({ eventSource, pipeReducer }) =>
         .subscribe(eventSource)
     )
 
-const effect2 = ({ eventSource, pipeReducer }) =>
+const effect2 = ({ eventSource, pipeReducer }) => console.log('setup effect2') ||
   zip(
     pipeReducer(lastEvent),
     pipeReducer(countEventsReducer),
@@ -73,7 +82,7 @@ const effect2 = ({ eventSource, pipeReducer }) =>
         .subscribe(eventSource)
     )
 
-const effect3 = ({ eventSource, pipeReducer }) =>
+const effect3 = ({ eventSource, pipeReducer }) => console.log('setup effect3') ||
   pipeReducer(listSameEventsReducer)
     .subscribe(event => console.log('effect3 received', event))
     .add(
@@ -85,7 +94,7 @@ const effect3 = ({ eventSource, pipeReducer }) =>
         .subscribe(eventSource)
     )
 
-const effect4 = ({ eventSource, pipeReducer }) =>
+const effect4 = ({ eventSource, pipeReducer }) => console.log('setup effect4') ||
   pipeReducer(lastEvenEvent)
     .subscribe(event => console.log('effect4 received', event))
     .add(
@@ -97,7 +106,7 @@ const effect4 = ({ eventSource, pipeReducer }) =>
         .subscribe(eventSource)
     )
 
-const effect5 = ({ eventSource, pipeReducer }) =>
+const effect5 = ({ eventSource, pipeReducer }) => console.log('setup effect5') ||
   pipeReducer(lastEvenEvent)
     .subscribe(data => console.log('effect5 received', data))
     .add(
@@ -109,8 +118,20 @@ const effect5 = ({ eventSource, pipeReducer }) =>
         .subscribe(eventSource)
     )
 
-const effect6 = ({ eventSource, pipeReducer }) => {
+const effect7 = ({ eventSource, addSource }) => {
+  console.log('setup effect7')
+  const removeSource = addSource([{ type: 'other stored event' }])
+
+  return eventSource.subscribe(event => console.log('effect7 received', event))
+    .add(removeSource)
+}
+
+const effect6 = ({ eventSource, pipeReducer, addEffect }) => {
+  console.log('setup effect6')
+  const removeEffect = addEffect(effect7)
+
   return pipeReducer(lastEvenEvent).subscribe(data => console.log('effect6 received', data))
+    .add(removeEffect)
     .add(
       interval(11000)
         .pipe(

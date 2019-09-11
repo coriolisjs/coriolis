@@ -1,4 +1,4 @@
-import { Subject, from, merge, noop, EMPTY } from 'rxjs'
+import { Subject, merge, noop, EMPTY } from 'rxjs'
 import {
   concat,
   map,
@@ -57,7 +57,7 @@ export const createEventSource = (initialSource = EMPTY, logObserver = noop) => 
       tap(logObserver)
     )
 
-  const event$ = from(initialSource)
+  const event$ = initialSource
     .pipe(
       concat(startoverNewevent$),
       share()
