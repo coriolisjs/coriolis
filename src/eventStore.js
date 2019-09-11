@@ -2,7 +2,6 @@ import {
   Observable,
   ReplaySubject,
   Subject,
-  Subscription,
   from,
   noop
 } from 'rxjs'
@@ -50,39 +49,95 @@ const createAggregator = (reducer, getAggregator) => {
 
 const payloadEquals = payload => event => event.payload === payload
 
-export const createStore = (...effects) => {
-  if (!effects.length) {
-    throw new Error('No effect defined. This is useless')
-  }
-
-  const {
-    observable: mainSource,
-    add: _addSource
-  } = createExtensibleObservable()
-
-  const {
-    observable: loggersOutput2,
-    add: addLoggerOutput
-  } = createExtensibleObservable()
-
+const createLogMerger = () => {
   const loggersInput = new Subject()
   const loggersOutput = new Subject()
 
   const mainLogger = Subject.create(loggersInput, loggersOutput)
 
-  const eventSource = createEventSource(mainSource, mainLogger)
+  const addLogger = logger => {
+    const subscription = loggersInput.subscribe(logger)
 
-  const replayCaster = new ReplaySubject(1)
+    if (logger instanceof Observable) {
+      const loggerOutputSubscription = logger.subscribe(
+        payload => loggersOutput.next({ type: 'logger output', payload }),
+        error => loggersOutput.next({ type: 'logger output error', payload: error, error: true }),
+        () => loggersOutput.next({ type: 'logger output completed' })
+      )
 
-  const getAggregator = createIndex(createAggregator)
+      return () => {
+        subscription.unsubscribe()
+        loggerOutputSubscription.unsubscribe()
+      }
+    }
+
+    return () => subscription.unsubscribe()
+  }
+
+  return {
+    logger: mainLogger,
+    addLogger
+  }
+}
+
+const createExtensibleFusableObservable = cutMessage => {
+  const {
+    observable,
+    add
+  } = createExtensibleObservable()
+
+  const {
+    pass: addSource,
+    cut: disableAddSource
+  } = createFuse(
+    source => add(from(source)),
+    () => { throw new Error(cutMessage) }
+  )
+
+  return {
+    observable,
+    addSource,
+    disableAddSource
+  }
+}
+
+export const createStore = (...effects) => {
+  if (!effects.length) {
+    throw new Error('No effect defined. This is useless')
+  }
 
   const initialPayload = {}
+  const getAggregator = createIndex(createAggregator)
+
+  const eventCaster = new Subject()
+  const replayCaster = new ReplaySubject(1)
+  const eventCatcher = new Subject()
 
   const initDone = replayCaster.pipe(
     filter(payloadEquals(initialPayload)),
     take(1),
     shareReplay(1)
   )
+
+  const effectEventSource = Subject.create(
+    eventCatcher,
+    eventCaster.pipe(skipUntil(initDone))
+  )
+
+  const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
+
+  const {
+    logger,
+    addLogger
+  } = createLogMerger()
+
+  const {
+    observable: mainSource,
+    addSource,
+    disableAddSource
+  } = createExtensibleFusableObservable('addSource must be called before all sources completed')
+
+  const eventSource = createEventSource(mainSource, logger)
 
   const initReducer = reducer =>
     replayCaster.subscribe(getAggregator(reducer))
@@ -99,82 +154,47 @@ export const createStore = (...effects) => {
       distinctUntilChanged()
     )
 
-  const addLogger = logger => {
-    const subscription = loggersInput.subscribe(logger)
+  const addEffect = effect => {
+    const removeEffect = effect({
+      initialEvent$,
+      eventSource: effectEventSource,
+      pipeReducer,
+      initReducer,
+      addSource,
+      addLogger,
+      addEffect
+    }) || noop
 
-    if (logger instanceof Observable) {
-      const removeLoggerOutput = addLoggerOutput(logger)
-
-      return () => {
-        subscription.unsubscribe()
-        removeLoggerOutput()
-      }
-    }
-
-    return () => subscription.unsubscribe()
+    return removeEffect.unsubscribe
+      ? () => removeEffect.unsubscribe()
+      : removeEffect
   }
-
-  const {
-    pass: addSource,
-    cut: disableAddSource
-  } = createFuse(
-    source => _addSource(from(source)),
-    () => { throw new Error('addSource must be called before all sources completed') }
-  )
 
   const disableAddSourceSubscription = initDone.subscribe(disableAddSource)
 
-  const setupEffects = source =>
-    Observable.create(observer => {
-      const eventCaster = new Subject()
-      const afterInitEventSource = Subject.create(
-        observer,
-        eventCaster.pipe(skipUntil(initDone))
-      )
-
-      const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
-
-      const addEffect = effect => {
-        const removeEffect = effect({
-          initialEvent$,
-          eventSource: afterInitEventSource,
-          pipeReducer,
-          initReducer,
-          addSource,
-          addLogger,
-          addEffect
-        }) || noop
-
-        return removeEffect.unsubscribe ?
-          () => removeEffect.unsubscribe()
-          : removeEffect
-      }
-
-      const removeEffects = effects
-        .map(addEffect)
-        .reduce(
-          (prev, removeEffect) => () => { prev(); removeEffect() },
-          noop
-        )
-
-      const sourceSubscription = source.subscribe(eventCaster)
-
-      return () => {
-        sourceSubscription.unsubscribe()
-        removeEffects()
-      }
-    })
-
-  const storeSubscription = eventSource
+  const eventCatcherSubscription = eventCatcher
     .pipe(
-      tap(replayCaster),
-      setupEffects,
       startWith({ type: INITIAL_EVENT_TYPE, payload: initialPayload })
     )
     .subscribe(eventSource)
 
+  const removeEffects = effects
+    .map(addEffect)
+    .reduce(
+      (prev, removeEffect) => () => { prev(); removeEffect() },
+      noop
+    )
+
+  const eventCasterSubscription = eventSource
+    .pipe(
+      tap(replayCaster)
+    )
+    .subscribe(eventCaster)
+
   return () => {
-    storeSubscription.unsubscribe()
     disableAddSourceSubscription.unsubscribe()
+    eventCatcherSubscription.unsubscribe()
+    eventCasterSubscription.unsubscribe()
+    removeEffects()
   }
 }
