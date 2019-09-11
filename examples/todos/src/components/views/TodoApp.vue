@@ -2,7 +2,7 @@
   <AppContainer>
     <h1>Ma liste de tâches</h1>
     <TodoControl />
-    <TodoList />
+    <TodoList class="todolist" />
     <ViewLink view="About">
       About
     </ViewLink>
@@ -25,3 +25,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .todolist {
+    max-height: 60vh;
+    overflow: auto;
+    width: 60vw;
+    margin: 1em auto;
+    background: #f9f9f9;
+    padding: 1em;
+  }
+</style>
