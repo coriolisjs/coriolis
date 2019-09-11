@@ -5,8 +5,10 @@ import { changed } from '../events/view'
 
 const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 
-export const urlbar = ({ eventSource, pipeReducer }) =>
-  pipeReducer(currentView)
+export const urlbar = ({ addSource, eventSource, pipeReducer }) => {
+  const removeSource = addSource([changed({ view: getCurrentUrlView() })])
+
+  const reducerSubscription = pipeReducer(currentView)
     .subscribe(newView => {
       if (newView === getCurrentUrlView()) {
         // view already in url bar, no need to push it
@@ -15,7 +17,13 @@ export const urlbar = ({ eventSource, pipeReducer }) =>
 
       history.pushState({}, newView, newView)
     })
-    .add(
-      subscribeEvent(window, 'popstate', () =>
-        eventSource.next(changed({ view: getCurrentUrlView() })))
-    )
+
+  const popstateUnsubscribe = subscribeEvent(window, 'popstate', () =>
+    eventSource.next(changed({ view: getCurrentUrlView() })))
+
+  return () => {
+    reducerSubscription.unsubscribe()
+    popstateUnsubscribe()
+    removeSource()
+  }
+}
