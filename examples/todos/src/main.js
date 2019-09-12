@@ -1,13 +1,13 @@
 import { createStore } from 'coriolis'
 
 import { createUi } from './effects/ui'
-import { urlbar } from './effects/urlbar'
 import { localStorage } from './effects/localStorage'
+import { logEvents } from './effects/logEvents'
 
 const storageKey = 'storedEventsForTodoListApp'
 
 createStore(
+  logEvents,
   localStorage(storageKey),
-  createUi(),
-  urlbar
+  createUi()
 )
