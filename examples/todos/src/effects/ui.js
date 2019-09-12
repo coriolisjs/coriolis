@@ -5,6 +5,7 @@ import About from '../components/views/About.vue'
 
 import ViewSwitch from '../components/ViewSwitch'
 
+import { urlbar } from '../effects/urlbar'
 import { todolist } from '../reducers/todo'
 
 const views = {
@@ -13,9 +14,10 @@ const views = {
 }
 
 export const createUi = () => {
-  // Vue.config.productionTip = false
+  Vue.config.productionTip = false
 
-  return ({ eventSource, pipeReducer, initReducer }) => {
+  return ({ eventSource, pipeReducer, initReducer, addEffect }) => {
+    addEffect(urlbar(Object.keys(views)))
     initReducer(todolist)
 
     const vue = new Vue({
@@ -29,7 +31,9 @@ export const createUi = () => {
       .$mount('#app')
 
     return () => {
+      const node = vue.$el
       vue.$destroy()
+      node.parentNode.removeChild(node)
     }
   }
 }
