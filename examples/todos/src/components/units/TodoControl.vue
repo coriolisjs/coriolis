@@ -20,13 +20,13 @@
 
 <script>
 import { added, filter, filters } from '../../events/todo'
-import { todolistFilterName } from '../../reducers/todo'
+import { todolistFilterName } from '../../aggrs/todo'
 
 export default {
   name: 'todoControl',
   inject: [
     'dispatch',
-    'pipeReducer'
+    'pipeAggr'
   ],
   data () {
     return {
@@ -49,7 +49,7 @@ export default {
     }
   },
   created () {
-    this.filterNameSubscription = this.pipeReducer(todolistFilterName).subscribe(filterName => {
+    this.filterNameSubscription = this.pipeAggr(todolistFilterName).subscribe(filterName => {
       this.filterName = filterName
     })
   },

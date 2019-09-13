@@ -1,18 +1,18 @@
-import { currentView as currentViewReducer } from '../reducers/currentView'
+import { currentView as currentViewAggr } from '../aggrs/currentView'
 
 export default views => ({
   name: 'viewSwitch',
   inject: [
-    'pipeReducer'
+    'pipeAggr'
   ],
   created () {
-    this.reducerSubscription = this.pipeReducer(currentViewReducer)
+    this.aggrSubscription = this.pipeAggr(currentViewAggr)
       .subscribe(newView => {
         this.currentView = newView
       })
   },
   beforeDestroy () {
-    this.reducerSubscription.unsubscribe()
+    this.aggrSubscription.unsubscribe()
   },
   data () {
     return {

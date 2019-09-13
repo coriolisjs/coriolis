@@ -6,7 +6,7 @@ import About from '../components/views/About.vue'
 import ViewSwitch from '../components/ViewSwitch'
 
 import { urlbar } from '../effects/urlbar'
-import { todolist } from '../reducers/todo'
+import { todolist, todolistFilterName } from '../aggrs/todo'
 
 const views = {
   TodoApp,
@@ -16,15 +16,16 @@ const views = {
 export const createUi = () => {
   Vue.config.productionTip = false
 
-  return ({ eventSource, pipeReducer, initReducer, addEffect }) => {
+  return ({ eventSource, pipeAggr, initAggr, addEffect }) => {
     addEffect(urlbar(Object.keys(views)))
-    initReducer(todolist)
+    initAggr(todolist)
+    initAggr(todolistFilterName)
 
     const vue = new Vue({
       provide: {
         dispatch: event => eventSource.next(event),
         event$: eventSource.asObservable(),
-        pipeReducer
+        pipeAggr
       },
       render: createElement => createElement(ViewSwitch(views))
     })

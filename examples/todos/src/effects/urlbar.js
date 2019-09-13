@@ -1,15 +1,15 @@
 import { subscribeEvent } from '../libs/browser/subscribeEvent'
 
-import { currentView } from '../reducers/currentView'
+import { currentView } from '../aggrs/currentView'
 import { changed } from '../events/view'
 
 const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 
-export const urlbar = views => ({ addSource, eventSource, pipeReducer }) => {
+export const urlbar = views => ({ addSource, eventSource, pipeAggr }) => {
   const removeSource = addSource([changed({ view: getCurrentUrlView() })])
 
   let previousView
-  const reducerSubscription = pipeReducer(currentView)
+  const aggrSubscription = pipeAggr(currentView)
     .subscribe(newView => {
       if (!views.includes(newView)) {
         const view = previousView || views[0]
@@ -30,7 +30,7 @@ export const urlbar = views => ({ addSource, eventSource, pipeReducer }) => {
     eventSource.next(changed({ view: getCurrentUrlView() })))
 
   return () => {
-    reducerSubscription.unsubscribe()
+    aggrSubscription.unsubscribe()
     popstateUnsubscribe()
     removeSource()
   }

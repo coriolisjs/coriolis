@@ -13,7 +13,7 @@
 <script>
 import TodoItem from './TodoItem'
 
-import { filteredTodolist } from '../../reducers/todo'
+import { filteredTodolist } from '../../aggrs/todo'
 import { added } from '../../events/todo'
 
 export default {
@@ -22,7 +22,7 @@ export default {
     TodoItem
   },
   inject: [
-    'pipeReducer'
+    'pipeAggr'
   ],
   data () {
     return {
@@ -31,8 +31,8 @@ export default {
     }
   },
   created () {
-    this.todolistSubscription = this.pipeReducer(filteredTodolist).subscribe(todolist => {
-      // kind of clone objects to avoid mutate reducer's state
+    this.todolistSubscription = this.pipeAggr(filteredTodolist).subscribe(todolist => {
+      // kind of clone objects to avoid mutate aggr's state
       // TODO: find a better way to prevent vue from mutate the nested data
       this.todolist = todolist.map(item => ({ ...item }))
     })
