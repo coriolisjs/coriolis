@@ -26,24 +26,53 @@ import { createFuse } from './lib/function/createFuse'
 
 const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
 
-const createAggregator = (reducer, getAggregator) => {
+const createAggregator = (aggr, getAggregator) => {
   let lastEvent
-  let lastResult
+  let lastState
+  let lastValues = []
+
+  const using = {
+    aggr: []
+  }
+
+  const useState = () => {
+    using.state = true
+    using.aggr.push(() => lastState)
+  }
+  const useEvent = () => {
+    using.event = true
+    using.aggr.push(event => event)
+  }
+  const useAggr = requestedAggr =>
+    using.aggr.push(getAggregator(requestedAggr))
+
+  const aggrBehaviour = aggr({
+    useState,
+    useEvent,
+    useAggr
+  })
 
   return event => {
-    if (!lastEvent || event !== lastEvent.value) {
-      lastEvent = { value: event }
-
-      // useReducer will use getAggregator
-      // getAggregator uses a relatively slow indexing solution (cf: ./lib/objectIndex.js)
-      // If this causes latency, we could add local cache on this function call to ensure quick access
-      // Or getAggregator's indexing solution could be improved
-      const useReducer = reducer => () => getAggregator(reducer)(event)
-
-      lastResult = reducer(lastResult, event, useReducer)
+    // in any case, same event > same result
+    if (lastEvent && event === lastEvent.value) {
+      return lastState
     }
 
-    return lastResult
+    lastEvent = { value: event }
+
+    const values = using.aggr.map(aggr => aggr(event))
+
+    const anyChange = using.event || values.some((item, idx) => item !== lastValues[idx])
+
+    if (!anyChange) {
+      return lastState
+    }
+
+    lastValues = values
+
+    lastState = aggrBehaviour(...values)
+
+    return lastState
   }
 }
 
@@ -60,6 +89,7 @@ const createLogMerger = () => {
 
     if (logger instanceof Observable) {
       const loggerOutputSubscription = logger.subscribe(
+        // TODO: using event builders here would be better
         payload => loggersOutput.next({ type: 'logger output', payload }),
         error => loggersOutput.next({ type: 'logger output error', payload: error, error: true }),
         () => loggersOutput.next({ type: 'logger output completed' })
@@ -139,15 +169,15 @@ export const createStore = (...effects) => {
 
   const eventSource = createEventSource(mainSource, logger)
 
-  const initReducer = reducer =>
-    replayCaster.subscribe(getAggregator(reducer))
+  const initAggr = aggr =>
+    replayCaster.subscribe(getAggregator(aggr))
 
-  const pipeReducer = reducer =>
+  const pipeAggr = aggr =>
     replayCaster.pipe(
-      map(getAggregator(reducer)),
+      map(getAggregator(aggr)),
 
-      // while init is not finished (old events replaying), we expect reducers to
-      // catch all events, but we don't want any new state emited (it's not new states, it's old state re-reduced)
+      // while init is not finished (old events replaying), we expect aggrs to
+      // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
       skipUntil(initDone),
 
       // if event does not lead to a new aggregate, we don't want to emit
@@ -158,8 +188,8 @@ export const createStore = (...effects) => {
     const removeEffect = effect({
       initialEvent$,
       eventSource: effectEventSource,
-      pipeReducer,
-      initReducer,
+      pipeAggr,
+      initAggr,
       addSource,
       addLogger,
       addEffect
