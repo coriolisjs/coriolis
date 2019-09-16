@@ -27,6 +27,10 @@ import { createFuse } from './lib/function/createFuse'
 const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
 
 const createAggregator = (aggr, getAggregator) => {
+  if (typeof aggr !== 'function') {
+    throw new TypeError('Aggr must be a function')
+  }
+
   let lastEvent
   let lastState
   let lastValues = []

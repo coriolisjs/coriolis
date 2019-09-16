@@ -3,21 +3,27 @@ import { map, tap } from 'rxjs/operators'
 
 import { createStore } from './eventStore'
 
-// reducers
+// Aggrs
 
-const countEventsReducer = (count = 0) => console.log(' -> countEvents') || count + 1
+const countEventsAggr = ({ useState }) => (
+  useState(),
+  (count = 0) => console.log(' -> countEvents') || count + 1
+)
 
-const listEventsReducer = (list = [], event) => console.log(' -> listEvents') || [...list, event]
+const listEventsAggr = ({ useState, useEvent }) => (
+  useState(),
+  useEvent(),
+  (list = [], event) => console.log(' -> listEvents') || [...list, event]
+)
 
-const listEventNames = (_, __, useReducer) => {
-  const getEventList = useReducer(listEventsReducer)
-
-  return getEventList().map(({ type }) => type)
-}
+const listEventNames = ({ useAggr }) => (
+  useAggr(listEventsAggr),
+  eventList => eventList.map(({ type }) => type)
+)
 
 createStore(
-  ({ eventSource, pipeReducer }) =>
-    pipeReducer(countEventsReducer)
+  ({ eventSource, pipeAggr }) =>
+    pipeAggr(countEventsAggr)
       .subscribe(data => console.log('events count', data))
       .add(
         interval(1000)
@@ -27,11 +33,11 @@ createStore(
           )
           .subscribe(eventSource)
       ),
-  ({ eventSource, pipeReducer }) =>
-    pipeReducer(listEventNames)
+  ({ eventSource, pipeAggr }) =>
+    pipeAggr(listEventNames)
       .subscribe(data => console.log('eventnames list', data))
       .add(
-        pipeReducer(listEventsReducer)
+        pipeAggr(listEventsAggr)
           .subscribe(data => console.log('events list', data))
       )
       .add(

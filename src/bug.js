@@ -1,4 +1,3 @@
-import { createEventSource } from './eventSource'
 import { createStore } from './eventStore'
 
 const logEvent = event => console.log('✍ ', event)
@@ -6,18 +5,25 @@ const logEvent = event => console.log('✍ ', event)
 const expectedType = 'expected type'
 const expectedState = 'expected state'
 
-const bugReducer = (state, { type, payload }) => {
-  console.log('reducer', type, payload)
-  if (type !== expectedType) {
-    return state
+const bugAggr = ({ useState, useEvent }) => (
+  useState(),
+  useEvent(),
+  (state, { type, payload }) => {
+    console.log('aggr', type, payload)
+    if (type !== expectedType) {
+      return state
+    }
+
+    console.log('state changed', payload)
+    return payload
   }
+)
 
-  console.log('currentView state changed', payload)
-  return payload
-}
+const bugEffect = ({ addLogger, eventSource, pipeAggr }) => {
+  const removeLogger = addLogger(logEvent)
+  const sourceSubscription = eventSource.subscribe(event => console.log('effect got event', event))
 
-const bugEffect = (eventSource, pipeReducer) => {
-  pipeReducer(bugReducer)
+  return pipeAggr(bugAggr)
     .subscribe(reducedState => {
       console.log('effect got state', reducedState)
       if (reducedState !== expectedState) {
@@ -29,11 +35,10 @@ const bugEffect = (eventSource, pipeReducer) => {
 
       console.log('Houra !!')
     })
-    .add(
-      eventSource.subscribe(event => console.log('effect got event', event))
-    )
+    .add(sourceSubscription)
+    .add(() => removeLogger())
 }
 
-createStore(createEventSource([], logEvent))
-  .addEffect(bugEffect)
-  .init()
+createStore(
+  bugEffect
+)
