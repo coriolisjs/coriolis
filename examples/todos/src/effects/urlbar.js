@@ -6,7 +6,7 @@ import { changed } from '../events/view'
 const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 
 export const urlbar = views => ({ addSource, eventSource, pipeAggr }) => {
-  const removeSource = addSource([changed({ view: getCurrentUrlView() })])
+  const removeSource = addSource([changed({ view: getCurrentUrlView() || views[0] })])
 
   let previousView
   const aggrSubscription = pipeAggr(currentView)
