@@ -1,11 +1,15 @@
-import { getLocalStorageJSON, appendLocalStorage } from '../libs/browser/localStorage'
+import { localStoredArray } from '../libs/browser/localStorage'
 
-export const localStorage = storageKey => ({ addSource, addLogger }) => {
-  const removeSource = addSource(getLocalStorageJSON(storageKey, []))
-  const removeLogger = addLogger(appendLocalStorage(storageKey))
+export const localStorage = storageKey => {
+  const storage = localStoredArray(storageKey)
 
-  return () => {
-    removeSource()
-    removeLogger()
+  return ({ addSource, addLogger }) => {
+    const removeSource = addSource(storage.get())
+    const removeLogger = addLogger(storage.append)
+
+    return () => {
+      removeSource()
+      removeLogger()
+    }
   }
 }
