@@ -13,6 +13,7 @@ export const urlbar = views => ({ addSource, eventSource, pipeAggr }) => {
     .subscribe(newView => {
       if (!views.includes(newView)) {
         const view = previousView || views[0]
+        previousView = view
         eventSource.next(changed({ view }))
         return
       }
@@ -23,6 +24,7 @@ export const urlbar = views => ({ addSource, eventSource, pipeAggr }) => {
         return
       }
 
+      previousView = newView
       history.pushState({ view: newView }, newView, newView)
     })
 
