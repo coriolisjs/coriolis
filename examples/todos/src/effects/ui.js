@@ -13,11 +13,13 @@ const views = {
   About
 }
 
+const viewNames = Object.keys(views)
+
 export const createUi = () => {
   Vue.config.productionTip = false
 
   return ({ eventSource, pipeAggr, initAggr, addEffect }) => {
-    addEffect(urlbar(Object.keys(views)))
+    addEffect(urlbar(viewNames))
     initAggr(todolist)
     initAggr(todolistFilterName)
 
