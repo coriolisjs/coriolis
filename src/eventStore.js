@@ -3,7 +3,8 @@ import {
   ReplaySubject,
   Subject,
   from,
-  noop
+  noop,
+  identity
 } from 'rxjs'
 import {
   distinctUntilChanged,
@@ -26,7 +27,7 @@ import { createFuse } from './lib/function/createFuse'
 
 const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
 
-const createAggregator = (aggr, getAggregator) => {
+const createAggregator = (aggr, getAggregator, getReducer) => {
   if (typeof aggr !== 'function') {
     throw new TypeError('Aggr must be a function')
   }
@@ -39,22 +40,41 @@ const createAggregator = (aggr, getAggregator) => {
     aggr: []
   }
 
+  const getLastState = () => lastState
+
   const useState = () => {
     using.state = true
-    using.aggr.push(() => lastState)
+    using.aggr.push(getLastState)
   }
+
   const useEvent = () => {
     using.event = true
-    using.aggr.push(event => event)
+    using.aggr.push(identity)
   }
-  const useAggr = requestedAggr =>
-    using.aggr.push(getAggregator(requestedAggr))
+
+  const useIndexed = getIndexed => obj =>
+    using.aggr.push(getIndexed(obj))
+
+  const useAggr = useIndexed(getAggregator)
+  const useReducer = useIndexed(getReducer)
 
   const aggrBehaviour = aggr({
     useState,
     useEvent,
-    useAggr
+    useAggr,
+    useReducer
   })
+
+  // if given aggregator definition expects only state and event (or less), it should be a reducer
+  if (getReducer && using.aggr.length === (using.state + using.event)) {
+    console.warn('Prefer using initReducer, pipeReducer or useReducer when you only use state or event')
+    if (
+      (!using.aggr[0] || using.aggr[0] === getLastState) &&
+      (!using.aggr[1] || using.aggr[1] === identity)
+    ) {
+      return getReducer(aggrBehaviour)
+    }
+  }
 
   return event => {
     // in any case, same event > same result
@@ -79,6 +99,12 @@ const createAggregator = (aggr, getAggregator) => {
     return lastState
   }
 }
+
+const createReducerAggregator = reducer => createAggregator(({ useState, useEvent }) => (
+  useState(),
+  useEvent(),
+  reducer
+))
 
 const payloadEquals = payload => event => event.payload === payload
 
@@ -141,7 +167,8 @@ export const createStore = (...effects) => {
   }
 
   const initialPayload = {}
-  const getAggregator = createIndex(createAggregator)
+  const getReducer = createIndex(reducer => createReducerAggregator(reducer))
+  const getAggregator = createIndex(aggr => createAggregator(aggr, getAggregator, getReducer))
 
   const eventCaster = new Subject()
   const replayCaster = new ReplaySubject(1)
@@ -173,12 +200,12 @@ export const createStore = (...effects) => {
 
   const eventSource = createEventSource(mainSource, logger)
 
-  const initAggr = aggr =>
-    replayCaster.subscribe(getAggregator(aggr))
+  const initIndexed = getIndexed => aggr =>
+    replayCaster.subscribe(getIndexed(aggr))
 
-  const pipeAggr = aggr =>
+  const pipeIndexed = getIndexed => obj =>
     replayCaster.pipe(
-      map(getAggregator(aggr)),
+      map(getIndexed(obj)),
 
       // while init is not finished (old events replaying), we expect aggrs to
       // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
@@ -188,12 +215,20 @@ export const createStore = (...effects) => {
       distinctUntilChanged()
     )
 
+  const initAggr = initIndexed(getAggregator)
+  const initReducer = initIndexed(getReducer)
+
+  const pipeAggr = pipeIndexed(getAggregator)
+  const pipeReducer = pipeIndexed(getReducer)
+
   const addEffect = effect => {
     const removeEffect = effect({
       initialEvent$,
       eventSource: effectEventSource,
       pipeAggr,
       initAggr,
+      pipeReducer,
+      initReducer,
       addSource,
       addLogger,
       addEffect
