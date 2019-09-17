@@ -1,19 +1,9 @@
+import { connect } from '../libs/vuejs/connect'
+
 import { currentView as currentViewAggr } from '../aggrs/currentView'
 
-export default {
+const ViewSwitch = {
   name: 'ViewSwitch',
-  inject: [
-    'pipeAggr'
-  ],
-  created () {
-    this.aggrSubscription = this.pipeAggr(currentViewAggr)
-      .subscribe(newView => {
-        this.currentView = newView
-      })
-  },
-  beforeDestroy () {
-    this.aggrSubscription.unsubscribe()
-  },
   data: () => ({
     currentView: undefined
   }),
@@ -30,3 +20,9 @@ export default {
     return createElement(this.views[this.currentView])
   }
 }
+
+export default connect({
+  mapSource: {
+    currentView: currentViewAggr
+  }
+})(ViewSwitch)

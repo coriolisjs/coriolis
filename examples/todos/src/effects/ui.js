@@ -26,8 +26,7 @@ export const createUi = () => {
     const vue = new Vue({
       provide: {
         dispatch: event => eventSource.next(event),
-        event$: eventSource.asObservable(),
-        pipeAggr
+        getSource: pipeAggr
       },
       render: createElement => createElement(ViewSwitch, { props: { views } })
     })

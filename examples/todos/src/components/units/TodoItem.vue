@@ -7,13 +7,12 @@
 </template>
 
 <script>
+import { connect } from '../../libs/vuejs/connect'
+
 import { edited, removed, done, reset } from '../../events/todo'
 
-export default {
+const TodoItem = {
   name: 'TodoItem',
-  inject: [
-    'dispatch'
-  ],
   props: {
     id: Number,
     text: String,
@@ -21,17 +20,27 @@ export default {
   },
   methods: {
     removeItem () {
-      this.dispatch(removed({ id: this.id }))
+      this.$emit('removed', { id: this.id })
     },
     editItem () {
-      this.dispatch(edited({ id: this.id, text: this.$refs.textInput.value }))
+      this.$emit('edited', { id: this.id, text: this.$refs.textInput.value })
     },
     checkItem () {
-      const buildEvent = this.$refs.doneCheckbox.checked ? done : reset
-      this.dispatch(buildEvent({ id: this.id }))
+      const eventName = this.$refs.doneCheckbox.checked ? 'done' : 'reset'
+      this.$emit(eventName, { id: this.id })
     }
   }
 }
+
+export default connect({
+  eventDispatch: {
+    removed,
+    edited,
+    done,
+    reset
+  }
+})(TodoItem)
+
 </script>
 
 <style lang="scss" scoped>

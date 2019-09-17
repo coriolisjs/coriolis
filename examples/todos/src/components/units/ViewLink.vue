@@ -3,18 +3,26 @@
 </template>
 
 <script>
+import { connect } from '../../libs/vuejs/connect'
+
 import { changed } from '../../events/view'
 
-export default {
+const ViewLink = {
   name: 'ViewLink',
-  inject: ['dispatch'],
   props: {
     view: String
   },
   methods: {
     trigger () {
-      this.dispatch(changed({ view: this.view }))
+      this.$emit('switch', { view: this.view })
     }
   }
 }
+
+export default connect({
+  eventDispatch: {
+    switch: changed
+  }
+})(ViewLink)
+
 </script>

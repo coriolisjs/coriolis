@@ -19,15 +19,13 @@
 </template>
 
 <script>
+import { connect } from '../../libs/vuejs/connect'
+
 import { added, filter, filters } from '../../events/todo'
 import { todolistFilterName } from '../../aggrs/todo'
 
-export default {
+const TodoControl = {
   name: 'TodoControl',
-  inject: [
-    'dispatch',
-    'pipeAggr'
-  ],
   data: () => ({
     filters: filters.slice(),
     filterName: undefined,
@@ -38,24 +36,27 @@ export default {
       if (!this.textInputValue) {
         return
       }
-      this.dispatch(added({ text: this.$refs.textInput.value }))
+      this.$emit('added', { text: this.$refs.textInput.value })
       this.textInputValue = ''
       this.$refs.textInput.focus()
     },
     setFilter (filterName) {
-      this.dispatch(filter({ filterName }))
+      this.$emit('filter', { filterName })
     }
-  },
-  created () {
-    this.filterNameSubscription = this.pipeAggr(todolistFilterName).subscribe(filterName => {
-      this.filterName = filterName
-    })
   },
   mounted () {
     this.$refs.textInput.focus()
-  },
-  beforeDestroy () {
-    this.filterNameSubscription.unsubscribe()
   }
 }
+
+export default connect({
+  mapSource: {
+    filterName: todolistFilterName
+  },
+  eventDispatch: {
+    added,
+    filter
+  }
+})(TodoControl)
+
 </script>
