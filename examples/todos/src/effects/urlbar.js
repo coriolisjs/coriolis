@@ -12,11 +12,17 @@ export const urlbar = views => ({ addSource, eventSource, pipeAggr }) => {
   const aggrSubscription = pipeAggr(currentView)
     .subscribe(newView => {
       if (!views.includes(newView)) {
-        const view = previousView || views[0]
+        const view = (previousView && newView !== previousView)
+          ? previousView
+          : views[0]
+
         previousView = view
         eventSource.next(changed({ view }))
         return
       }
+
+      previousView = newView
+
       if (newView === getCurrentUrlView()) {
         // view already in url bar, no need to push it
         // if this happens, there's probably a view configuration problem
@@ -24,7 +30,6 @@ export const urlbar = views => ({ addSource, eventSource, pipeAggr }) => {
         return
       }
 
-      previousView = newView
       history.pushState({ view: newView }, newView, newView)
     })
 
