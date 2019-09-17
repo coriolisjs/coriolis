@@ -29,7 +29,7 @@ export const createUi = () => {
         event$: eventSource.asObservable(),
         pipeAggr
       },
-      render: createElement => createElement(ViewSwitch(views))
+      render: createElement => createElement(ViewSwitch, { props: { views } })
     })
       .$mount('#app')
 

@@ -14,22 +14,18 @@
 import TodoItem from './TodoItem'
 
 import { filteredTodolist } from '../../aggrs/todo'
-import { added } from '../../events/todo'
 
 export default {
-  name: 'todo-list',
+  name: 'TodoList',
   components: {
     TodoItem
   },
   inject: [
     'pipeAggr'
   ],
-  data () {
-    return {
-      todolist: [],
-      filterName: undefined
-    }
-  },
+  data: () => ({
+    todolist: []
+  })
   created () {
     this.todolistSubscription = this.pipeAggr(filteredTodolist).subscribe(todolist => {
       // kind of clone objects to avoid mutate aggr's state

@@ -10,7 +10,7 @@
 import { edited, removed, done, reset } from '../../events/todo'
 
 export default {
-  name: 'todo-item',
+  name: 'TodoItem',
   inject: [
     'dispatch'
   ],

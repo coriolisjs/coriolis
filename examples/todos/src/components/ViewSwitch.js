@@ -1,7 +1,7 @@
 import { currentView as currentViewAggr } from '../aggrs/currentView'
 
-export default views => ({
-  name: 'viewSwitch',
+export default {
+  name: 'ViewSwitch',
   inject: [
     'pipeAggr'
   ],
@@ -14,15 +14,19 @@ export default views => ({
   beforeDestroy () {
     this.aggrSubscription.unsubscribe()
   },
-  data () {
-    return {
-      currentView: undefined
+  data: () => ({
+    currentView: undefined
+  }),
+  props: {
+    views: {
+      type: Object,
+      required: true
     }
   },
   render (createElement) {
     if (!this.currentView) {
       return
     }
-    return createElement(views[this.currentView])
+    return createElement(this.views[this.currentView])
   }
-})
+}

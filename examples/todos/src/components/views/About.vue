@@ -10,7 +10,7 @@ import AppContainer from '../units/AppContainer.vue'
 import ViewLink from '../units/ViewLink.vue'
 
 export default {
-  name: 'about',
+  name: 'About',
   components: {
     AppContainer,
     ViewLink

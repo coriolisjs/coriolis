@@ -16,7 +16,7 @@ import TodoList from '../units/TodoList.vue'
 import ViewLink from '../units/ViewLink.vue'
 
 export default {
-  name: 'todoApp',
+  name: 'TodoApp',
   components: {
     AppContainer,
     TodoControl,

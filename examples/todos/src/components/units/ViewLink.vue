@@ -6,7 +6,7 @@
 import { changed } from '../../events/view'
 
 export default {
-  name: 'viewLink',
+  name: 'ViewLink',
   inject: ['dispatch'],
   props: {
     view: String

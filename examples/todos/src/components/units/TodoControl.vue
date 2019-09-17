@@ -23,18 +23,16 @@ import { added, filter, filters } from '../../events/todo'
 import { todolistFilterName } from '../../aggrs/todo'
 
 export default {
-  name: 'todoControl',
+  name: 'TodoControl',
   inject: [
     'dispatch',
     'pipeAggr'
   ],
-  data () {
-    return {
-      filters,
-      filterName: undefined,
-      textInputValue: ''
-    }
-  },
+  data: () => ({
+    filters: filters.slice(),
+    filterName: undefined,
+    textInputValue: ''
+  }),
   methods: {
     addItem () {
       if (!this.textInputValue) {
