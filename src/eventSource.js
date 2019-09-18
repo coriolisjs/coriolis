@@ -7,31 +7,21 @@ import {
 } from 'rxjs/operators'
 
 import { lossless } from './lib/rx/operator/lossless'
-import { hasOnlyKeys } from './lib/object/hasOnlyKeys'
+import { throwFalsy } from './lib/function/throwFalsy'
+import { uniqSymbol } from './lib/symbol/uniqSymbol'
+import { isValidEvent } from './lib/event/isValidEvent'
 
-const unicityWarrentKey = Symbol(Math.random().toString(36).substring(2, 15))
-
-const isValidEvent = event =>
-  event &&
-  event.type &&
-  hasOnlyKeys(event, ['type', 'payload', 'error', 'meta']) &&
-  (event.error === undefined || typeof event.error === 'boolean') &&
-  (event.meta === undefined || typeof event.meta === 'object')
-
-const throwFalsy = (validator, error) => event => {
-  if (!validator(event)) {
-    throw error
-  }
-}
-
-const preventLoops = event => {
-  if (event.meta && event.meta[unicityWarrentKey]) {
+/*
+Adding a uniq property in every event's metadata, we can ensure each events enters only once
+*/
+const preventLoops = (secretKey = uniqSymbol()) => event => {
+  if (event.meta && event.meta[secretKey]) {
     throw new Error('Event coming back to source detected')
   }
 
   return {
     ...event,
-    meta: Object.defineProperty({ ...event.meta }, unicityWarrentKey, {
+    meta: Object.defineProperty({ ...event.meta }, secretKey, {
       configurable: false,
       enumerable: false,
       writable: false,
@@ -52,7 +42,7 @@ export const createEventSource = (initialSource = EMPTY, logObserver = noop) => 
   const startoverNewevent$ = newevent$
     .pipe(
       tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
-      map(preventLoops),
+      map(preventLoops()),
       lossless,
       tap(logObserver)
     )
