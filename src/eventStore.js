@@ -45,20 +45,6 @@ export const createStore = (...effects) => {
 
   const replayCaster = eventCaster.pipe(shareReplay(1))
 
-  const initDone = replayCaster.pipe(
-    // checking payload, event itself could have been changed (adding meta-data for example)
-    filter(payloadEquals(firstEvent.payload)),
-    take(1),
-    shareReplay(1)
-  )
-
-  const effectEventSource = Subject.create(
-    eventCatcher,
-    eventCaster.pipe(skipUntil(initDone))
-  )
-
-  const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
-
   const {
     broadcastSubject: logger,
     addTarget: addLogger
@@ -71,6 +57,22 @@ export const createStore = (...effects) => {
   } = createExtensibleFusableObservable('addSource must be called before all sources completed')
 
   const eventSource = createEventSource(mainSource, logger)
+
+  const initDone = eventCaster.pipe(
+    // checking payload, event itself could have been changed (adding meta-data for example)
+    filter(payloadEquals(firstEvent.payload)),
+    take(1),
+    shareReplay(1)
+  )
+
+  const initDoneSubscription = initDone.subscribe(disableAddSource)
+
+  const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
+
+  const effectEventSource = Subject.create(
+    eventCatcher,
+    eventCaster.pipe(skipUntil(initDone))
+  )
 
   const initIndexed = getIndexed => aggr =>
     replayCaster.subscribe(getIndexed(aggr))
@@ -105,8 +107,6 @@ export const createStore = (...effects) => {
       : removeEffect
   }
 
-  const disableAddSourceSubscription = initDone.subscribe(disableAddSource)
-
   const eventCatcherSubscription = eventCatcher
     .pipe(
       startWith(firstEvent)
@@ -124,7 +124,7 @@ export const createStore = (...effects) => {
     .subscribe(eventCaster)
 
   return () => {
-    disableAddSourceSubscription.unsubscribe()
+    initDoneSubscription.unsubscribe()
     eventCatcherSubscription.unsubscribe()
     eventCasterSubscription.unsubscribe()
     removeEffects()
