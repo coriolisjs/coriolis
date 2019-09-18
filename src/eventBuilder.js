@@ -11,6 +11,7 @@ export const createEventBuilder = (type, payloadBuilder = identity, metaBuilder)
       payload = payloadBuilder(args)
     } catch (error) {
       payload = error
+      event.error = true
     }
 
     if (metaBuilder) {
@@ -18,6 +19,7 @@ export const createEventBuilder = (type, payloadBuilder = identity, metaBuilder)
         event.meta = metaBuilder(args)
       } catch (error) {
         payload = error
+        event.error = true
       }
     }
 
