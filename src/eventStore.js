@@ -1,7 +1,6 @@
 import {
   ReplaySubject,
   Subject,
-  from,
   noop
 } from 'rxjs'
 import {
@@ -21,34 +20,12 @@ import { createReducerAggregator } from './reducerAggregator'
 import { createAggregator } from './aggregator'
 import { createBroadcastSubject } from './broadcastSubject'
 
-import { createExtensibleObservable } from './lib/rx/extensibleObservable'
+import { createExtensibleFusableObservable } from './lib/rx/extensibleFusableObservable'
 import { createIndex } from './lib/objectIndex'
-import { createFuse } from './lib/function/createFuse'
 
 export const INITIAL_EVENT_TYPE = Symbol('INITIAL_EVENT')
 
 const payloadEquals = payload => event => event.payload === payload
-
-const createExtensibleFusableObservable = cutMessage => {
-  const {
-    observable,
-    add
-  } = createExtensibleObservable()
-
-  const {
-    pass: addSource,
-    cut: disableAddSource
-  } = createFuse(
-    source => add(from(source)),
-    () => { throw new Error(cutMessage) }
-  )
-
-  return {
-    observable,
-    addSource,
-    disableAddSource
-  }
-}
 
 export const createStore = (...effects) => {
   if (!effects.length) {
