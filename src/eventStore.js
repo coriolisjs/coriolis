@@ -3,8 +3,7 @@ import {
   ReplaySubject,
   Subject,
   from,
-  noop,
-  identity
+  noop
 } from 'rxjs'
 import {
   distinctUntilChanged,
@@ -19,92 +18,14 @@ import {
 } from 'rxjs/operators'
 
 import { createEventSource } from './eventSource'
+import { createReducerAggregator } from './reducerAggregator'
+import { createAggregator } from './aggregator'
 
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
-
 import { createIndex } from './lib/objectIndex'
 import { createFuse } from './lib/function/createFuse'
 
 const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
-
-const createAggregator = (aggr, getAggregator, getReducer) => {
-  if (typeof aggr !== 'function') {
-    throw new TypeError('Aggr must be a function')
-  }
-
-  let lastEvent
-  let lastState
-  let lastValues = []
-
-  const using = {
-    aggr: []
-  }
-
-  const getLastState = () => lastState
-
-  const useState = () => {
-    using.state = true
-    using.aggr.push(getLastState)
-  }
-
-  const useEvent = () => {
-    using.event = true
-    using.aggr.push(identity)
-  }
-
-  const useIndexed = getIndexed => obj =>
-    using.aggr.push(getIndexed(obj))
-
-  const useAggr = useIndexed(getAggregator)
-  const useReducer = useIndexed(getReducer)
-
-  const aggrBehaviour = aggr({
-    useState,
-    useEvent,
-    useAggr,
-    useReducer
-  })
-
-  // if given aggregator definition expects only state and event (or less), it should be a reducer
-  if (getReducer && using.aggr.length === (using.state + using.event)) {
-    console.warn('Prefer using initReducer, pipeReducer or useReducer when you only use state or event')
-    if (
-      (!using.aggr[0] || using.aggr[0] === getLastState) &&
-      (!using.aggr[1] || using.aggr[1] === identity)
-    ) {
-      return getReducer(aggrBehaviour)
-    }
-  }
-
-  return event => {
-    // in any case, same event > same result
-    if (lastEvent && event === lastEvent.value) {
-      return lastState
-    }
-
-    lastEvent = { value: event }
-
-    const values = using.aggr.map(aggr => aggr(event))
-
-    const anyChange = using.event || values.some((item, idx) => item !== lastValues[idx])
-
-    if (!anyChange) {
-      return lastState
-    }
-
-    lastValues = values
-
-    lastState = aggrBehaviour(...values)
-
-    return lastState
-  }
-}
-
-const createReducerAggregator = reducer => createAggregator(({ useState, useEvent }) => (
-  useState(),
-  useEvent(),
-  reducer
-))
 
 const payloadEquals = payload => event => event.payload === payload
 
