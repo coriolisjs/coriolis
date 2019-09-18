@@ -18,9 +18,9 @@ const isValidEvent = event =>
   (event.error === undefined || typeof event.error === 'boolean') &&
   (event.meta === undefined || typeof event.meta === 'object')
 
-const throwInvalide = event => {
-  if (!isValidEvent(event)) {
-    throw new TypeError('Invalid event')
+const throwFalsy = (validator, error) => event => {
+  if (!validator(event)) {
+    throw error
   }
 }
 
@@ -51,7 +51,7 @@ export const createEventSource = (initialSource = EMPTY, logObserver = noop) => 
 
   const startoverNewevent$ = newevent$
     .pipe(
-      tap(throwInvalide),
+      tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
       map(preventLoops),
       lossless,
       tap(logObserver)
