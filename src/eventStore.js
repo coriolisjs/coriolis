@@ -24,7 +24,7 @@ import { variableFunction } from './lib/function/variableFunction'
 import { createIndex } from './lib/objectIndex'
 import { payloadEquals } from './lib/event/payloadEquals'
 
-export const FIRST_EVENT_TYPE = Symbol('FIRST_EVENT')
+export const FIRST_EVENT_TYPE = 'All initial events have been read'
 
 const buildFirstEvent = () => ({
   type: FIRST_EVENT_TYPE,
