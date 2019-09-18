@@ -24,23 +24,30 @@ import { createExtensibleFusableObservable } from './lib/rx/extensibleFusableObs
 import { createIndex } from './lib/objectIndex'
 import { payloadEquals } from './lib/event/payloadEquals'
 
-export const INITIAL_EVENT_TYPE = Symbol('INITIAL_EVENT')
+export const FIRST_EVENT_TYPE = Symbol('FIRST_EVENT')
+
+const buildFirstEvent = () => ({
+  type: FIRST_EVENT_TYPE,
+  payload: {}
+})
 
 export const createStore = (...effects) => {
   if (!effects.length) {
     throw new Error('No effect defined. This is useless')
   }
 
-  const initialPayload = {}
   const getReducer = createIndex(reducer => createReducerAggregator(reducer))
   const getAggregator = createIndex(aggr => createAggregator(aggr, getAggregator, getReducer))
+
+  const firstEvent = buildFirstEvent()
 
   const eventCaster = new Subject()
   const replayCaster = new ReplaySubject(1)
   const eventCatcher = new Subject()
 
   const initDone = replayCaster.pipe(
-    filter(payloadEquals(initialPayload)),
+    // checking payload, event itself could have been changed (adding meta-data for example)
+    filter(payloadEquals(firstEvent.payload)),
     take(1),
     shareReplay(1)
   )
@@ -108,7 +115,7 @@ export const createStore = (...effects) => {
 
   const eventCatcherSubscription = eventCatcher
     .pipe(
-      startWith({ type: INITIAL_EVENT_TYPE, payload: initialPayload })
+      startWith(firstEvent)
     )
     .subscribe(eventSource)
 
