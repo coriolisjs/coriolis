@@ -30,6 +30,16 @@ const preventLoops = (secretKey = uniqSymbol()) => event => {
   }
 }
 
+/*
+EventSource behaviour:
+  Immediatly every input event is kept in a buffer until input events subscription
+  then subscribes to log subject's output if any, taking this as input events
+
+  On eventSource subscription, subscribes initialSource
+  When initialSource completes, subscribes to input events (flushes buffer, then gets new events)
+
+  Share's subscriptions to ensure upstream subscriptions are done only once
+*/
 export const createEventSource = (initialSource = EMPTY, logObserver = noop) => {
   let newevent$
   const neweventSubject = newevent$ = new Subject()
@@ -41,6 +51,7 @@ export const createEventSource = (initialSource = EMPTY, logObserver = noop) => 
 
   const startoverNewevent$ = newevent$
     .pipe(
+      // Ensuring event's shape helps keeping control
       tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
       map(preventLoops()),
       lossless,
