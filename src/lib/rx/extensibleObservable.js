@@ -44,26 +44,27 @@ export const createExtensibleObservable = () => {
         source,
         subscription: source.subscribe(
           event => subject.next(event),
-          error => subject.next(error),
+          error => subject.error(error),
           () => remove(source)
         )
       })
+    }
+
+    const sourceManager = {
+      add,
+      remove
     }
 
     const subscription = subject.subscribe(observer)
     const unsubscribe = () => {
       subscription.unsubscribe()
       subscriptions.forEach(({ subscription: sourceSubscription }) => sourceSubscription.unsubscribe())
-      sourceManagers = sourceManagers.filter(({ add: registered }) => registered !== add)
+      sourceManagers = sourceManagers.filter(registered => registered !== sourceManager)
     }
 
-    sourceManagers.push({
-      add,
-      remove
-    })
+    sourceManagers.push(sourceManager)
 
     sources.forEach(add)
-
     subscriptionDone = true
 
     if (subscriptions.length === 0) {

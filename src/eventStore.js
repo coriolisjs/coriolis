@@ -1,5 +1,6 @@
 import {
   Subject,
+  from,
   noop
 } from 'rxjs'
 import {
@@ -18,7 +19,8 @@ import { createReducerAggregator } from './reducerAggregator'
 import { createAggregator } from './aggregator'
 import { createBroadcastSubject } from './broadcastSubject'
 
-import { createExtensibleFusableObservable } from './lib/rx/extensibleFusableObservable'
+import { createExtensibleObservable } from './lib/rx/extensibleObservable'
+import { variableFunction } from './lib/function/variableFunction'
 import { createIndex } from './lib/objectIndex'
 import { payloadEquals } from './lib/event/payloadEquals'
 
@@ -52,9 +54,17 @@ export const createStore = (...effects) => {
 
   const {
     observable: mainSource,
-    addSource,
-    disableAddSource
-  } = createExtensibleFusableObservable('addSource must be called before all sources completed')
+    add
+  } = createExtensibleObservable()
+
+  const {
+    func: addSource,
+    setup
+  } = variableFunction(source => add(from(source)))
+
+  const disableAddSource = () => setup(() => {
+    throw new Error('addSource must be called before all sources completed')
+  })
 
   const eventSource = createEventSource(mainSource, logger)
 
@@ -108,15 +118,13 @@ export const createStore = (...effects) => {
   }
 
   const eventCatcherSubscription = eventCatcher
-    .pipe(
-      startWith(firstEvent)
-    )
+    .pipe(startWith(firstEvent))
     .subscribe(eventSource)
 
   const removeEffects = effects
     .map(addEffect)
     .reduce(
-      (prev, removeEffect) => () => { prev(); removeEffect() },
+      (prev, removeEffect) => () => (prev(), removeEffect()),
       noop
     )
 
