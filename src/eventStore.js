@@ -1,5 +1,4 @@
 import {
-  ReplaySubject,
   Subject,
   noop
 } from 'rxjs'
@@ -11,8 +10,7 @@ import {
   skipUntil,
   startWith,
   take,
-  takeUntil,
-  tap
+  takeUntil
 } from 'rxjs/operators'
 
 import { createEventSource } from './eventSource'
@@ -41,9 +39,11 @@ export const createStore = (...effects) => {
 
   const firstEvent = buildFirstEvent()
 
+  // Use a subject to have a single subscription point to connect all together
   const eventCaster = new Subject()
-  const replayCaster = new ReplaySubject(1)
   const eventCatcher = new Subject()
+
+  const replayCaster = eventCaster.pipe(shareReplay(1))
 
   const initDone = replayCaster.pipe(
     // checking payload, event itself could have been changed (adding meta-data for example)
@@ -127,9 +127,6 @@ export const createStore = (...effects) => {
     )
 
   const eventCasterSubscription = eventSource
-    .pipe(
-      tap(replayCaster)
-    )
     .subscribe(eventCaster)
 
   return () => {
