@@ -1,7 +1,7 @@
 import { interval } from 'rxjs'
 import { map, tap } from 'rxjs/operators'
 
-import { createStore } from './eventStore'
+import { createStore } from '../eventStore'
 
 // Aggrs
 

@@ -1,4 +1,4 @@
-import { createStore } from './eventStore'
+import { createStore } from '../eventStore'
 
 const logEvent = event => console.log('✍ ', event)
 

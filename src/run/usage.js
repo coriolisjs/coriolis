@@ -1,7 +1,7 @@
 import { interval, zip } from 'rxjs'
 import { map, take, tap, share } from 'rxjs/operators'
 
-import { createStore } from './eventStore'
+import { createStore } from '../eventStore'
 
 console.log('start')
 
