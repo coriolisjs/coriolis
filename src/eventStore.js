@@ -22,10 +22,9 @@ import { createBroadcastSubject } from './broadcastSubject'
 
 import { createExtensibleFusableObservable } from './lib/rx/extensibleFusableObservable'
 import { createIndex } from './lib/objectIndex'
+import { payloadEquals } from './lib/event/payloadEquals'
 
 export const INITIAL_EVENT_TYPE = Symbol('INITIAL_EVENT')
-
-const payloadEquals = payload => event => event.payload === payload
 
 export const createStore = (...effects) => {
   if (!effects.length) {
