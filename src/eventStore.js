@@ -25,7 +25,7 @@ import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { createIndex } from './lib/objectIndex'
 import { createFuse } from './lib/function/createFuse'
 
-const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
+export const INITIAL_EVENT_TYPE = Symbol('INITIAL_EVENT')
 
 const payloadEquals = payload => event => event.payload === payload
 

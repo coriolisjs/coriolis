@@ -26,7 +26,7 @@ const lastEvenEvent = (state, event) => console.log(' -> get last even event') |
 
 const listEventsNames = ({ useReducer }) => (
   useReducer(listEvents),
-  eventList => eventList.map(({ type }) => type)
+  eventList => eventList.map(({ type }) => type.toString())
 )
 
 const listSameEvents = ({ useEvent, useReducer, useAggr }) => (
@@ -34,7 +34,7 @@ const listSameEvents = ({ useEvent, useReducer, useAggr }) => (
   useReducer(listEvents),
   useAggr(listEventsNames),
   (event, eventList, eventNames) =>
-    console.log(` -> listEvents of type "${event.type}" in [${eventNames.join(',')}]`) ||
+    console.log(` -> listEvents of type "${event.type.toString()}" in [${eventNames.join(',')}]`) ||
     eventList.filter(({ type }) => type === event.type)
 )
 
