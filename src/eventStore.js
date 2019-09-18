@@ -75,9 +75,9 @@ export const createStore = (...effects) => {
   const initIndexed = getIndexed => aggr =>
     replayCaster.subscribe(getIndexed(aggr))
 
-  const pipeIndexed = getIndexed => obj =>
+  const pipeIndexed = getIndexed => aggr =>
     replayCaster.pipe(
-      map(getIndexed(obj)),
+      map(getIndexed(aggr)),
 
       // while init is not finished (old events replaying), we expect aggrs to
       // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
@@ -87,23 +87,17 @@ export const createStore = (...effects) => {
       distinctUntilChanged()
     )
 
-  const initAggr = initIndexed(getAggregator)
-  const initReducer = initIndexed(getReducer)
-
-  const pipeAggr = pipeIndexed(getAggregator)
-  const pipeReducer = pipeIndexed(getReducer)
-
   const addEffect = effect => {
     const removeEffect = effect({
-      initialEvent$,
-      eventSource: effectEventSource,
-      pipeAggr,
-      initAggr,
-      pipeReducer,
-      initReducer,
+      addEffect,
       addSource,
       addLogger,
-      addEffect
+      initialEvent$,
+      eventSource: effectEventSource,
+      initAggr: initIndexed(getAggregator),
+      initReducer: initIndexed(getReducer),
+      pipeAggr: pipeIndexed(getAggregator),
+      pipeReducer: pipeIndexed(getReducer)
     }) || noop
 
     return removeEffect.unsubscribe
