@@ -36,7 +36,7 @@ const TodoControl = {
       if (!this.textInputValue) {
         return
       }
-      this.$emit('added', { text: this.$refs.textInput.value })
+      this.$emit('added', { text: this.textInputValue })
       this.textInputValue = ''
       this.$refs.textInput.focus()
     },
