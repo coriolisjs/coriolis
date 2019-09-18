@@ -1,5 +1,4 @@
 import {
-  Observable,
   ReplaySubject,
   Subject,
   from,
@@ -20,6 +19,7 @@ import {
 import { createEventSource } from './eventSource'
 import { createReducerAggregator } from './reducerAggregator'
 import { createAggregator } from './aggregator'
+import { createBroadcastSubject } from './broadcastSubject'
 
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { createIndex } from './lib/objectIndex'
@@ -28,38 +28,6 @@ import { createFuse } from './lib/function/createFuse'
 const INITIAL_EVENT_TYPE = 'INITIAL_EVENT'
 
 const payloadEquals = payload => event => event.payload === payload
-
-const createLogMerger = () => {
-  const loggersInput = new Subject()
-  const loggersOutput = new Subject()
-
-  const mainLogger = Subject.create(loggersInput, loggersOutput)
-
-  const addLogger = logger => {
-    const subscription = loggersInput.subscribe(logger)
-
-    if (logger instanceof Observable) {
-      const loggerOutputSubscription = logger.subscribe(
-        // TODO: using event builders here would be better
-        payload => loggersOutput.next({ type: 'logger output', payload }),
-        error => loggersOutput.next({ type: 'logger output error', payload: error, error: true }),
-        () => loggersOutput.next({ type: 'logger output completed' })
-      )
-
-      return () => {
-        subscription.unsubscribe()
-        loggerOutputSubscription.unsubscribe()
-      }
-    }
-
-    return () => subscription.unsubscribe()
-  }
-
-  return {
-    logger: mainLogger,
-    addLogger
-  }
-}
 
 const createExtensibleFusableObservable = cutMessage => {
   const {
@@ -109,9 +77,9 @@ export const createStore = (...effects) => {
   const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 
   const {
-    logger,
-    addLogger
-  } = createLogMerger()
+    broadcastSubject: logger,
+    addTarget: addLogger
+  } = createBroadcastSubject()
 
   const {
     observable: mainSource,
