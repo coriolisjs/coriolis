@@ -21,6 +21,7 @@ import { createBroadcastSubject } from './broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { variableFunction } from './lib/function/variableFunction'
 import { createIndex } from './lib/objectIndex'
+import { objectFrom } from './lib/object/objectFrom'
 import { payloadEquals } from './lib/event/payloadEquals'
 
 export const FIRST_EVENT_TYPE = 'All initial events have been read'
@@ -35,7 +36,15 @@ export const createStore = (...effects) => {
     throw new Error('No effect defined. This is useless')
   }
 
-  const getAggregator = createIndex(aggr => createAggregator(aggr, getAggregator))
+  const {
+    get: getAggregator,
+    list: listAggregators
+  } = createIndex(aggr => createAggregator(aggr, getAggregator))
+
+  const getSnapshot = () => objectFrom(
+    listAggregators()
+      .map(([ref, getState]) => [ref.name, getState()])
+  )
 
   const firstEvent = buildFirstEvent()
 
@@ -105,7 +114,8 @@ export const createStore = (...effects) => {
       initialEvent$,
       eventSource: effectEventSource,
       initAggr,
-      pipeAggr
+      pipeAggr,
+      getSnapshot
     }) || noop
 
     return removeEffect.unsubscribe

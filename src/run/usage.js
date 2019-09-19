@@ -40,13 +40,15 @@ const listSameEvents = ({ useEvent, useAggr }) => (
 
 // effects
 
-const effect0 = ({ addSource, addLogger }) => {
+const effect0 = ({ addSource, addLogger, getSnapshot }) => {
   console.log('setup effect0')
   const removeLogger = addLogger(logObserver)
+  const removeSnapshoter = addLogger(() => console.log(getSnapshot()))
   const removeSource = addSource(initialSource)
 
   return () => {
     removeLogger()
+    removeSnapshoter()
     removeSource()
   }
 }

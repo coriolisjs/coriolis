@@ -2,7 +2,7 @@
 export const createIndex = getNotYetIndexed => {
   const index = new Map()
 
-  return key => {
+  const get = key => {
     const indexed = index.get(key)
 
     if (indexed) {
@@ -14,5 +14,14 @@ export const createIndex = getNotYetIndexed => {
     index.set(key, { value })
 
     return value
+  }
+
+  const list = () =>
+    Array.from(index.entries())
+      .map(([key, { value }]) => [key, value])
+
+  return {
+    get,
+    list
   }
 }
