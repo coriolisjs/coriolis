@@ -24,14 +24,14 @@ const lastEvenEvent = (state, event) => console.log(' -> get last even event') |
 
 // Aggrs
 
-const listEventsNames = ({ useReducer }) => (
-  useReducer(listEvents),
+const listEventsNames = ({ useAggr }) => (
+  useAggr(listEvents),
   eventList => eventList.map(({ type }) => type.toString())
 )
 
-const listSameEvents = ({ useEvent, useReducer, useAggr }) => (
+const listSameEvents = ({ useEvent, useAggr }) => (
   useEvent(),
-  useReducer(listEvents),
+  useAggr(listEvents),
   useAggr(listEventsNames),
   (event, eventList, eventNames) =>
     console.log(` -> listEvents of type "${event.type.toString()}" in [${eventNames.join(',')}]`) ||
@@ -51,10 +51,10 @@ const effect0 = ({ addSource, addLogger }) => {
   }
 }
 
-const effect1 = ({ eventSource, pipeReducer }) => console.log('setup effect1') ||
+const effect1 = ({ eventSource, pipeAggr }) => console.log('setup effect1') ||
   zip(
     eventSource,
-    pipeReducer(listEvents)
+    pipeAggr(listEvents)
   )
     .subscribe(event => console.log('effect1 received', event))
     .add(
@@ -66,11 +66,11 @@ const effect1 = ({ eventSource, pipeReducer }) => console.log('setup effect1') |
         .subscribe(eventSource)
     )
 
-const effect2 = ({ eventSource, pipeReducer }) => console.log('setup effect2') ||
+const effect2 = ({ eventSource, pipeAggr }) => console.log('setup effect2') ||
   zip(
     eventSource,
-    pipeReducer(countEvents),
-    pipeReducer(listEvents)
+    pipeAggr(countEvents),
+    pipeAggr(listEvents)
   )
     .subscribe(event => console.log('effect2 received', event))
     .add(
@@ -94,8 +94,8 @@ const effect3 = ({ eventSource, pipeAggr }) => console.log('setup effect3') ||
         .subscribe(eventSource)
     )
 
-const effect4 = ({ eventSource, pipeReducer }) => console.log('setup effect4') ||
-  pipeReducer(lastEvenEvent)
+const effect4 = ({ eventSource, pipeAggr }) => console.log('setup effect4') ||
+  pipeAggr(lastEvenEvent)
     .subscribe(event => console.log('effect4 received', event))
     .add(
       interval(10000)
@@ -106,8 +106,8 @@ const effect4 = ({ eventSource, pipeReducer }) => console.log('setup effect4') |
         .subscribe(eventSource)
     )
 
-const effect5 = ({ eventSource, pipeReducer }) => console.log('setup effect5') ||
-  pipeReducer(lastEvenEvent)
+const effect5 = ({ eventSource, pipeAggr }) => console.log('setup effect5') ||
+  pipeAggr(lastEvenEvent)
     .subscribe(data => console.log('effect5 received', data))
     .add(
       interval(11000)
@@ -126,11 +126,11 @@ const effect7 = ({ eventSource, addSource }) => {
     .add(removeSource)
 }
 
-const effect6 = ({ eventSource, pipeReducer, addEffect }) => {
+const effect6 = ({ eventSource, pipeAggr, addEffect }) => {
   console.log('setup effect6')
   const removeEffect = addEffect(effect7)
 
-  return pipeReducer(lastEvenEvent).subscribe(data => console.log('effect6 received', data))
+  return pipeAggr(lastEvenEvent).subscribe(data => console.log('effect6 received', data))
     .add(removeEffect)
     .add(
       interval(11000)

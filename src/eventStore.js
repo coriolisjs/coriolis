@@ -15,7 +15,6 @@ import {
 } from 'rxjs/operators'
 
 import { createEventSource } from './eventSource'
-import { createReducerAggregator } from './reducerAggregator'
 import { createAggregator } from './aggregator'
 import { createBroadcastSubject } from './broadcastSubject'
 
@@ -36,8 +35,7 @@ export const createStore = (...effects) => {
     throw new Error('No effect defined. This is useless')
   }
 
-  const getReducer = createIndex(reducer => createReducerAggregator(reducer))
-  const getAggregator = createIndex(aggr => createAggregator(aggr, getAggregator, getReducer))
+  const getAggregator = createIndex(aggr => createAggregator(aggr, getAggregator))
 
   const firstEvent = buildFirstEvent()
 
@@ -84,12 +82,12 @@ export const createStore = (...effects) => {
     eventCaster.pipe(skipUntil(initDone))
   )
 
-  const initIndexed = getIndexed => aggr =>
-    replayCaster.subscribe(getIndexed(aggr))
+  const initAggr = aggr =>
+    replayCaster.subscribe(getAggregator(aggr))
 
-  const pipeIndexed = getIndexed => aggr =>
+  const pipeAggr = aggr =>
     replayCaster.pipe(
-      map(getIndexed(aggr)),
+      map(getAggregator(aggr)),
 
       // while init is not finished (old events replaying), we expect aggrs to
       // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
@@ -106,10 +104,8 @@ export const createStore = (...effects) => {
       addLogger,
       initialEvent$,
       eventSource: effectEventSource,
-      initAggr: initIndexed(getAggregator),
-      initReducer: initIndexed(getReducer),
-      pipeAggr: pipeIndexed(getAggregator),
-      pipeReducer: pipeIndexed(getReducer)
+      initAggr,
+      pipeAggr
     }) || noop
 
     return removeEffect.unsubscribe
