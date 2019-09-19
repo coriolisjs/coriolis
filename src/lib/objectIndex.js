@@ -1,9 +1,9 @@
 
 export const createIndex = getNotYetIndexed => {
-  const index = []
+  const index = new Map()
 
   return key => {
-    const indexed = index.find(item => item.key === key)
+    const indexed = index.get(key)
 
     if (indexed) {
       return indexed.value
@@ -11,7 +11,7 @@ export const createIndex = getNotYetIndexed => {
 
     const value = getNotYetIndexed(key)
 
-    index.push({ key, value })
+    index.set(key, { value })
 
     return value
   }
