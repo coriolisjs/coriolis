@@ -13,6 +13,14 @@ const ViewSwitch = {
       required: true
     }
   },
+  watch: {
+    views (...args) {
+      console.log('views changed', this.views, args)
+    }
+  },
+  created () {
+    console.log('initial views', this.views)
+  },
   render (createElement) {
     if (!this.currentView) {
       return
