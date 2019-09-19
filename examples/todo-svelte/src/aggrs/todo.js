@@ -60,31 +60,23 @@ export const todolist = ({ useState, useEvent }) => (
   }
 )
 
-export const todolistFilterName = ({ useState, useEvent }) => (
-  useState(),
-  useEvent(),
-  (filterName = filters[0], { type, payload, error }) => {
-    if (error || type !== filter.toString()) {
-      return filterName
-    }
-
-    return payload
+export const todolistFilterName = (filterName = filters[0], { type, payload, error }) => {
+  if (error || type !== filter.toString()) {
+    return filterName
   }
-)
 
-export const filteredTodolist = ({ useAggr }) => (
-  useAggr(todolist),
-  useAggr(todolistFilterName),
-  (list, filterName) => {
-    switch (filterName) {
-      case 'active':
-        return list.filter(({ done }) => !done)
+  return payload
+}
 
-      case 'done':
-        return list.filter(({ done }) => done)
+export const filteredTodolist = (list, filterName) => {
+  switch (filterName) {
+    case 'active':
+      return list.filter(({ done }) => !done)
 
-      default:
-        return list
-    }
+    case 'done':
+      return list.filter(({ done }) => done)
+
+    default:
+      return list
   }
-)
+}
