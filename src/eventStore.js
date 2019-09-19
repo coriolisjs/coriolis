@@ -16,8 +16,8 @@ import {
 
 import { createEventSource } from './eventSource'
 import { createAggregator } from './aggregator'
-import { createBroadcastSubject } from './broadcastSubject'
 
+import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { variableFunction } from './lib/function/variableFunction'
 import { createIndex } from './lib/objectIndex'
