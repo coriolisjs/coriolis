@@ -80,7 +80,7 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
 
 const createComplexAggregator = (setupAggregator, getAggregator) => {
   if (typeof setupAggregator !== 'function') {
-    throw new TypeError('setupAggregator must be a function')
+    throw new TypeError('Aggregator definition must be a function')
   }
 
   let aggrBehaviour
@@ -133,6 +133,6 @@ const createComplexAggregator = (setupAggregator, getAggregator) => {
 }
 
 export const createAggregator = (setupAggregator, getAggregator) =>
-  setupAggregator.length === 2
+  (setupAggregator && setupAggregator.length === 2)
     ? createReducerAggregator(setupAggregator)
     : createComplexAggregator(setupAggregator, getAggregator)

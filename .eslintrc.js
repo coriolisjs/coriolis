@@ -15,5 +15,15 @@ module.exports = {
   },
   rules: {
     'no-sequences': 'off'
-  }
+  },
+  overrides: [{
+    files: ['src/test/**/*.js'],
+    env: {
+      mocha: true,
+    },
+    globals: {
+      expect: true,
+      sinon: true,
+    },
+  }]
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "clear": "rm -rf node_modules",
     "lint": "eslint .",
-    "test": "mocha",
+    "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.js'",
+    "test:watch": "npm run -s test -- --watch",
     "start": "babel-node src/run/usage",
     "build": "babel src -d dist --ignore 'src/**/*.spec.js','src/run'",
     "build:concat": "babel src --out-file dist/bundle.js --ignore 'src/**/*.spec.js','src/run'"
@@ -18,12 +19,19 @@
     "@babel/core": "^7.5.5",
     "@babel/node": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "dirty-chai": "^2.0.1",
     "eslint": "^6.2.2",
     "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-chai-expect": "^2.0.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.2.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "mocha": "^6.2.0",
+    "sinon": "^7.4.2",
+    "sinon-chai": "^3.3.0"
   },
   "dependencies": {
     "rxjs": "^6.5.2"
