@@ -24,6 +24,8 @@ module.exports = {
     globals: {
       expect: true,
       sinon: true,
+      withParams: true,
+      useParams: true
     },
   }]
 }

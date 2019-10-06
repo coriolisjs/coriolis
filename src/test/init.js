@@ -10,3 +10,21 @@ chai.use(dirtyChai)
 
 global.expect = expect
 global.sinon = sinon
+
+// ////////////////
+// Following defines a template string tag to catch test params inside a test title
+// ////////
+let lastParams
+global.withParams = (parts, ...params) => {
+  lastParams = params
+
+  return parts[0] + parts.slice(1).map((part, idx) => JSON.stringify(params[idx], null, 2) + part).join('')
+}
+
+global.useParams = callback => {
+  const params = lastParams.slice()
+
+  return function (...args) {
+    callback.call(this, ...params, ...args)
+  }
+}
