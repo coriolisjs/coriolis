@@ -38,7 +38,8 @@ export const createStore = (...effects) => {
 
   const {
     get: getAggregator,
-    list: listAggregators
+    list: listAggregators,
+    flush: flushAggr
   } = createIndex(aggr => createAggregator(aggr, getAggregator))
 
   const getSnapshot = () => objectFrom(
@@ -91,8 +92,13 @@ export const createStore = (...effects) => {
     eventCaster.pipe(skipUntil(initDone))
   )
 
-  const initAggr = aggr =>
-    replayCaster.subscribe(getAggregator(aggr))
+  const connectAggr = aggr => {
+    const subscription = replayCaster.subscribe(getAggregator(aggr))
+
+    // We don't return directly subscription because user is not aware it's an observable under the hood
+    // For user, the request is to connect an aggregator, it should return a function to disconnect it
+    return () => subscription.unsubscribe()
+  }
 
   const pipeAggr = aggr =>
     replayCaster.pipe(
@@ -113,7 +119,8 @@ export const createStore = (...effects) => {
       addLogger,
       initialEvent$,
       eventSource: effectEventSource,
-      initAggr,
+      connectAggr,
+      flushAggr,
       pipeAggr,
       getSnapshot
     }) || noop
