@@ -33,7 +33,7 @@ const buildFirstEvent = () => ({
 
 export const createStore = (...effects) => {
   if (!effects.length) {
-    throw new Error('No effect defined. This is useless')
+    throw new Error('No effect defined. This app is useless, let\'s stop right now')
   }
 
   const {
@@ -42,6 +42,9 @@ export const createStore = (...effects) => {
     flush: flushAggr
   } = createIndex(aggr => createAggregator(aggr, getAggregator))
 
+  // to build a snapshot, we get the current state from each aggregator and put
+  // all this in an object, using aggregator definition's name as keys. If any conflicts
+  // on names, numbers are concatenated on conflicting keys (aKey, aKey-2, aKey-3...)
   const getSnapshot = () => objectFrom(
     listAggregators()
       .map(([ref, getState]) => [ref.name, getState()])
@@ -62,28 +65,28 @@ export const createStore = (...effects) => {
 
   const {
     observable: mainSource,
-    add
+    add: addSourceToMainSource
   } = createExtensibleObservable()
 
   const {
     func: addSource,
-    setup
-  } = variableFunction(source => add(from(source)))
+    setup: setupAddSource
+  } = variableFunction(source => addSourceToMainSource(from(source)))
 
-  const disableAddSource = () => setup(() => {
+  const disableAddSource = () => setupAddSource(() => {
     throw new Error('addSource must be called before all sources completed')
   })
 
+  // From the moment this event source is created, it starts buffering all events it receives
+  // until it gets a subscription and passes them
   const eventSource = createEventSource(mainSource, logger)
 
   const initDone = eventCaster.pipe(
-    // checking payload, event itself could have been changed (adding meta-data for example)
+    // Check is done on payload value, event object itself would have been changed (adding meta-data for example)
     filter(payloadEquals(firstEvent.payload)),
     take(1),
     shareReplay(1)
   )
-
-  const initDoneSubscription = initDone.subscribe(disableAddSource)
 
   const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 
@@ -130,10 +133,14 @@ export const createStore = (...effects) => {
       : removeEffect
   }
 
+  const initDoneSubscription = initDone.subscribe(disableAddSource)
+
+  // EventCatcher must be connected to eventSource before effects are added, to be ready to catch all events
   const eventCatcherSubscription = eventCatcher
     .pipe(startWith(firstEvent))
     .subscribe(eventSource)
 
+  // connect each defined effect and buid a disconnect function that disconnect all effects
   const removeEffects = effects
     .map(addEffect)
     .reduce(
@@ -141,6 +148,7 @@ export const createStore = (...effects) => {
       noop
     )
 
+  // Once everything is pieced together, subscribe it to event source to start the process
   const eventCasterSubscription = eventSource
     .subscribe(eventCaster)
 

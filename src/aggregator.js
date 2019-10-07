@@ -59,6 +59,9 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
   const getValues = event => {
     const values = using.aggr.map(aggr => aggr(event))
 
+    // getValues will be called only once per event, this is garanteed from
+    // reducer aggregator's initial part
+    // if event is used, values is garanteed to change each time
     if (using.event) {
       return values
     }
