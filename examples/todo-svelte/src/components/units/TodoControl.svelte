@@ -11,7 +11,7 @@ let filterName
 let textInput
 let textInputValue
 
-const subscription = getSource(todolistFilterName).subscribe(newFilterName => { filterName = newFilterName })
+const subscription = getSource(todolistFilterName, newFilterName => { filterName = newFilterName })
 
 const addItem = () => {
   if (!textInputValue) {

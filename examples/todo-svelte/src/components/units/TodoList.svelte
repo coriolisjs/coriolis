@@ -9,8 +9,7 @@ const getSource = getContext('getSource')
 
 let todolist = []
 
-const subscription = getSource(filteredTodolist)
-    .subscribe(newtodolist => { todolist = newtodolist })
+const subscription = getSource(filteredTodolist, newtodolist => { todolist = newtodolist })
 
 onDestroy(() => subscription.unsubscribe())
 

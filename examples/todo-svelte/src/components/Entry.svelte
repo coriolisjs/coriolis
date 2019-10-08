@@ -12,10 +12,12 @@ setContext('getSource', getSource)
 
 let CurrentView
 
-getSource(currentViewAggr).subscribe(newview => { CurrentView = views[newview] })
+getSource(currentViewAggr, newview => { CurrentView = views[newview] })
 
 </script>
 
 {#if CurrentView}
   <svelte:component this={CurrentView}/>
+{:else}
+  <div>... Routing Error ...</div>
 {/if}

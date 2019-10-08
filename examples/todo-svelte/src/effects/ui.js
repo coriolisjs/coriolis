@@ -17,11 +17,26 @@ export const createUi = () => ({ eventSource, pipeAggr, connectAggr, addEffect }
   connectAggr(todolist)
   connectAggr(todolistFilterName)
 
+  const getSource = (aggr, callback) => callback
+    ? pipeAggr(aggr).subscribe(callback)
+    : pipeAggr(aggr)
+
+  const getValue = aggr => {
+    let value
+
+    pipeAggr(aggr)
+      .subscribe(data => { value = data })
+      .unsubscribe()
+
+    return value
+  }
+
   const app = new Entry({
     target: document.body,
     props: {
       dispatch: event => eventSource.next(event),
-      getSource: pipeAggr,
+      getSource,
+      getValue,
       views
     }
   })
