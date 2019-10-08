@@ -9,9 +9,9 @@ import {
   map,
   shareReplay,
   skipUntil,
-  startWith,
   take,
-  takeUntil
+  takeUntil,
+  endWith
 } from 'rxjs/operators'
 
 import { createEventSource } from './eventSource'
@@ -79,7 +79,7 @@ export const createStore = (...effects) => {
 
   // From the moment this event source is created, it starts buffering all events it receives
   // until it gets a subscription and passes them
-  const eventSource = createEventSource(mainSource, logger)
+  const eventSource = createEventSource(mainSource.pipe(endWith(firstEvent)), logger)
 
   const initDone = eventCaster.pipe(
     // Check is done on payload value, event object itself would have been changed (adding meta-data for example)
@@ -137,7 +137,6 @@ export const createStore = (...effects) => {
 
   // EventCatcher must be connected to eventSource before effects are added, to be ready to catch all events
   const eventCatcherSubscription = eventCatcher
-    .pipe(startWith(firstEvent))
     .subscribe(eventSource)
 
   // connect each defined effect and buid a disconnect function that disconnect all effects
