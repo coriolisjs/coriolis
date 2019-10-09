@@ -32,6 +32,23 @@ onDestroy(() => subscription.unsubscribe())
 
 </script>
 
+<style lang="scss">
+  button[disabled] {
+    color: silver;
+    opacity: .5
+  }
+
+  button.filter {
+    cursor: pointer;
+
+    &[disabled] {
+      background: rgb(95, 197, 95);
+      cursor: default;
+      color: black;
+    }
+  }
+</style>
+
 <div>
   <form on:submit|preventDefault={addItem}>
     <input
@@ -46,6 +63,7 @@ onDestroy(() => subscription.unsubscribe())
     Show :
     {#each filters as filter (filter)}
     <button
+      class="filter"
       on:click|preventDefault={() => setFilter(filter)}
       disabled={filter === filterName}
     >
