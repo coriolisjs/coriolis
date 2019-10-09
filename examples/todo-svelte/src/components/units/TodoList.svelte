@@ -10,7 +10,7 @@
   let todolist$ = getSource(filteredTodolist)
 </script>
 
-<ol>
+<ol class={$$props.class}>
 {#each $todolist$ as item (item.id)}
   <TodoItem
     id={item.id}

@@ -1,12 +1,12 @@
 <script>
-import AppContainer from '../units/AppContainer.svelte'
-import TodoControl from '../units/TodoControl.svelte'
-import TodoList from '../units/TodoList.svelte'
-import ViewLink from '../units/ViewLink.svelte'
+  import AppContainer from '../units/AppContainer.svelte'
+  import TodoControl from '../units/TodoControl.svelte'
+  import TodoList from '../units/TodoList.svelte'
+  import ViewLink from '../units/ViewLink.svelte'
 </script>
 
 <style>
-  .todolist {
+  :global(.todolist) {
     max-height: 60vh;
     overflow: auto;
     width: 60vw;
