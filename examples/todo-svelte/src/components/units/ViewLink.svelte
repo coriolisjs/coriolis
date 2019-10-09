@@ -1,14 +1,13 @@
 <script>
-import { getContext } from 'svelte'
+  import { getContext } from 'svelte'
 
-import { changed } from '../../events/view'
+  import { changed } from '../../events/view'
 
-const dispatch = getContext('dispatch')
+  const dispatch = getContext('dispatch')
 
-export let view
+  export let view
 
-const trigger = () => dispatch(changed({ view }))
-
+  const trigger = () => dispatch(changed({ view }))
 </script>
 
 <a href={view} on:click|preventDefault={trigger}><slot /></a>

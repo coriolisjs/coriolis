@@ -1,19 +1,19 @@
 <script>
-import { setContext } from 'svelte'
+  import { setContext } from 'svelte'
 
-import { currentView as currentViewAggr } from '../aggrs/currentView'
+  import { currentView } from '../aggrs/currentView'
 
-export let dispatch
-export let getSource
-export let views
+  export let dispatch
+  export let getSource
+  export let views
 
-setContext('dispatch', dispatch)
-setContext('getSource', getSource)
+  setContext('dispatch', dispatch)
+  setContext('getSource', getSource)
 
-let CurrentView
+  const viewName$ = getSource(currentView)
 
-getSource(currentViewAggr, newview => { CurrentView = views[newview] })
-
+  let CurrentView
+  $: CurrentView = views[$viewName$]
 </script>
 
 {#if CurrentView}

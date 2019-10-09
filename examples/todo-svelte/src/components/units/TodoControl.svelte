@@ -1,35 +1,31 @@
 <script>
-import { getContext, createEventDispatcher, onMount, onDestroy } from 'svelte'
+  import { getContext, onMount } from 'svelte'
 
-import { added, filter, filters } from '../../events/todo'
-import { todolistFilterName } from '../../aggrs/todo'
+  import { added, filter, filters } from '../../events/todo'
+  import { todolistFilterName } from '../../aggrs/todo'
 
-const dispatch = getContext('dispatch')
-const getSource = getContext('getSource')
+  const dispatch = getContext('dispatch')
+  const getSource = getContext('getSource')
 
-let filterName
-let textInput
-let textInputValue
+  let filterName$ = getSource(todolistFilterName)
+  let textInput
+  let textInputValue
 
-const subscription = getSource(todolistFilterName, newFilterName => { filterName = newFilterName })
+  const addItem = () => {
+    if (!textInputValue) {
+      return
+    }
 
-const addItem = () => {
-  if (!textInputValue) {
-    return
+    dispatch(added({ text: textInputValue }))
+    textInputValue = ''
+    textInput.focus()
   }
 
-  dispatch(added({ text: textInputValue }))
-  textInputValue = ''
-  textInput.focus()
-}
+  const setFilter = filterName => {
+    dispatch(filter({ filterName }))
+  }
 
-const setFilter = filterName => {
-  dispatch(filter({ filterName }))
-}
-
-onMount(() => textInput.focus())
-onDestroy(() => subscription.unsubscribe())
-
+  onMount(() => textInput.focus())
 </script>
 
 <style lang="scss">
@@ -65,7 +61,7 @@ onDestroy(() => subscription.unsubscribe())
     <button
       class="filter"
       on:click|preventDefault={() => setFilter(filter)}
-      disabled={filter === filterName}
+      disabled={filter === $filterName$}
     >
       {filter}
     </button>

@@ -1,22 +1,17 @@
 <script>
-import { getContext, onDestroy } from 'svelte'
+  import { getContext } from 'svelte'
 
-import TodoItem from './TodoItem.svelte'
+  import TodoItem from './TodoItem.svelte'
 
-import { filteredTodolist } from '../../aggrs/todo'
+  import { filteredTodolist } from '../../aggrs/todo'
 
-const getSource = getContext('getSource')
+  const getSource = getContext('getSource')
 
-let todolist = []
-
-const subscription = getSource(filteredTodolist, newtodolist => { todolist = newtodolist })
-
-onDestroy(() => subscription.unsubscribe())
-
+  let todolist$ = getSource(filteredTodolist)
 </script>
 
 <ol>
-{#each todolist as item (item.id)}
+{#each $todolist$ as item (item.id)}
   <TodoItem
     id={item.id}
     text={item.text}

@@ -1,25 +1,24 @@
 <script>
-import { getContext } from 'svelte'
+  import { getContext } from 'svelte'
 
-import { edited, removed, done, reset } from '../../events/todo'
+  import { edited, removed, done, reset } from '../../events/todo'
 
-const dispatch = getContext('dispatch')
+  const dispatch = getContext('dispatch')
 
-export let id
-export let text
-export let isDone
+  export let id
+  export let text
+  export let isDone
 
-let doneCheckbox
+  let doneCheckbox
 
-const removeItem = () => dispatch(removed({ id }))
+  const removeItem = () => dispatch(removed({ id }))
 
-const editItem = () => dispatch(edited({ id, text }))
+  const editItem = () => dispatch(edited({ id, text }))
 
-const checkItem = () => {
-  const eventBuilder = doneCheckbox.checked ? done : reset
-  dispatch(eventBuilder({ id }))
-}
-
+  const checkItem = () => {
+    const eventBuilder = doneCheckbox.checked ? done : reset
+    dispatch(eventBuilder({ id }))
+  }
 </script>
 
 <style>
