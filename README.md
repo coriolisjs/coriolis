@@ -2,18 +2,18 @@
 
 Rules about Coriolis
 
+- un event doit avoir un format standard:
+  - un type
+  - optionel: un payload
+  - si c'est une erreur, error: true
+  - des meta-données
+
 - La définition d'aggrégats peut se faire sous deux formes
   - simples sous forme de reducer
   - complexes sous forme de selecteur
 
 - Les définitions d'aggregats peuvent être utilisées tel quel à tout moment.
   La liste des aggregats n'est pas un pré-requis pour la définition du store
-
-- un event doit avoir un format standard:
-  - un type
-  - optionel: un payload
-  - si c'est une erreur, error: true
-  - des meta-données
 
 - Définition d'un effet
   - Un effet peut :
