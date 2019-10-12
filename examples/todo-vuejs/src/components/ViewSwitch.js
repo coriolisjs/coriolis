@@ -1,11 +1,11 @@
 import { connect } from '../libs/vuejs/connect'
 
-import { currentView as currentViewAggr } from '../aggrs/currentView'
+import { currentView } from '../aggrs/currentView'
 
 const ViewSwitch = {
   name: 'ViewSwitch',
   data: () => ({
-    currentView: undefined
+    viewName: undefined
   }),
   props: {
     views: {
@@ -13,24 +13,16 @@ const ViewSwitch = {
       required: true
     }
   },
-  watch: {
-    views (...args) {
-      console.log('views changed', this.views, args)
-    }
-  },
-  created () {
-    console.log('initial views', this.views)
-  },
   render (createElement) {
-    if (!this.currentView) {
+    if (!this.viewName) {
       return
     }
-    return createElement(this.views[this.currentView])
+    return createElement(this.views[this.viewName])
   }
 }
 
 export default connect({
   mapSource: {
-    currentView: currentViewAggr
+    viewName: currentView
   }
 })(ViewSwitch)
