@@ -10,6 +10,7 @@ import { lossless } from './lib/rx/operator/lossless'
 import { throwFalsy } from './lib/function/throwFalsy'
 import { uniqSymbol } from './lib/symbol/uniqSymbol'
 import { isValidEvent } from './lib/event/isValidEvent'
+import { getTimestamp } from './lib/time/timestamp'
 
 /*
 Adding a uniq property in every event's metadata, we can ensure each events enters only once
@@ -29,6 +30,17 @@ const preventLoops = (secretKey = uniqSymbol()) => event => {
     })
   }
 }
+
+/*
+Adding a time reference for each event helps keeping an accurate view on events flow
+*/
+const stampEvent = event => ({
+  ...event,
+  meta: {
+    timestamp: getTimestamp(),
+    ...event.meta
+  }
+})
 
 /*
 EventSource behaviour:
@@ -55,11 +67,13 @@ export const createEventSource = (initialSource = EMPTY, logObserver = noop) => 
       tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
       map(preventLoops()),
       lossless,
+      map(stampEvent),
       tap(logObserver)
     )
 
   const event$ = initialSource
     .pipe(
+      map(stampEvent),
       concat(startoverNewevent$),
       share()
     )
