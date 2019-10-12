@@ -9,9 +9,9 @@ createStore(
   ({
     eventSource,
     addLogger,
-    pipeAggr
+    withAggr
   }) => {
-    pipeAggr((state = 1, { type, payload }) => {
+    withAggr((state = 1, { type, payload }) => {
       if (type !== 'event') {
         return state
       }

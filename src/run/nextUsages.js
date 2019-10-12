@@ -22,8 +22,8 @@ const listEventNames = ({ useAggr }) => (
 )
 
 createStore(
-  ({ eventSource, pipeAggr }) =>
-    pipeAggr(countEventsAggr)
+  ({ eventSource, withAggr }) =>
+    withAggr(countEventsAggr)
       .subscribe(data => console.log('events count', data))
       .add(
         interval(1000)
@@ -33,11 +33,11 @@ createStore(
           )
           .subscribe(eventSource)
       ),
-  ({ eventSource, pipeAggr }) =>
-    pipeAggr(listEventNames)
+  ({ eventSource, withAggr }) =>
+    withAggr(listEventNames)
       .subscribe(data => console.log('eventnames list', data))
       .add(
-        pipeAggr(listEventsAggr)
+        withAggr(listEventsAggr)
           .subscribe(data => console.log('events list', data))
       )
       .add(

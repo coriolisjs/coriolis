@@ -95,17 +95,10 @@ export const createStore = (...effects) => {
     eventCaster.pipe(skipUntil(initDone))
   )
 
-  const connectAggr = aggr => {
-    const subscription = replayCaster.subscribe(getAggregator(aggr))
-
-    // We don't return directly subscription because user is not aware it's an observable under the hood
-    // For user, the request is to connect an aggregator, it should return a function to disconnect it
-    return () => subscription.unsubscribe()
-  }
-
-  const pipeAggr = aggr =>
-    replayCaster.pipe(
-      map(getAggregator(aggr)),
+  const withAggr = aggr => {
+    const aggregator = getAggregator(aggr)
+    const aggr$ = replayCaster.pipe(
+      map(aggregator),
 
       // while init is not finished (old events replaying), we expect aggrs to
       // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
@@ -115,7 +108,25 @@ export const createStore = (...effects) => {
       distinctUntilChanged()
     )
 
-  const aggrValue = aggr => getAggregator(aggr)()
+    const subscribe = callback => aggr$.subscribe(callback)
+
+    const connect = () => {
+      const subscription = replayCaster.subscribe(aggregator)
+
+      // We don't return directly subscription because user is not aware it's an observable under the hood
+      // For user, the request is to connect an aggregator, it should return a function to disconnect it
+      return () => subscription.unsubscribe()
+    }
+
+    const flush = () => flushAggr(aggr)
+
+    return {
+      subscribe,
+      connect,
+      flush,
+      get value () { return aggregator() }
+    }
+  }
 
   const addEffect = effect => {
     const removeEffect = effect({
@@ -124,10 +135,7 @@ export const createStore = (...effects) => {
       addLogger,
       initialEvent$,
       eventSource: effectEventSource,
-      connectAggr,
-      flushAggr,
-      pipeAggr,
-      aggrValue,
+      withAggr,
       getSnapshot
     }) || noop
 

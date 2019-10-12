@@ -7,10 +7,10 @@ const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
 const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 
-export const urlbar = viewNames => ({ addSource, eventSource, pipeAggr }) => {
+export const urlbar = viewNames => ({ addSource, eventSource, withAggr }) => {
   const removeSource = addSource([changed({ view: getCurrentUrlView() || viewNames[0] || UNDEFINED_VIEW_NAME })])
 
-  const aggrSubscription = pipeAggr(currentView)
+  const aggrSubscription = withAggr(currentView)
     .subscribe(newView => {
       if (newView === getCurrentUrlView()) {
         // view already in url bar, no need to push it

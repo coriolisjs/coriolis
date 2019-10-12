@@ -19,11 +19,11 @@ const bugAggr = ({ useState, useEvent }) => (
   }
 )
 
-const bugEffect = ({ addLogger, eventSource, pipeAggr }) => {
+const bugEffect = ({ addLogger, eventSource, withAggr }) => {
   const removeLogger = addLogger(logEvent)
   const sourceSubscription = eventSource.subscribe(event => console.log('effect got event', event))
 
-  return pipeAggr(bugAggr)
+  return withAggr(bugAggr)
     .subscribe(reducedState => {
       console.log('effect got state', reducedState)
       if (reducedState !== expectedState) {

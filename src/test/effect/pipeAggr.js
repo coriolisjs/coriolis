@@ -4,7 +4,7 @@ import {
   matchFirstEvent
 } from '../utils'
 
-describe('Effect pipeAggr', () => {
+describe('Effect withAggr', () => {
   it(`Given a reducer with a length=0 signature
       When this reducer is piped
       Then it is tested as an aggregator setup
@@ -13,8 +13,8 @@ describe('Effect pipeAggr', () => {
     const reducer = sinon.stub().returns('state')
     const dataSpy = sinon.spy()
 
-    const store = createStore(({ pipeAggr }) => {
-      pipeAggr(reducer).subscribe(dataSpy)
+    const store = createStore(({ withAggr }) => {
+      withAggr(reducer).subscribe(dataSpy)
     })
 
     expect(reducer, 'reducer').to.have.been.calledWith(undefined, {
@@ -34,8 +34,8 @@ describe('Effect pipeAggr', () => {
     const reducer = sinon.stub().returns('state')
     const dataSpy = sinon.spy()
 
-    const store = createStore(({ pipeAggr }) => {
-      pipeAggr(reducer).subscribe(dataSpy)
+    const store = createStore(({ withAggr }) => {
+      withAggr(reducer).subscribe(dataSpy)
     })
 
     expect(reducer, 'reducer').to.have.been.calledWith(undefined, matchFirstEvent)

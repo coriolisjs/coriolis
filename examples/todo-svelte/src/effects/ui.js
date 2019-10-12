@@ -12,16 +12,16 @@ const views = {
 
 const viewNames = Object.keys(views)
 
-export const createUi = () => ({ eventSource, pipeAggr, connectAggr, addEffect }) => {
+export const createUi = () => ({ eventSource, withAggr, addEffect }) => {
   addEffect(urlbar(viewNames))
-  connectAggr(todolist)
-  connectAggr(todolistFilterName)
+  withAggr(todolist).connect()
+  withAggr(todolistFilterName).connect()
 
   const app = new Entry({
     target: document.body,
     props: {
       dispatch: event => eventSource.next(event),
-      getSource: pipeAggr,
+      getSource: withAggr,
       views
     }
   })

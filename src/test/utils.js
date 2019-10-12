@@ -19,9 +19,7 @@ export const matchCoriolisEffectAPI = sinon.match({
   addSource: sinon.match.func,
   addLogger: sinon.match.func,
   addEffect: sinon.match.func,
-  pipeAggr: sinon.match.func,
-  connectAggr: sinon.match.func,
-  flushAggr: sinon.match.func,
+  withAggr: sinon.match.func,
   initialEvent$: matchObservable,
   getSnapshot: sinon.match.func
 })

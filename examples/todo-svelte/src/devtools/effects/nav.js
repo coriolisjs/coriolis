@@ -12,15 +12,15 @@ const isAvailableView = viewNames => ({ useAggr }) => (
   (isOpen, viewName) => viewNames.includes(viewName) || !isOpen
 )
 
-export const createNav = viewNames => ({ addSource, aggrValue, pipeAggr, eventSource }) => {
+export const createNav = viewNames => ({ addSource, withAggr, eventSource }) => {
   const removeSource = addSource(Observable.create(observer => {
-    if (!aggrValue(currentView)) {
+    if (!withAggr(currentView).value) {
       observer.next(viewChanged(viewNames[0] || UNDEFINED_VIEW_NAME))
     }
     observer.complete()
   }))
 
-  const availableViewSubscription = pipeAggr(isAvailableView(viewNames)).subscribe(isAvailable =>
+  const availableViewSubscription = withAggr(isAvailableView(viewNames)).subscribe(isAvailable =>
     !isAvailable && eventSource.next(viewChanged(viewNames[0])))
 
   return () => {

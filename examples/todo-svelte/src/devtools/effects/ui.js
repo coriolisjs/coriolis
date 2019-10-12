@@ -6,9 +6,9 @@ import { views } from '../components/views'
 import { eventList } from '../aggrs/eventList'
 import { eventTypeList } from '../aggrs/eventTypeList'
 
-export const createUI = () => ({ connectAggr, pipeAggr, eventSource, getSnapshot }) => {
-  connectAggr(eventList)
-  connectAggr(eventTypeList)
+export const createUI = () => ({ withAggr, eventSource, getSnapshot }) => {
+  withAggr(eventList).connect()
+  withAggr(eventTypeList).connect()
 
   const snapshot$ = eventSource
     .pipe(
@@ -20,7 +20,7 @@ export const createUI = () => ({ connectAggr, pipeAggr, eventSource, getSnapshot
     target: document.body,
     props: {
       dispatch: event => eventSource.next(event),
-      getSource: pipeAggr,
+      getSource: withAggr,
       snapshot$,
       views
     }
