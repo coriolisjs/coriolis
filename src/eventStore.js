@@ -115,6 +115,8 @@ export const createStore = (...effects) => {
       distinctUntilChanged()
     )
 
+  const aggrValue = aggr => getAggregator(aggr)()
+
   const addEffect = effect => {
     const removeEffect = effect({
       addEffect,
@@ -125,6 +127,7 @@ export const createStore = (...effects) => {
       connectAggr,
       flushAggr,
       pipeAggr,
+      aggrValue,
       getSnapshot
     }) || noop
 
