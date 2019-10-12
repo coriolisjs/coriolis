@@ -1,6 +1,6 @@
 import { viewChanged } from '../events'
 
-export const currentView = (view, { type, payload }) => {
+const currentCoriolisDevToolsView = (view, { type, payload }) => {
   switch(type) {
     case viewChanged.toString():
       return payload
@@ -9,3 +9,5 @@ export const currentView = (view, { type, payload }) => {
       return view
   }
 }
+
+export const currentView = currentCoriolisDevToolsView

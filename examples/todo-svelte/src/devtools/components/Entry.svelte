@@ -1,22 +1,35 @@
 <script>
-import { setContext } from 'svelte'
+  import { setContext } from 'svelte'
 
-import { currentView as currentViewAggr } from '../aggrs/currentView'
+  import DevToolsButton from './units/DevToolsButton.svelte'
 
-export let dispatch
-export let getSource
-export let getValue
-export let views
+  import { currentView } from '../aggrs/currentView'
+  import { isDevtoolsOpen } from '../aggrs/isDevtoolsOpen'
 
-setContext('dispatch', dispatch)
-setContext('getSource', getSource)
-setContext('getValue', getValue)
+  export let dispatch
+  export let getSource
+  export let snapshot$
+  export let views
 
-let CurrentView
-getSource(currentViewAggr, newview => { CurrentView = views[newview] })
+  const viewsIndex = views.reduce((idx, view) => ({
+    ...idx,
+    [view.name]: view
+  }), {})
 
+  setContext('dispatch', dispatch)
+  setContext('getSource', getSource)
+  setContext('snapshot$', snapshot$)
+  setContext('views', views)
+
+  const viewName$ = getSource(currentView)
+  const isDevtoolsOpen$ = getSource(isDevtoolsOpen)
+
+  let CurrentView
+  $: CurrentView = $isDevtoolsOpen$ && viewsIndex[$viewName$] && viewsIndex[$viewName$].component
 </script>
 
 {#if CurrentView}
   <svelte:component this={CurrentView}/>
+{:else}
+  <DevToolsButton />
 {/if}

@@ -1,34 +1,28 @@
+import { map, startWith } from 'rxjs/operators'
+
 import Entry from '../components/Entry.svelte'
-import EventsList from '../components/views/EventsList.svelte'
+import { views } from '../components/views'
 
 import { eventList } from '../aggrs/eventList'
+import { eventTypeList } from '../aggrs/eventTypeList'
 
-export const createUI = () => ({ connectAggr, pipeAggr, eventSource }) => {
+export const createUI = () => ({ connectAggr, pipeAggr, eventSource, getSnapshot }) => {
   connectAggr(eventList)
+  connectAggr(eventTypeList)
 
-  const getSource = (aggr, callback) => callback
-    ? pipeAggr(aggr).subscribe(callback)
-    : pipeAggr(aggr)
-
-  const getValue = aggr => {
-    let value
-
-    pipeAggr(aggr)
-      .subscribe(data => { value = data })
-      .unsubscribe()
-
-    return value
-  }
+  const snapshot$ = eventSource
+    .pipe(
+      startWith(true),
+      map(() => getSnapshot())
+    )
 
   const app = new Entry({
     target: document.body,
     props: {
       dispatch: event => eventSource.next(event),
-      getSource,
-      getValue,
-      views: {
-        EventsList
-      }
+      getSource: pipeAggr,
+      snapshot$,
+      views
     }
   })
 

@@ -1,30 +1,30 @@
+import { Observable } from 'rxjs'
+
 import { currentView } from '../aggrs/currentView'
 import { viewChanged } from '../events'
+import { isDevtoolsOpen } from '../aggrs/isDevtoolsOpen'
 
-export const createNav = views => ({ pipeAggr, addSource, eventSource }) => {
-  const removeSource = addSource([viewChanged(views[0] || 'undefined-view')])
+const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
-  let previousView
+const isAvailableView = viewNames => ({ useAggr }) => (
+  useAggr(isDevtoolsOpen),
+  useAggr(currentView),
+  (isOpen, viewName) => viewNames.includes(viewName) || !isOpen
+)
 
-  const currentViewSubscription = pipeAggr(currentView)
-    .subscribe(newView => {
-      if (views.includes(newView)) {
-        previousView = newView
-        return
-      }
+export const createNav = viewNames => ({ addSource, aggrValue, pipeAggr, eventSource }) => {
+  const removeSource = addSource(Observable.create(observer => {
+    if (!aggrValue(currentView)) {
+      observer.next(viewChanged(viewNames[0] || UNDEFINED_VIEW_NAME))
+    }
+    observer.complete()
+  }))
 
-      const replacementView = (previousView && newView !== previousView)
-        ? previousView
-        : views[0]
-
-      if (replacementView) {
-        previousView = replacementView
-        eventSource.next(viewChanged(replacementView))
-      }
-    })
+  const availableViewSubscription = pipeAggr(isAvailableView(viewNames)).subscribe(isAvailable =>
+    !isAvailable && eventSource.next(viewChanged(viewNames[0])))
 
   return () => {
     removeSource()
-    currentViewSubscription.unsubscribe()
+    availableViewSubscription.unsubscribe()
   }
 }
