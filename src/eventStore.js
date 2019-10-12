@@ -20,7 +20,7 @@ import { createAggregator } from './aggregator'
 import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { variableFunction } from './lib/function/variableFunction'
-import { createIndex } from './lib/objectIndex'
+import { createIndex } from './lib/map/objectIndex'
 import { objectFrom } from './lib/object/objectFrom'
 import { payloadEquals } from './lib/event/payloadEquals'
 
