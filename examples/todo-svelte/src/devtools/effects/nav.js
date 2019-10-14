@@ -20,8 +20,8 @@ export const createNav = viewNames => ({ addSource, withAggr, eventSource }) => 
     observer.complete()
   }))
 
-  const availableViewSubscription = withAggr(isAvailableView(viewNames)).subscribe(isAvailable =>
-    !isAvailable && eventSource.next(viewChanged(viewNames[0])))
+  const availableViewSubscription = withAggr(isAvailableView(viewNames))
+    .subscribe(isAvailable => !isAvailable && eventSource.next(viewChanged(viewNames[0])))
 
   return () => {
     removeSource()

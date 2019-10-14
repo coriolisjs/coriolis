@@ -21,6 +21,7 @@ import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { variableFunction } from './lib/function/variableFunction'
 import { createIndex } from './lib/map/objectIndex'
+import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { objectFrom } from './lib/object/objectFrom'
 import { payloadEquals } from './lib/event/payloadEquals'
 
@@ -66,13 +67,9 @@ const createAggrWrapper = (replayCaster, initDone) => {
       distinctUntilChanged()
     )
 
-    aggr$.connect = () => {
-      const subscription = replayCaster.subscribe(aggregator)
-
-      // We don't return directly subscription because user is not aware it's an observable under the hood
-      // For user, the request is to connect an aggregator, it should return a function to disconnect it
-      return () => subscription.unsubscribe()
-    }
+    // We don't return directly subscription because user is not aware it's an observable under the hood
+    // For user, the request is to connect an aggregator, it should return a function to disconnect it
+    aggr$.connect = () => simpleUnsub(replayCaster.subscribe(aggregator))
 
     aggr$.flush = () => flushAggr(aggr)
 
@@ -97,10 +94,13 @@ export const createStore = (...effects) => {
 
   const firstEvent = buildFirstEvent()
 
-  // Use a subject to have a single subscription point to connect all together
+  // Use subjects to have single subscription points to connect all together (one for input, one for output)
+  // eventCaster will handle events coming from eventSource to aggregators and effects
   const eventCaster = new Subject()
+  // eventCatcher will handle events coming from effects to eventSource
   const eventCatcher = new Subject()
 
+  // replayCaster is the same as eventCaster but always replaying last event
   const replayCaster = eventCaster.pipe(shareReplay(1))
 
   const {
@@ -142,20 +142,14 @@ export const createStore = (...effects) => {
     eventCaster.pipe(skipUntil(initDone))
   )
 
-  const addEffect = effect => {
-    const removeEffect = effect({
-      addEffect,
-      addSource,
-      addLogger,
-      initialEvent$,
-      eventSource: effectEventSource,
-      withAggr
-    }) || noop
-
-    return removeEffect.unsubscribe
-      ? () => removeEffect.unsubscribe()
-      : removeEffect
-  }
+  const addEffect = effect => simpleUnsub(effect({
+    addEffect,
+    addSource,
+    addLogger,
+    initialEvent$,
+    eventSource: effectEventSource,
+    withAggr
+  }))
 
   const initDoneSubscription = initDone.subscribe(disableAddSource)
 
