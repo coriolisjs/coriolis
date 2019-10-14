@@ -5,10 +5,12 @@ import { views } from '../components/views'
 
 import { eventList } from '../aggrs/eventList'
 import { eventTypeList } from '../aggrs/eventTypeList'
+import { eventListFilter } from '../aggrs/eventListFilter'
 
 export const createUI = () => ({ withAggr, eventSource, getSnapshot }) => {
   withAggr(eventList).connect()
   withAggr(eventTypeList).connect()
+  withAggr(eventListFilter).connect()
 
   const snapshot$ = eventSource
     .pipe(

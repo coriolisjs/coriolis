@@ -5,11 +5,11 @@
 
   import EventListItem from './EventListItem.svelte'
 
-  import { eventList } from '../../aggrs/eventList'
+  import { filteredEventList } from '../../aggrs/filteredEventList'
 
   const getSource = getContext('getSource')
 
-  let eventList$ = getSource(eventList)
+  let eventList$ = getSource(filteredEventList)
 </script>
 
 <style lang="scss">
@@ -17,12 +17,12 @@
     height: 100%;
     overflow: hidden;
 
-    :global(svelte-virtual-list-row):hover {
-      background: rgba(white, .1);
-    }
-
     :global(svelte-virtual-list-row):nth-child(even) {
       background: rgba(black, .1);
+    }
+
+    :global(svelte-virtual-list-row):hover {
+      background: rgba(white, .1);
     }
   }
 </style>

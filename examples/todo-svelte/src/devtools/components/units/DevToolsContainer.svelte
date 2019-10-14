@@ -40,6 +40,7 @@
       height: 56px;
       overflow: hidden;
       border-radius: 100%;
+      cursor: pointer;
     }
   }
 </style>
@@ -54,6 +55,7 @@
       {/each}
     </nav>
     <slot name="title" />
+    <slot name="tools" />
   </header>
   <slot />
 </div>
