@@ -21,7 +21,7 @@
 
   const selectTimingType = event => dispatch(devtoolsTimingTypeSelected(event.target.value))
 
-  const logEvent = () => console.log({ type, payload, meta, error })
+  const logEvent = () => console.log(`${error ? 'ERROR - ' : ''}${type}\npayload: `, payload, '\nmeta: ', meta)
 </script>
 
 <style lang="scss">
@@ -62,15 +62,21 @@
   }
 </style>
 
-<div class="eventListItem">
-  <div
-    class="type"
-    on:click={() => console.log({ type, payload, meta, error })}
-  >
+<div
+  class="eventListItem"
+  on:click={logEvent}
+>
+  <div class="type">
     {type}
   </div>
-  <div class="timing">
-    <select class="timing-select" on:change={selectTimingType}>
+  <div
+    class="timing"
+    on:click|stopPropagation
+  >
+    <select
+      class="timing-select"
+      on:change={selectTimingType}
+    >
       <option value="deltaN" selected={$selectedTimingType$ === 'deltaN'}>+{deltaN}ms</option>
       <option value="delta0" selected={$selectedTimingType$ === 'delta0'}>+{delta0}ms</option>
       <option value="date" selected={$selectedTimingType$ === 'date'}>{date}</option>
