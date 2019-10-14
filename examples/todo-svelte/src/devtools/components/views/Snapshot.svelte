@@ -1,9 +1,13 @@
 <script>
   import { getContext } from 'svelte'
 
+  import { snapshot } from 'coriolis'
+
   import DevToolsContainer from '../units/DevToolsContainer.svelte'
 
-  const snapshot$ = getContext('snapshot$')
+  const getSource = getContext('getSource')
+
+  const snapshot$ = getSource(snapshot)
 </script>
 
 <style>

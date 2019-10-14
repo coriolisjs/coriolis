@@ -1,7 +1,7 @@
 import { interval, zip } from 'rxjs'
 import { map, take, tap, share } from 'rxjs/operators'
 
-import { createStore } from '../eventStore'
+import { createStore, snapshot } from '../eventStore'
 
 console.log('start')
 
@@ -40,10 +40,10 @@ const listSameEvents = ({ useEvent, useAggr }) => (
 
 // effects
 
-const effect0 = ({ addSource, addLogger, getSnapshot }) => {
+const effect0 = ({ addSource, addLogger, withAggr }) => {
   console.log('setup effect0')
   const removeLogger = addLogger(logObserver)
-  const removeSnapshoter = addLogger(() => console.log(getSnapshot()))
+  const removeSnapshoter = addLogger(() => console.log(withAggr(snapshot).value))
   const removeSource = addSource(initialSource)
 
   return () => {

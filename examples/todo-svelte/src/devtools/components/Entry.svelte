@@ -8,7 +8,6 @@
 
   export let dispatch
   export let getSource
-  export let snapshot$
   export let views
 
   const viewsIndex = views.reduce((idx, view) => ({
@@ -18,7 +17,6 @@
 
   setContext('dispatch', dispatch)
   setContext('getSource', getSource)
-  setContext('snapshot$', snapshot$)
   setContext('views', views)
 
   const viewName$ = getSource(currentView)

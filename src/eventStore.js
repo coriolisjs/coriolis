@@ -25,30 +25,75 @@ import { objectFrom } from './lib/object/objectFrom'
 import { payloadEquals } from './lib/event/payloadEquals'
 
 export const FIRST_EVENT_TYPE = 'All initial events have been read'
+export const snapshot = () => {}
 
 const buildFirstEvent = () => ({
   type: FIRST_EVENT_TYPE,
   payload: {}
 })
 
-export const createStore = (...effects) => {
-  if (!effects.length) {
-    throw new Error('No effect defined. This app is useless, let\'s stop right now')
-  }
-
+const createAggrWrapper = (replayCaster, initDone) => {
   const {
     get: getAggregator,
     list: listAggregators,
     flush: flushAggr
-  } = createIndex(aggr => createAggregator(aggr, getAggregator))
+  } = createIndex(aggr => aggr === snapshot
+    ? getSnapshot
+    : createAggregator(aggr, getAggregator))
 
   // to build a snapshot, we get the current state from each aggregator and put
   // all this in an object, using aggregator definition's name as keys. If any conflicts
   // on names, numbers are concatenated on conflicting keys (aKey, aKey-2, aKey-3...)
   const getSnapshot = () => objectFrom(
     listAggregators()
-      .map(([ref, getState]) => [ref.name, getState()])
+      .filter(([aggr]) => aggr !== snapshot)
+      .map(([aggr, aggregator]) => [aggr.name, aggregator()])
   )
+
+  const {
+    get: getAggrWrapper
+  } = createIndex(aggr => {
+    const aggregator = getAggregator(aggr)
+
+    const aggr$ = replayCaster.pipe(
+      map(aggregator),
+
+      // while init is not finished (old events replaying), we expect aggrs to
+      // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
+      skipUntil(initDone),
+
+      // if event does not lead to a new aggregate, we don't want to emit
+      distinctUntilChanged()
+    )
+
+    aggr$.connect = () => {
+      const subscription = replayCaster.subscribe(aggregator)
+
+      // We don't return directly subscription because user is not aware it's an observable under the hood
+      // For user, the request is to connect an aggregator, it should return a function to disconnect it
+      return () => subscription.unsubscribe()
+    }
+
+    aggr$.flush = () => flushAggr(aggr)
+
+    aggr$.getValue = () => aggregator()
+
+    Object.defineProperty(aggr$, 'value', {
+      configurable: false,
+      enumerable: true,
+      get: aggr$.getValue
+    })
+
+    return aggr$
+  })
+
+  return getAggrWrapper
+}
+
+export const createStore = (...effects) => {
+  if (!effects.length) {
+    throw new Error('No effect defined. This app is useless, let\'s stop right now')
+  }
 
   const firstEvent = buildFirstEvent()
 
@@ -88,45 +133,14 @@ export const createStore = (...effects) => {
     shareReplay(1)
   )
 
+  const withAggr = createAggrWrapper(replayCaster, initDone)
+
   const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 
   const effectEventSource = Subject.create(
     eventCatcher,
     eventCaster.pipe(skipUntil(initDone))
   )
-
-  const withAggr = aggr => {
-    const aggregator = getAggregator(aggr)
-    const aggr$ = replayCaster.pipe(
-      map(aggregator),
-
-      // while init is not finished (old events replaying), we expect aggrs to
-      // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
-      skipUntil(initDone),
-
-      // if event does not lead to a new aggregate, we don't want to emit
-      distinctUntilChanged()
-    )
-
-    const subscribe = callback => aggr$.subscribe(callback)
-
-    const connect = () => {
-      const subscription = replayCaster.subscribe(aggregator)
-
-      // We don't return directly subscription because user is not aware it's an observable under the hood
-      // For user, the request is to connect an aggregator, it should return a function to disconnect it
-      return () => subscription.unsubscribe()
-    }
-
-    const flush = () => flushAggr(aggr)
-
-    return {
-      subscribe,
-      connect,
-      flush,
-      get value () { return aggregator() }
-    }
-  }
 
   const addEffect = effect => {
     const removeEffect = effect({
@@ -135,8 +149,7 @@ export const createStore = (...effects) => {
       addLogger,
       initialEvent$,
       eventSource: effectEventSource,
-      withAggr,
-      getSnapshot
+      withAggr
     }) || noop
 
     return removeEffect.unsubscribe

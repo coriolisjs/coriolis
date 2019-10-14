@@ -20,8 +20,7 @@ export const matchCoriolisEffectAPI = sinon.match({
   addLogger: sinon.match.func,
   addEffect: sinon.match.func,
   withAggr: sinon.match.func,
-  initialEvent$: matchObservable,
-  getSnapshot: sinon.match.func
+  initialEvent$: matchObservable
 })
 
 export const matchCoriolisAggregatorSetupAPI = sinon.match({
