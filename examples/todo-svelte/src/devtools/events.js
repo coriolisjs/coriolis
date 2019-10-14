@@ -5,4 +5,4 @@ export const viewChanged = createEventBuilder('Current Coriolis devtools view ch
 export const devtoolsOpened = createEventBuilder('Coriolis devtools have been opened')
 export const devtoolsClosed = createEventBuilder('Coriolis devtools have been closed')
 
-export const timingTypeSelected = createEventBuilder('Timing type for event display have been selected', type => type)
+export const devtoolsTimingTypeSelected = createEventBuilder('Coriolis devtools timing type for event display have been selected', type => type)

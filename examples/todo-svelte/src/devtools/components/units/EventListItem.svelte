@@ -2,7 +2,7 @@
   import { getContext } from 'svelte'
 
   import { selectedTimingType } from '../../aggrs/selectedTimingType'
-  import { timingTypeSelected } from '../../events'
+  import { devtoolsTimingTypeSelected } from '../../events'
 
   export let type
   export let payload
@@ -19,7 +19,7 @@
 
   const selectedTimingType$ = getSource(selectedTimingType)
 
-  const selectTimingType = event => dispatch(timingTypeSelected(event.target.value))
+  const selectTimingType = event => dispatch(devtoolsTimingTypeSelected(event.target.value))
 
   const logEvent = () => console.log({ type, payload, meta, error })
 </script>

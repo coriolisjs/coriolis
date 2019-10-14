@@ -1,7 +1,7 @@
-import { timingTypeSelected } from '../events'
+import { devtoolsTimingTypeSelected } from '../events'
 
 export const selectedTimingType = (selected, event) => {
-  if (event.type !== timingTypeSelected.toString()) {
+  if (event.type !== devtoolsTimingTypeSelected.toString()) {
     return selected
   }
 
