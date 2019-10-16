@@ -13,6 +13,7 @@ import {
 } from 'rxjs/operators'
 
 import { createEventSource } from './eventSource'
+import { createAggregatorFactory } from './aggregator'
 import { createAggrWrapperFactory } from './aggrWrapper'
 
 import { createBroadcastSubject } from './lib/rx/broadcastSubject'
@@ -85,9 +86,11 @@ export const createStore = (_options, ...rest) => {
     shareReplay(1)
   )
 
+  const aggregatorFactory = options.aggregatorFactory || createAggregatorFactory()
+
   const {
-    getAggrWrapper: withAggr
-  } = createAggrWrapperFactory(replayCaster, initDone, options.createAggregator)
+    get: withAggr
+  } = createAggrWrapperFactory(replayCaster, initDone, aggregatorFactory.get)
 
   const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 

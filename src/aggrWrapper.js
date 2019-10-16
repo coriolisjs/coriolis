@@ -7,35 +7,11 @@ import {
   skipUntil
 } from 'rxjs/operators'
 
-import { createAggregator } from './aggregator'
-
 import { createIndex } from './lib/map/objectIndex'
-import { objectFrom } from './lib/object/objectFrom'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 
-export const snapshot = () => {}
-
-export const createAggrWrapperFactory = (event$, skipUntil$ = of(true), aggregatorBuilder = createAggregator) => {
-  const {
-    get: getAggregator,
-    list: listAggregators
-  } = createIndex(aggr => aggr === snapshot
-    ? getSnapshot
-    : aggregatorBuilder(aggr, getAggregator))
-
-  // to build a snapshot, we get the current state from each aggregator and put
-  // all this in an object, using aggregator definition's name as keys. If any conflicts
-  // on names, numbers are concatenated on conflicting keys (aKey, aKey-2, aKey-3...)
-  const getSnapshot = () => objectFrom(
-    listAggregators()
-      .filter(([aggr]) => aggr !== snapshot)
-      .map(([aggr, aggregator]) => [aggr.name, aggregator()])
-  )
-
-  const {
-    get: getAggrWrapper,
-    list: listAggrWrappers
-  } = createIndex(aggr => {
+export const createAggrWrapperFactory = (event$, skipUntil$ = of(true), getAggregator) =>
+  createIndex(aggr => {
     const aggregator = getAggregator(aggr)
 
     const aggr$ = event$.pipe(
@@ -63,9 +39,3 @@ export const createAggrWrapperFactory = (event$, skipUntil$ = of(true), aggregat
 
     return aggr$
   })
-
-  return {
-    getAggrWrapper,
-    listAggrWrappers
-  }
-}

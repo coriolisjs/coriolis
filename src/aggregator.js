@@ -1,5 +1,22 @@
 import { identity, noop } from 'rxjs'
 
+import { createIndex } from './lib/map/objectIndex'
+import { objectFrom } from './lib/object/objectFrom'
+
+// snapshot is a unique aggr that will return all indexed aggregators' last state
+export const snapshot = () => {}
+
+// aggr wrapper that allow an aggr to be parametered and still have shared cached results
+export const parameteredAggr = aggr =>
+  createIndex((...args) => aggrAPI => {
+    let count = 0
+    const useParam = () => aggrAPI.useValue(args[count++])
+    return aggr({
+      useParam,
+      ...aggrAPI
+    })
+  }).get
+
 const createReducerAggregator = reducer => {
   if (typeof reducer !== 'function') {
     throw new TypeError('reducer must be a function')
@@ -40,10 +57,13 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
   const useAggr = aggr =>
     using.aggr.push(getAggregator(aggr))
 
+  const useValue = value => using.aggr.push(() => value)
+
   const setupParams = {
     useState,
     useEvent,
-    useAggr
+    useAggr,
+    useValue
   }
 
   const isNullSetup = () => using.aggr.length === 0
@@ -81,15 +101,15 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
   }
 }
 
-const createComplexAggregator = (setupAggregator, getAggregator) => {
-  if (typeof setupAggregator !== 'function') {
-    throw new TypeError('Aggregator definition must be a function')
+const createComplexAggregator = (aggr, getAggregator) => {
+  if (typeof aggr !== 'function') {
+    throw new TypeError('Aggr must be a function')
   }
 
   let aggrBehaviour
 
-  let aggregate = noop
-  const getLastState = () => aggregate()
+  let aggregator = noop
+  const getLastState = () => aggregator()
 
   const {
     setupParams,
@@ -100,16 +120,16 @@ const createComplexAggregator = (setupAggregator, getAggregator) => {
   } = handleAggregatorSetup(getLastState, getAggregator)
 
   try {
-    aggrBehaviour = setupAggregator(setupParams)
+    aggrBehaviour = aggr(setupParams)
   } catch (error) {
-    // setup failed, let's assume setupAggregator is in fact a reducer
-    return createReducerAggregator(setupAggregator)
+    // setup failed, let's assume aggr is in fact a reducer
+    return createReducerAggregator(aggr)
   }
 
   if (isNullSetup() || typeof aggrBehaviour !== 'function') {
     // giving a reducer with optional parameters could lead here.
-    // let's assume setupAggregator is in fact a reducer
-    return createReducerAggregator(setupAggregator)
+    // let's assume aggr is in fact a reducer
+    return createReducerAggregator(aggr)
   }
 
   // if given aggregator definition expects only state and event (or less), it should be a reducer
@@ -122,7 +142,7 @@ const createComplexAggregator = (setupAggregator, getAggregator) => {
     }
   }
 
-  aggregate = createReducerAggregator((lastState, event) => {
+  aggregator = createReducerAggregator((lastState, event) => {
     const values = getValues(event)
 
     if (!values) {
@@ -132,7 +152,7 @@ const createComplexAggregator = (setupAggregator, getAggregator) => {
     return aggrBehaviour(...values)
   })
 
-  return aggregate
+  return aggregator
 }
 
 // There's two cases (reducer or complex aggregator) but we want a single access point so we have to
@@ -141,7 +161,28 @@ const createComplexAggregator = (setupAggregator, getAggregator) => {
 // - complex aggregator definition is a function with only one parameter
 // If this guess is not accurate, we should handle aggregator definition as complex aggregator because in
 // complex aggregator handling process there's fallbacks to ensure it works even if a reducer is passed
-export const createAggregator = (setupAggregator, getAggregator) =>
-  (setupAggregator && setupAggregator.length === 2)
-    ? createReducerAggregator(setupAggregator)
-    : createComplexAggregator(setupAggregator, getAggregator)
+export const createAggregator = (aggr, getAggregator = createAggregator) =>
+  (aggr && aggr.length === 2)
+    ? createReducerAggregator(aggr)
+    : createComplexAggregator(aggr, getAggregator)
+
+export const createAggregatorFactory = (aggregatorBuilder = createAggregator) => {
+  const factory = createIndex(
+    aggr =>
+      aggr === snapshot
+        ? getSnapshot
+        : aggregatorBuilder(aggr, factory.get)
+  )
+
+  // to build a snapshot, we get the current state from each aggregator and put
+  // all this in an object, using aggregator definition's name as keys. If any conflicts
+  // on names, numbers are concatenated on conflicting keys (aKey, aKey-2, aKey-3...)
+  const getSnapshot = () => objectFrom(
+    factory.list()
+      // we don't want to list snapshot aggregator's state as it would cause a recursive loop
+      .filter(([aggr]) => aggr !== snapshot)
+      .map(([aggr, aggregator]) => [aggr.name, aggregator()])
+  )
+
+  return factory
+}
