@@ -135,6 +135,12 @@ const createComplexAggregator = (setupAggregator, getAggregator) => {
   return aggregate
 }
 
+// There's two cases (reducer or complex aggregator) but we want a single access point so we have to
+// guess whether it's a reducer or a complex aggregator definition
+// - reducer definition is a function with two parameters
+// - complex aggregator definition is a function with only one parameter
+// If this guess is not accurate, we should handle aggregator definition as complex aggregator because in
+// complex aggregator handling process there's fallbacks to ensure it works even if a reducer is passed
 export const createAggregator = (setupAggregator, getAggregator) =>
   (setupAggregator && setupAggregator.length === 2)
     ? createReducerAggregator(setupAggregator)

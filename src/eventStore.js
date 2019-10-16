@@ -4,9 +4,7 @@ import {
   noop
 } from 'rxjs'
 import {
-  distinctUntilChanged,
   filter,
-  map,
   shareReplay,
   skipUntil,
   take,
@@ -15,79 +13,33 @@ import {
 } from 'rxjs/operators'
 
 import { createEventSource } from './eventSource'
-import { createAggregator } from './aggregator'
+import { createAggrWrapperFactory } from './aggrWrapper'
 
 import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { variableFunction } from './lib/function/variableFunction'
-import { createIndex } from './lib/map/objectIndex'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
-import { objectFrom } from './lib/object/objectFrom'
 import { payloadEquals } from './lib/event/payloadEquals'
 
 export const FIRST_EVENT_TYPE = 'All initial events have been read'
-export const snapshot = () => {}
 
 const buildFirstEvent = () => ({
   type: FIRST_EVENT_TYPE,
   payload: {}
 })
 
-const createAggrWrapper = (replayCaster, initDone) => {
-  const {
-    get: getAggregator,
-    list: listAggregators,
-    flush: flushAggr
-  } = createIndex(aggr => aggr === snapshot
-    ? getSnapshot
-    : createAggregator(aggr, getAggregator))
+export const createStore = (_options, ...rest) => {
+  let options = _options
+  let effects
+  if (typeof options === 'function') {
+    effects = [options, ...rest]
+    options = {}
+  } else if (options.effects && Array.isArray(options.effects)) {
+    effects = [...options.effects, ...rest]
+  } else {
+    effects = rest
+  }
 
-  // to build a snapshot, we get the current state from each aggregator and put
-  // all this in an object, using aggregator definition's name as keys. If any conflicts
-  // on names, numbers are concatenated on conflicting keys (aKey, aKey-2, aKey-3...)
-  const getSnapshot = () => objectFrom(
-    listAggregators()
-      .filter(([aggr]) => aggr !== snapshot)
-      .map(([aggr, aggregator]) => [aggr.name, aggregator()])
-  )
-
-  const {
-    get: getAggrWrapper
-  } = createIndex(aggr => {
-    const aggregator = getAggregator(aggr)
-
-    const aggr$ = replayCaster.pipe(
-      map(aggregator),
-
-      // while init is not finished (old events replaying), we expect aggrs to
-      // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
-      skipUntil(initDone),
-
-      // if event does not lead to a new aggregate, we don't want to emit
-      distinctUntilChanged()
-    )
-
-    // We don't return directly subscription because user is not aware it's an observable under the hood
-    // For user, the request is to connect an aggregator, it should return a function to disconnect it
-    aggr$.connect = () => simpleUnsub(replayCaster.subscribe(aggregator))
-
-    aggr$.flush = () => flushAggr(aggr)
-
-    aggr$.getValue = () => aggregator()
-
-    Object.defineProperty(aggr$, 'value', {
-      configurable: false,
-      enumerable: true,
-      get: aggr$.getValue
-    })
-
-    return aggr$
-  })
-
-  return getAggrWrapper
-}
-
-export const createStore = (...effects) => {
   if (!effects.length) {
     throw new Error('No effect defined. This app is useless, let\'s stop right now')
   }
@@ -133,7 +85,9 @@ export const createStore = (...effects) => {
     shareReplay(1)
   )
 
-  const withAggr = createAggrWrapper(replayCaster, initDone)
+  const {
+    getAggrWrapper: withAggr
+  } = createAggrWrapperFactory(replayCaster, initDone, options.createAggregator)
 
   const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 
