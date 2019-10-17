@@ -19,6 +19,7 @@ export const parameteredAggr = aggr =>
     })
   }).get
 
+// Builds an aggregator function (receives an event, returns a state) from a reducer function
 const createReducerAggregator = reducer => {
   if (typeof reducer !== 'function') {
     throw new TypeError('reducer must be a function')
@@ -116,6 +117,7 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
   }
 }
 
+// builds an aggregator from a complexe aggr definition function
 const createComplexAggregator = (aggr, getAggregator) => {
   if (typeof aggr !== 'function') {
     throw new TypeError('Aggr must be a function')
