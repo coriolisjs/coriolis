@@ -2,6 +2,8 @@ import { identity, noop } from 'rxjs'
 
 import { createIndex } from './lib/map/objectIndex'
 import { objectFrom } from './lib/object/objectFrom'
+import { variableFunction } from './lib/function/variableFunction'
+import { chain } from './lib/function/chain'
 
 // snapshot is a unique aggr that will return all indexed aggregators' last state
 export const snapshot = () => {}
@@ -39,6 +41,10 @@ const createReducerAggregator = reducer => {
   }
 }
 
+const throwUnexpectedScope = funcName => () => {
+  throw new Error(`Unexpected out-of-scope usage of function ${funcName}`)
+}
+
 const handleAggregatorSetup = (getLastState, getAggregator) => {
   const using = {
     aggr: []
@@ -59,12 +65,20 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
 
   const useValue = value => using.aggr.push(() => value)
 
-  const setupParams = {
+  const setupParamsRaw = Object.entries({
     useState,
     useEvent,
     useAggr,
     useValue
-  }
+  })
+    .map(([key, value]) => [key, variableFunction(value)])
+
+  const setupParams = objectFrom(setupParamsRaw.map(([key, { func }]) => [key, func]))
+
+  const preventOutOfScopeUsage = chain(
+    ...setupParamsRaw
+      .map(([key, { setup }]) => () => setup(throwUnexpectedScope(key)))
+  )
 
   const isNullSetup = () => using.aggr.length === 0
 
@@ -97,7 +111,8 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
     getValues,
     isNullSetup,
     isReducerSetup,
-    isReducerLikeSetup
+    isReducerLikeSetup,
+    preventOutOfScopeUsage
   }
 }
 
@@ -116,7 +131,8 @@ const createComplexAggregator = (aggr, getAggregator) => {
     getValues,
     isNullSetup,
     isReducerSetup,
-    isReducerLikeSetup
+    isReducerLikeSetup,
+    preventOutOfScopeUsage
   } = handleAggregatorSetup(getLastState, getAggregator)
 
   try {
@@ -131,6 +147,8 @@ const createComplexAggregator = (aggr, getAggregator) => {
     // let's assume aggr is in fact a reducer
     return createReducerAggregator(aggr)
   }
+
+  preventOutOfScopeUsage()
 
   // if given aggregator definition expects only state and event (or less), it should be a reducer
   if (isReducerLikeSetup()) {
