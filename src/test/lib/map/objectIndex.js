@@ -1,6 +1,6 @@
 import { createIndex } from '../../../lib/map/objectIndex'
 
-describe.only('ObjectIndex', () => {
+describe('ObjectIndex', () => {
   it(`Given an object index
     When this index is called various times with one parameter each time
     Then it returns indexed values
