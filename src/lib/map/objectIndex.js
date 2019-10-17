@@ -3,16 +3,16 @@ export const createIndex = getNotYetIndexed => {
   let index = new Map()
 
   const get = (key, ...rest) => {
-    const indexed = index.get(key)
+    const indexed = index.get(key) || {}
 
     if (rest.length) {
-      let subset = indexed && indexed.subset
+      let subset = indexed.subset
 
       if (!subset) {
         subset = createIndex((...args) => getNotYetIndexed(key, ...args))
 
         index.set(key, {
-          ...(indexed || {}),
+          ...indexed,
           subset
         })
       }
@@ -20,15 +20,22 @@ export const createIndex = getNotYetIndexed => {
       return subset.get(...rest)
     }
 
-    if (indexed && 'value' in indexed) {
+    if (indexed.loading) {
+      throw new Error('Cycle index referencing is not possible')
+    }
+
+    if ('value' in indexed) {
       return indexed.value
     }
+
+    indexed.loading = true
 
     const value = getNotYetIndexed(key)
 
     index.set(key, {
-      ...(indexed || {}),
-      value
+      ...indexed,
+      value,
+      loading: false
     })
 
     return value
