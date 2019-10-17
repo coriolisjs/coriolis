@@ -4,6 +4,7 @@ import { createIndex } from './lib/map/objectIndex'
 import { objectFrom } from './lib/object/objectFrom'
 import { variableFunction } from './lib/function/variableFunction'
 import { chain } from './lib/function/chain'
+import { tryOrNull } from './lib/function/tryOrNull'
 
 // snapshot is a unique aggr that will return all indexed aggregators' last state
 export const snapshot = () => {}
@@ -46,25 +47,27 @@ const throwUnexpectedScope = funcName => () => {
   throw new Error(`Unexpected out-of-scope usage of function ${funcName}`)
 }
 
-const handleAggregatorSetup = (getLastState, getAggregator) => {
+const createAggrSetupAPI = (getLastState, getAggregator) => {
   const using = {
-    aggr: []
+    state: false,
+    event: false,
+    aggregators: []
   }
 
   const useState = () => {
     using.state = true
-    using.aggr.push(getLastState)
+    using.aggregators.push(getLastState)
   }
 
   const useEvent = () => {
     using.event = true
-    using.aggr.push(identity)
+    using.aggregators.push(identity)
   }
 
   const useAggr = aggr =>
-    using.aggr.push(getAggregator(aggr))
+    using.aggregators.push(getAggregator(aggr))
 
-  const useValue = value => using.aggr.push(() => value)
+  const useValue = value => using.aggregators.push(() => value)
 
   const setupParamsRaw = Object.entries({
     useState,
@@ -81,18 +84,18 @@ const handleAggregatorSetup = (getLastState, getAggregator) => {
       .map(([key, { setup }]) => () => setup(throwUnexpectedScope(key)))
   )
 
-  const isNullSetup = () => using.aggr.length === 0
+  const isNullSetup = () => using.aggregators.length === 0
 
   const isReducerSetup = () =>
-    (!using.aggr[0] || using.aggr[0] === getLastState) &&
-    (!using.aggr[1] || using.aggr[1] === identity)
+    (!using.aggregators[0] || using.aggregators[0] === getLastState) &&
+    (!using.aggregators[1] || using.aggregators[1] === identity)
 
   const isReducerLikeSetup = () =>
-    using.aggr.length === (using.state + using.event)
+    using.aggregators.length === (using.state + using.event)
 
   let lastValues = []
   const getValues = event => {
-    const values = using.aggr.map(aggr => aggr(event))
+    const values = using.aggregators.map(aggr => aggr(event))
 
     // getValues will be called only once per event, this is garanteed from
     // reducer aggregator's initial part
@@ -123,8 +126,6 @@ const createComplexAggregator = (aggr, getAggregator) => {
     throw new TypeError('Aggr must be a function')
   }
 
-  let aggrBehaviour
-
   let aggregator = noop
   const getLastState = () => aggregator()
 
@@ -135,26 +136,20 @@ const createComplexAggregator = (aggr, getAggregator) => {
     isReducerSetup,
     isReducerLikeSetup,
     preventOutOfScopeUsage
-  } = handleAggregatorSetup(getLastState, getAggregator)
+  } = createAggrSetupAPI(getLastState, getAggregator)
 
-  try {
-    aggrBehaviour = aggr(setupParams)
-  } catch (error) {
-    // setup failed, let's assume aggr is in fact a reducer
-    return createReducerAggregator(aggr)
-  }
+  const aggrBehaviour = tryOrNull(() => aggr(setupParams))
+  preventOutOfScopeUsage()
 
   if (isNullSetup() || typeof aggrBehaviour !== 'function') {
-    // giving a reducer with optional parameters could lead here.
+    // reducer aggr with optional parameters could lead here.
     // let's assume aggr is in fact a reducer
     return createReducerAggregator(aggr)
   }
 
-  preventOutOfScopeUsage()
-
   // if given aggregator definition expects only state and event (or less), it should be a reducer
   if (isReducerLikeSetup()) {
-    console.warn('Prefer using simple reducer signature when you only need state and/or event')
+    console.warn('Prefer using simple reducer signature " (state, event) => newstate " when you only need state and/or event')
 
     // Replace with getAggregator in case signature matches reducer signature (state, event)
     if (isReducerSetup()) {
