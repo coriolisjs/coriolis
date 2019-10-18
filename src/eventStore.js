@@ -77,7 +77,11 @@ export const createStore = (_options, ...rest) => {
 
   // From the moment this event source is created, it starts buffering all events it receives
   // until it gets a subscription and passes them
-  const eventSource = createEventSource(mainSource.pipe(endWith(firstEvent)), logger)
+  const eventSource = createEventSource(
+    mainSource.pipe(endWith(firstEvent)),
+    logger,
+    options.eventEnhancer
+  )
 
   const initDone = eventCaster.pipe(
     // Check is done on payload value, event object itself would have been changed (adding meta-data for example)

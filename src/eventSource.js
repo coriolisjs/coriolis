@@ -1,4 +1,4 @@
-import { Subject, merge, noop, EMPTY } from 'rxjs'
+import { Subject, merge, noop, identity, EMPTY } from 'rxjs'
 import {
   concat,
   map,
@@ -52,7 +52,11 @@ EventSource behaviour:
 
   Share's subscriptions to ensure upstream subscriptions are done only once
 */
-export const createEventSource = (initialSource = EMPTY, logObserver = noop) => {
+export const createEventSource = (
+  initialSource = EMPTY,
+  logObserver = noop,
+  eventEnhancer = identity
+) => {
   let newevent$
   const neweventSubject = newevent$ = new Subject()
 
@@ -68,12 +72,14 @@ export const createEventSource = (initialSource = EMPTY, logObserver = noop) => 
       map(preventLoops()),
       lossless,
       map(stampEvent),
+      eventEnhancer,
       tap(logObserver)
     )
 
   const event$ = initialSource
     .pipe(
       map(stampEvent),
+      eventEnhancer,
       concat(startoverNewevent$),
       share()
     )
