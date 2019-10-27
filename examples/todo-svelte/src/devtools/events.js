@@ -8,3 +8,7 @@ export const devtoolsClosed = createEventBuilder('Coriolis devtools have been cl
 export const devtoolsEventListFilterChange = createEventBuilder('Coriolis devtools event list filter have been changed', filter => filter)
 
 export const devtoolsTimingTypeSelected = createEventBuilder('Coriolis devtools timing type for event display have been selected', type => type)
+
+export const devtoolsAggregatorCreated = createEventBuilder('Coriolis devtools detected an aggregator creation', aggr => aggr)
+export const devtoolsAggrCalled = createEventBuilder('Coriolis devtools detected an aggr have been called', aggr => aggr)
+export const devtoolsAggregatorCalled = createEventBuilder('Coriolis devtools detected an aggregator have been called', aggr => aggr)
