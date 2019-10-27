@@ -1,60 +1,49 @@
-import { findAndReplace } from '../libs/array/findAndReplace'
+import { produce } from 'immer'
 import { not } from '../libs/function/not'
 
 import { added, removed, done, reset, edited, filter, filters } from '../events/todo'
 
-const setTodoText = text => item => ({
-  ...item,
-  text
-})
-
-const setTodoDone = done => item => ({
-  ...item,
-  done
-})
-
 let nextItemId = 1
-const newTodoItem = item => ({
-  ...item,
-  id: nextItemId++
+const newTodoItem = produce(item => {
+  item.id = nextItemId++
 })
 
 const hasId = id => item => item.id === id
 
-export const todolist = (state = [], { type, payload, error }) => {
+export const todolist = produce((draft, { type, payload, error }) => {
   if (error) {
-    return state
+    return
   }
 
   switch (type) {
     case added.toString():
-      return [
-        ...state,
-        newTodoItem(payload)
-      ]
+      draft.push(newTodoItem(payload))
+      break
 
     case edited.toString():
-      return findAndReplace(
-        state,
-        hasId(payload.id),
-        setTodoText(payload.text)
-      )
+      const editedItem = draft.find(hasId(payload.id))
+
+      if (editedItem) {
+        editedItem.text = payload.text
+      }
+      break
 
     case done.toString():
     case reset.toString():
-      return findAndReplace(
-        state,
-        hasId(payload),
-        setTodoDone(type === done.toString())
-      )
+      const changedItem = draft.find(hasId(payload))
+
+      if (changedItem) {
+        changedItem.done = type === done.toString()
+      }
+      break
 
     case removed.toString():
-      return state.filter(not(hasId(payload)))
+      return draft.filter(not(hasId(payload)))
 
     default:
-      return state
+      break
   }
-}
+}, [])
 
 export const todolistFilterName = (filterName = filters[0], { type, payload, error }) => {
   if (error || type !== filter.toString()) {
@@ -67,7 +56,7 @@ export const todolistFilterName = (filterName = filters[0], { type, payload, err
 export const filteredTodolist = ({ useAggr }) => (
   useAggr(todolist),
   useAggr(todolistFilterName),
-  (list, filterName) => {
+  produce((list, filterName) => {
     switch (filterName) {
       case 'active':
         return list.filter(({ done }) => !done)
@@ -76,7 +65,7 @@ export const filteredTodolist = ({ useAggr }) => (
         return list.filter(({ done }) => done)
 
       default:
-        return list
+        break
     }
-  }
+  })
 )
