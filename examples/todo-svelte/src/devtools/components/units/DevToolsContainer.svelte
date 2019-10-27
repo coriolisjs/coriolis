@@ -20,7 +20,7 @@
     padding: 3px 0 3px 6px;
     display: flex;
     flex-direction: column;
-    z-index: 0;
+    z-index: 1;
 
     header {
       flex: 0 0 auto;
