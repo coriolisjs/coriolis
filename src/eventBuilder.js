@@ -34,7 +34,13 @@ export const createEventBuilder = (type, payloadBuilder = identity, metaBuilder)
     return event
   }
 
+  const aggr = (lastEvent, event) =>
+    event.type === type
+      ? event
+      : lastEvent
+
   eventBuilder.toString = () => type
+  eventBuilder.toAggr = () => aggr
 
   return eventBuilder
 }
