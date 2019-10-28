@@ -1,8 +1,13 @@
+import { eventStoreEvent } from '../events'
 
-export const eventTypeIndex = (list = {}, event) => ({
-  ...list,
-  [event.type]: (list[event.type] || 0) + 1
-})
+export const eventTypeIndex = ({ useState, useAggr }) => (
+  useState(),
+  useAggr(eventStoreEvent.toAggr()),
+  (index = {}, { payload: originalEvent }) => ({
+    ...index,
+    [originalEvent.type]: (index[originalEvent.type] || 0) + 1
+  })
+)
 
 export const eventTypeList = ({ useAggr }) => (
   useAggr(eventTypeIndex),

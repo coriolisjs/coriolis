@@ -12,3 +12,5 @@ export const devtoolsTimingTypeSelected = createEventBuilder('Coriolis devtools 
 export const devtoolsAggregatorCreated = createEventBuilder('Coriolis devtools detected an aggregator creation', aggr => aggr)
 export const devtoolsAggrCalled = createEventBuilder('Coriolis devtools detected an aggr have been called', aggr => aggr)
 export const devtoolsAggregatorCalled = createEventBuilder('Coriolis devtools detected an aggregator have been called', aggr => aggr)
+
+export const eventStoreEvent = createEventBuilder('Coriolis devtools detected an event', event => event)
