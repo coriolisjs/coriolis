@@ -36,7 +36,6 @@ const createReducerAggregator = reducer => {
     }
 
     lastEvent = { value: event }
-
     lastState = reducer(lastState, event)
 
     return lastState
@@ -104,7 +103,11 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
       return values
     }
 
-    const anyChange = values.some((item, idx) => item !== lastValues[idx])
+    const anyChange = values.some((value, idx) =>
+      // last state change is not a value change due to current event, it must not count as a change
+      using.aggregators[idx] !== getLastState &&
+      value !== lastValues[idx]
+    )
     lastValues = values
 
     return anyChange ? values : undefined
