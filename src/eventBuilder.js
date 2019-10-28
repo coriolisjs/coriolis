@@ -39,6 +39,11 @@ export const createEventBuilder = (type, payloadBuilder = identity, metaBuilder)
       ? event
       : lastEvent
 
+  Object.defineProperty(aggr, 'name', {
+    value: `last event of type: ${type.toString()}`,
+    writable: false
+  })
+
   eventBuilder.toString = () => type
   eventBuilder.toAggr = () => aggr
 
