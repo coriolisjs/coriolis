@@ -7,7 +7,7 @@ const getTimestampDelta = (timestamp2, timestamp1) => timestamp1
 export const eventList = ({ useState, useAggr }) => (
   useState(),
   useAggr(eventStoreEvent.toAggr()),
-  (list = [], { payload: originalEvent }) => [{
+  (list = [], { payload: { event: originalEvent }}) => [{
     type: originalEvent.type,
     payload: originalEvent.payload,
     meta: originalEvent.meta,

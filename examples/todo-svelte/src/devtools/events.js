@@ -13,4 +13,5 @@ export const devtoolsAggregatorCreated = createEventBuilder('Coriolis devtools d
 export const devtoolsAggrCalled = createEventBuilder('Coriolis devtools detected an aggr have been called', aggr => aggr)
 export const devtoolsAggregatorCalled = createEventBuilder('Coriolis devtools detected an aggregator have been called', aggr => aggr)
 
-export const eventStoreEvent = createEventBuilder('Coriolis devtools detected an event', event => event)
+export const eventStoreAdded = createEventBuilder('Coriolis devtools registered new event store', ({ storeId, storeName }) => ({ storeId, storeName }))
+export const eventStoreEvent = createEventBuilder('Coriolis devtools detected an event', ({ storeId, event }) => ({ storeId, event }))

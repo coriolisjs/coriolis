@@ -21,7 +21,7 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
 
   const aggregatorEvents = new Subject()
 
-  const devtoolsEffect = createCoriolisDevToolsEffect(aggregatorEvents.pipe(lossless))
+  const devtoolsEffect = createCoriolisDevToolsEffect(options.storeName, aggregatorEvents.pipe(lossless))
 
   options.effects = [devtoolsEffect, ...effects]
 

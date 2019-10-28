@@ -12,6 +12,7 @@ const storageKey = 'storedEventsForTodoListApp'
 
 createStore(wrapCoriolisOptions(
   {
+    storeName: 'todo-svelte',
     eventEnhancer: map(produce(identity))
   },
   // logEvents,
