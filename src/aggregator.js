@@ -141,10 +141,13 @@ const createComplexAggregator = (aggr, getAggregator) => {
     preventOutOfScopeUsage
   } = createAggrSetupAPI(getLastState, getAggregator)
 
-  const aggrBehaviour = tryOrNull(() => aggr(setupParams))
+  const aggrBehavior = tryOrNull(() => aggr(setupParams))
   preventOutOfScopeUsage()
 
-  if (isNullSetup() || typeof aggrBehaviour !== 'function') {
+  if (isNullSetup() || typeof aggrBehavior !== 'function') {
+    if (aggrBehavior === null) {
+      console.info('Aggr setup failure, let\'s use it as a reducer', aggr.name, aggr, aggrBehavior)
+    }
     // reducer aggr with optional parameters could lead here.
     // let's assume aggr is in fact a reducer
     return createReducerAggregator(aggr)
@@ -152,11 +155,11 @@ const createComplexAggregator = (aggr, getAggregator) => {
 
   // if given aggregator definition expects only state and event (or less), it should be a reducer
   if (isReducerLikeSetup()) {
-    console.warn('Prefer using simple reducer signature " (state, event) => newstate " when you only need state and/or event')
+    console.info('Prefer using simple reducer signature " (state, event) => newstate " when you only need state and/or event')
 
     // Replace with getAggregator in case signature matches reducer signature (state, event)
     if (isReducerSetup()) {
-      return getAggregator(aggrBehaviour)
+      return getAggregator(aggrBehavior)
     }
   }
 
@@ -167,7 +170,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
       return lastState
     }
 
-    return aggrBehaviour(...values)
+    return aggrBehavior(...values)
   })
 
   return aggregator
