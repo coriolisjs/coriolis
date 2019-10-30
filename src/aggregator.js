@@ -46,6 +46,22 @@ const throwUnexpectedScope = funcName => () => {
   throw new Error(`Unexpected out-of-scope usage of function ${funcName}`)
 }
 
+// an event aggregator is an aggregator that will return the event if it is of a
+// type, or it will return the last event of that type
+// combining such aggregator means returning the event if one of the aggregators return it
+const combineEventAggregators = aggregators => createReducerAggregator(
+  aggregators
+    .reduce(
+      (acc, aggregator) => (lastEvent, event) =>
+        acc(lastEvent, event) === event
+          ? event
+          : aggregator(event) === event
+            ? event
+            : lastEvent,
+      identity
+    )
+)
+
 const createAggrSetupAPI = (getLastState, getAggregator) => {
   const using = {
     state: false,
@@ -58,9 +74,25 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     using.aggregators.push(getLastState)
   }
 
-  const useEvent = () => {
-    using.event = true
-    using.aggregators.push(identity)
+  const useEvent = (...eventTypes) => {
+    eventTypes.forEach(eventType => {
+      if (!eventType.toAggr) {
+        throw new TypeError(
+          'useEvent(eventBuilder) is only possible with event builders created with createEventBuilder (must have a toAggr method)'
+        )
+      }
+    })
+
+    // flag true if catching all events (means skip filtering interesting events)
+    using.allEvents = !eventTypes.length
+
+    using.aggregators.push(
+      eventTypes.length
+        ? combineEventAggregators(
+          eventTypes.map(eventType => getAggregator(eventType.toAggr()))
+        )
+        : identity
+    )
   }
 
   const useAggr = aggr =>
@@ -90,7 +122,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     (!using.aggregators[1] || using.aggregators[1] === identity)
 
   const isReducerLikeSetup = () =>
-    using.aggregators.length === (using.state + using.event)
+    using.aggregators.length === (using.state + using.allEvents)
 
   let lastValues = []
   const getValues = event => {
@@ -99,7 +131,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     // getValues will be called only once per event, this is garanteed from
     // reducer aggregator's initial part
     // if event is used, values is garanteed to change each time
-    if (using.event) {
+    if (using.allEvents) {
       return values
     }
 
