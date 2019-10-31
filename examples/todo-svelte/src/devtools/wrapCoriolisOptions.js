@@ -4,11 +4,14 @@ import { createAggregator, createAggregatorFactory } from 'coriolis'
 
 import { createCoriolisDevToolsEffect } from './effect'
 
-import { devtoolsAggregatorCreated, devtoolsAggrCalled, devtoolsAggregatorCalled } from './events'
+import { devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled } from './events'
 import { lossless } from '../../../../src/lib/rx/operator/lossless'
 
 let lastStoreId = 0
 const getStoreId = () => ++lastStoreId
+
+let lastAggrId = 0
+const getAggrId = () => ++lastAggrId
 
 export const wrapCoriolisOptions = (_options, ...rest) => {
   let options = _options
@@ -30,17 +33,57 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
   options.effects = [devtoolsEffect, ...effects]
 
   options.aggregatorFactory = createAggregatorFactory((aggr, getAggregator) => {
-    aggregatorEvents.next(devtoolsAggregatorCreated({ storeId, aggr }))
+    const aggrId = getAggrId()
+    aggregatorEvents.next(devtoolsAggregatorCreated({ storeId, aggrId, aggr }))
+
+    const aggrBehaviorWrapper = aggrBehavior => (...args) => {
+      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args }))
+      return aggrBehavior(...args)
+    }
 
     const wrappedaggr = (...args) => {
-      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggr }))
+      if (args.length === 1 && (args[0].useAggr || args[0].useEvent || args[0].useState)) {
+        let aggrBehavior
+        let shouldThrow = false
+
+        try {
+          aggrBehavior = aggr(...args)
+        } catch(error) {
+          shouldThrow = true
+          aggrBehavior = error
+        }
+
+        aggregatorEvents.next(devtoolsAggrSetup({ storeId, aggrId, aggrBehavior }))
+
+        if (typeof aggrBehavior !== 'function') {
+          if (shouldThrow) {
+            throw aggrBehavior
+          }
+
+          return aggrBehavior
+        }
+
+        return aggrBehaviorWrapper(aggrBehavior)
+      }
+
+      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args }))
       return aggr(...args)
     }
+
+    Object.defineProperty(wrappedaggr, 'name', {
+      value: aggr.name,
+      writable: false
+    })
+
+    Object.defineProperty(wrappedaggr, 'length', {
+      value: aggr.length,
+      writable: false
+    })
 
     const aggregator = createAggregator(wrappedaggr, getAggregator)
 
     return event => {
-      aggregatorEvents.next(devtoolsAggregatorCalled({ storeId, aggr }))
+      aggregatorEvents.next(devtoolsAggregatorCalled({ storeId, aggrId, event }))
       return aggregator(event)
     }
   })

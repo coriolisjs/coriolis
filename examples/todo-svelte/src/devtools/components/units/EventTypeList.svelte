@@ -1,6 +1,8 @@
 <script>
   import { getContext } from 'svelte'
 
+  import EventTypeListItem from './EventTypeListItem.svelte'
+
   import { eventTypeList } from '../../aggrs/eventTypeList'
 
   const getSource = getContext('getSource')
@@ -17,7 +19,7 @@
 </style>
 
 <ul class="event-type-list">
-  {#each $eventTypeList$ as eventType (eventType.name)}
-    <li>{eventType.name} - {eventType.count}</li>
-  {/each}
+{#each $eventTypeList$ as eventType (eventType.name)}
+  <EventTypeListItem {...eventType} />
+{/each}
 </ul>

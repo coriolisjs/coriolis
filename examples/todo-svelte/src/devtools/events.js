@@ -9,9 +9,11 @@ export const devtoolsEventListFilterChange = createEventBuilder('Coriolis devtoo
 
 export const devtoolsTimingTypeSelected = createEventBuilder('Coriolis devtools timing type for event display have been selected', type => type)
 
-export const devtoolsAggregatorCreated = createEventBuilder('Coriolis devtools detected an aggregator creation', ({ storeId, aggrId, aggr }) => ({ storeId, aggr }))
-export const devtoolsAggrCalled = createEventBuilder('Coriolis devtools detected an aggr have been called', ({ storeId, aggr }) => ({ storeId, aggr }))
-export const devtoolsAggregatorCalled = createEventBuilder('Coriolis devtools detected an aggregator have been called', ({ storeId, aggr }) => ({ storeId, aggr }))
+export const devtoolsAggregatorCreated = createEventBuilder('Coriolis devtools detected an aggregator creation', ({ storeId, aggrId, aggr }) => ({ storeId, aggrId, aggr }))
+export const devtoolsAggrSetup = createEventBuilder('Coriolis devtools detected an aggr have been setup', ({ storeId, aggrId, aggrBehavior }) => ({ storeId, aggrId, aggrBehavior }))
+export const devtoolsAggrCalled = createEventBuilder('Coriolis devtools detected an aggr have been called', ({ storeId, aggrId, args }) => ({ storeId, aggrId, args }))
+export const devtoolsAggregatorCalled = createEventBuilder('Coriolis devtools detected an aggregator have been called', ({ storeId, aggrId, event }) => ({ storeId, aggrId, event }))
 
-export const eventStoreAdded = createEventBuilder('Coriolis devtools registered new event store', ({ storeId, storeName }) => ({ storeId, storeName }))
-export const eventStoreEvent = createEventBuilder('Coriolis devtools detected an event', ({ storeId, event }) => ({ storeId, event }))
+export const storeAdded = createEventBuilder('Coriolis devtools registered new event store', ({ storeId, storeName }) => ({ storeId, storeName }))
+export const currentStoreChanged = createEventBuilder('Coriolis devtools current event store have been changed', storeId => storeId)
+export const storeEvent = createEventBuilder('Coriolis devtools detected an event', ({ storeId, event }) => ({ storeId, event }))
