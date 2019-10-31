@@ -3,29 +3,6 @@ import { get } from '../lib/object/get'
 import { devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled } from '../events'
 import { currentStoreId } from './currentStoreId'
 
-export const allAggrsLists = ({ useState, useEvent }) => (
-  useState(),
-  useEvent(devtoolsAggregatorCreated),
-  (list = {}, { payload: { storeId, aggr }}) => ({
-    ...list,
-    [storeId]: [
-      ...(list[storeId] || []),
-      aggr
-    ]
-  })
-)
-
-export const aggrsList = ({ useAggr }) => (
-  useAggr(currentStoreId),
-  useAggr(allAggrsLists),
-  (storeId, allAggrs) => get(allAggrs, storeId)
-)
-
-export const aggrNamesList = ({ useAggr }) => (
-  useAggr(aggrsList),
-  aggrs => aggrs && aggrs.map(aggr => aggr.name || 'unnamed')
-)
-
 const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior }}) => {
   switch(type) {
     case devtoolsAggregatorCreated.toString():
@@ -73,8 +50,8 @@ export const fullAggrsIndex = ({ useState, useEvent }) => (
   })
 )
 
-export const aggrsIndex = ({ useAggr }) => (
+export const aggrsList = ({ useAggr }) => (
   useAggr(currentStoreId),
   useAggr(fullAggrsIndex),
-  (storeId, fullIndex) => get(fullIndex, storeId)
+  (storeId, fullIndex) => Object.values(get(fullIndex, storeId) || {})
 )

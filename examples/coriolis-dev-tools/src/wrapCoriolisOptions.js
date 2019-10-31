@@ -5,7 +5,7 @@ import { createAggregator, createAggregatorFactory } from 'coriolis'
 import { createCoriolisDevToolsEffect } from './effect'
 
 import { devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled } from './events'
-import { lossless } from '../../../../src/lib/rx/operator/lossless'
+import { lossless } from './lib/rx/operator/lossless'
 
 let lastStoreId = 0
 const getStoreId = () => ++lastStoreId

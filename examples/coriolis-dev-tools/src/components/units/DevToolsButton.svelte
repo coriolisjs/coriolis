@@ -5,7 +5,7 @@
   import NavButton from '../units/NavButton.svelte'
 </script>
 
-<style>
+<style lang="scss">
   :global(.coriolis-dev-tools-button-open) {
     position: fixed;
     bottom: 24px;
@@ -19,6 +19,10 @@
     font-size: .8em;
     box-shadow: inset -3px -4px 10px -8px rgba(0,0,0,0.5);
     color: rgba(0, 0, 0, .6);
+
+    &:hover {
+      background-color: rgb(240, 246, 255);
+    }
   }
 </style>
 

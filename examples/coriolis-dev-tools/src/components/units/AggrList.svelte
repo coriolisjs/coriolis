@@ -3,11 +3,11 @@
 
   import AggrListItem from './AggrListItem.svelte'
 
-  import { aggrsIndex } from '../../aggrs/aggrsList.js'
+  import { aggrsList } from '../../aggrs/aggrsList.js'
 
   const getSource = getContext('getSource')
 
-  let aggrsIndex$ = getSource(aggrsIndex)
+  let aggrsList$ = getSource(aggrsList)
 </script>
 
 <style lang="scss">
@@ -20,7 +20,7 @@
 </style>
 
 <ul>
-{#each Object.entries($aggrsIndex$) as [key, aggrstate] (aggrstate.aggrId)}
+{#each Object.entries($aggrsList$) as aggrstate (aggrstate.aggrId)}
   <AggrListItem {...aggrstate} />
 {/each}
 </ul>

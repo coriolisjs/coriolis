@@ -6,6 +6,7 @@
 <style lang="scss">
   li {
     padding: .5em;
+    background: rgba(black, .1);
 
     &:nth-child(even) {
       background: rgba(black, .2);

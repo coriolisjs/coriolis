@@ -14,7 +14,7 @@
 <style>
   input {
     padding: .2em;
-    background: rgba(white, .5);
+    background: rgba(255, 255, 255, .5);
   }
 </style>
 

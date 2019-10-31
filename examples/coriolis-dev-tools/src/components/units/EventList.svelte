@@ -18,8 +18,12 @@
     height: 100%;
     overflow: hidden;
 
-    :global(svelte-virtual-list-row):nth-child(even) {
+    :global(svelte-virtual-list-row) {
       background: rgba(black, .1);
+
+      &:nth-child(even) {
+        background: rgba(black, .2);
+      }
     }
 
     :global(svelte-virtual-list-row):hover {
