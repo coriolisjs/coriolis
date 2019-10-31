@@ -1,13 +1,10 @@
 import { viewChanged } from '../events'
 
-const currentCoriolisDevToolsView = (view, { type, payload }) => {
-  switch(type) {
-    case viewChanged.toString():
-      return payload
+// sets aggr with long name to improve logs
+const currentCoriolisDevToolsView = ({ useEvent }) => (
+  useEvent(viewChanged),
+  ({ payload }) => payload
+)
 
-    default:
-      return view
-  }
-}
-
+// exports with short name for ease of use
 export const currentView = currentCoriolisDevToolsView
