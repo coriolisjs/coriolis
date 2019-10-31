@@ -1,6 +1,6 @@
 import { EMPTY } from 'rxjs'
 
-import { createStore } from 'coriolis'
+import { createStore, snapshot } from 'coriolis'
 
 import { createUI } from './effects/ui'
 import { createNav } from './effects/nav'
@@ -20,10 +20,11 @@ const initDevtoolsEventStore = () => {
   )
 
   return (storeId, storeName = 'unnamed', aggregatorEvents = EMPTY) =>
-    ({ eventSource, initialEvent$ }) => {
+    ({ eventSource, initialEvent$, withAggr }) => {
       devtoolsEventSource.next(storeAdded({
         storeId,
-        storeName
+        storeName,
+        snapshot$: withAggr(snapshot)
       }))
 
       const aggregatorEventsSubscription = aggregatorEvents.subscribe(event => devtoolsEventSource.next(event))

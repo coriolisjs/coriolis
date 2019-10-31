@@ -1,23 +1,33 @@
 <script>
   import { getContext } from 'svelte'
+  import formatHighlight from 'json-format-highlight'
 
-  import { snapshot } from 'coriolis'
+  import { currentStoreSnapshot } from '../../aggrs/currentStoreSnapshot'
 
   import DevToolsContainer from '../units/DevToolsContainer.svelte'
 
   const getSource = getContext('getSource')
 
-  const snapshot$ = getSource(snapshot)
+  const snapshot$$ = getSource(currentStoreSnapshot)
+  let snapshot$ = snapshot$$.value
+  $: snapshot$ = $snapshot$$
 </script>
 
 <style>
   pre {
     height: 100%;
     overflow: auto;
+    background: rgba(0, 0, 0, .4);
+    padding: 15px;
   }
 </style>
 
 <DevToolsContainer>
   <h2 slot="title">Snapshot</h2>
-  <pre>{JSON.stringify($snapshot$, null, 2)}</pre>
+  <pre>
+    {@html formatHighlight($snapshot$, {
+      keyColor: 'rgb(138, 204, 114)',
+      stringColor: 'rgb(235, 235, 227)'
+    })}
+  </pre>
 </DevToolsContainer>
