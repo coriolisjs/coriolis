@@ -14,6 +14,7 @@
 
 <style lang="scss">
   .eventList {
+    position: relative;
     height: 100%;
     overflow: hidden;
 
@@ -24,11 +25,22 @@
     :global(svelte-virtual-list-row):hover {
       background: rgba(white, .1);
     }
+
+    .empty {
+      position: absolute;
+      width: 100%;
+      top: 45%;
+      text-align: center;
+    }
   }
 </style>
 
 <div class="eventList">
+{#if ($eventList$ && $eventList$.length)}
   <VirtualList items={$eventList$} let:item>
     <EventListItem {...item} />
   </VirtualList>
+{:else}
+  <div class="empty">No event to display</div>
+{/if}
 </div>
