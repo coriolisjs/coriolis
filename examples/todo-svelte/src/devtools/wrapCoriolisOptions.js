@@ -7,6 +7,9 @@ import { createCoriolisDevToolsEffect } from './effect'
 import { devtoolsAggregatorCreated, devtoolsAggrCalled, devtoolsAggregatorCalled } from './events'
 import { lossless } from '../../../../src/lib/rx/operator/lossless'
 
+let lastStoreId = 0
+const getStoreId = () => ++lastStoreId
+
 export const wrapCoriolisOptions = (_options, ...rest) => {
   let options = _options
   let effects
@@ -19,24 +22,25 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
     effects = rest
   }
 
+  const storeId = getStoreId()
   const aggregatorEvents = new Subject()
 
-  const devtoolsEffect = createCoriolisDevToolsEffect(options.storeName, aggregatorEvents.pipe(lossless))
+  const devtoolsEffect = createCoriolisDevToolsEffect(storeId, options.storeName, aggregatorEvents.pipe(lossless))
 
   options.effects = [devtoolsEffect, ...effects]
 
   options.aggregatorFactory = createAggregatorFactory((aggr, getAggregator) => {
-    aggregatorEvents.next(devtoolsAggregatorCreated(aggr))
+    aggregatorEvents.next(devtoolsAggregatorCreated({ storeId, aggr }))
 
     const wrappedaggr = (...args) => {
-      aggregatorEvents.next(devtoolsAggrCalled(aggr))
+      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggr }))
       return aggr(...args)
     }
 
     const aggregator = createAggregator(wrappedaggr, getAggregator)
 
     return event => {
-      aggregatorEvents.next(devtoolsAggregatorCalled(aggr))
+      aggregatorEvents.next(devtoolsAggregatorCalled({ storeId, aggr }))
       return aggregator(event)
     }
   })
