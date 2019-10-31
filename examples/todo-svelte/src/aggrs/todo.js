@@ -10,48 +10,52 @@ const newTodoItem = produce(item => {
 
 const hasId = id => item => item.id === id
 
-export const todolist = produce((draft, { type, payload, error }) => {
-  if (error) {
-    return
-  }
+export const todolist = ({ useState, useEvent }) => (
+  useState(),
+  useEvent(added, edited, done, reset, removed),
+  produce((draft, { type, payload, error}) => {
+    if (error) {
+      return
+    }
 
-  switch (type) {
-    case added.toString():
-      draft.push(newTodoItem(payload))
-      break
+    switch (type) {
+      case added.toString():
+        draft.push(newTodoItem(payload))
+        break
 
-    case edited.toString():
-      const editedItem = draft.find(hasId(payload.id))
+      case edited.toString():
+        const editedItem = draft.find(hasId(payload.id))
 
-      if (editedItem) {
-        editedItem.text = payload.text
-      }
-      break
+        if (editedItem) {
+          editedItem.text = payload.text
+        }
+        break
 
-    case done.toString():
-    case reset.toString():
-      const changedItem = draft.find(hasId(payload))
+      case done.toString():
+      case reset.toString():
+        const changedItem = draft.find(hasId(payload))
 
-      if (changedItem) {
-        changedItem.done = type === done.toString()
-      }
-      break
+        if (changedItem) {
+          changedItem.done = type === done.toString()
+        }
+        break
 
-    case removed.toString():
-      return draft.filter(not(hasId(payload)))
+      case removed.toString():
+        return draft.filter(not(hasId(payload)))
 
-    default:
-      break
-  }
-}, [])
+      default:
+        break
+    }
+  }, [])
+)
 
-export const todolistFilterName = (filterName = filters[0], { type, payload, error }) => {
-  if (error || type !== filter.toString()) {
-    return filterName
-  }
-
-  return payload
-}
+export const todolistFilterName = ({ useState, useEvent }) => (
+  useState(filters[0]),
+  useEvent(filter),
+  (filterName, { payload, error }) => error
+    ? filterName
+    : payload
+)
 
 export const filteredTodolist = ({ useAggr }) => (
   useAggr(todolist),
