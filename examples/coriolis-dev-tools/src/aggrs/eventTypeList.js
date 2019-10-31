@@ -1,8 +1,10 @@
-import { storeEvent } from '../events'
-import { currentStoreId } from './currentStoreId'
 import { get } from '../lib/object/get'
 
-export const allEventTypeIndex = ({ useState, useEvent }) => (
+import { storeEvent } from '../events'
+
+import { currentStoreId } from './currentStoreId'
+
+const allEventTypeIndex = ({ useState, useEvent }) => (
   useState(),
   useEvent(storeEvent),
   (index = {}, { payload: { storeId, event: originalEvent }}) => ({
@@ -14,7 +16,7 @@ export const allEventTypeIndex = ({ useState, useEvent }) => (
   })
 )
 
-export const eventTypeIndex = ({ useAggr }) => (
+const eventTypeIndex = ({ useAggr }) => (
   useAggr(currentStoreId),
   useAggr(allEventTypeIndex),
   (storeId, index) => get(index, storeId)

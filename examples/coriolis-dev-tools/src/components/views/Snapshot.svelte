@@ -1,12 +1,11 @@
 <script>
-  import { getContext } from 'svelte'
   import formatHighlight from 'json-format-highlight'
+
+  import { getSource } from '../../lib/svelte/coriolis'
 
   import { currentStoreSnapshot } from '../../aggrs/currentStoreSnapshot'
 
   import DevToolsContainer from '../units/DevToolsContainer.svelte'
-
-  const getSource = getContext('getSource')
 
   const snapshot$$ = getSource(currentStoreSnapshot)
   let snapshot$ = snapshot$$.value

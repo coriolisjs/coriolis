@@ -1,10 +1,8 @@
-import { viewChanged } from '../events'
+import { viewIndex } from './viewIndex'
+import { currentViewName } from './currentViewName'
 
-// sets aggr with long name to improve logs
-const currentCoriolisDevToolsView = ({ useEvent }) => (
-  useEvent(viewChanged),
-  ({ payload }) => payload
+export const currentView = ({ useAggr }) => (
+  useAggr(viewIndex),
+  useAggr(currentViewName),
+  (index, viewName) => index[viewName]
 )
-
-// exports with short name for ease of use
-export const currentView = currentCoriolisDevToolsView

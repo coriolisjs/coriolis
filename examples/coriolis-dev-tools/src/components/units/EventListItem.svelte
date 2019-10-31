@@ -1,5 +1,5 @@
 <script>
-  import { getContext } from 'svelte'
+  import { getSource, createDispatch } from '../../lib/svelte/coriolis'
 
   import { selectedTimingType } from '../../aggrs/selectedTimingType'
   import { devtoolsTimingTypeSelected } from '../../events'
@@ -15,12 +15,9 @@
   export let deltaN
   export let delta0
 
-  const getSource = getContext('getSource')
-  const dispatch = getContext('dispatch')
-
   const selectedTimingType$ = getSource(selectedTimingType)
 
-  const selectTimingType = event => dispatch(devtoolsTimingTypeSelected(event.target.value))
+  const selectTimingType = createDispatch(event => devtoolsTimingTypeSelected(event.target.value))
 
   const logEvent = () => console.log(`${error ? 'ERROR - ' : ''}${type}\npayload: `, payload, '\nmeta: ', meta)
 </script>

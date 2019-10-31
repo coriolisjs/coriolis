@@ -1,11 +1,13 @@
 <script>
-  import { getContext } from 'svelte'
+  import { getSource } from '../../lib/svelte/coriolis'
+
+  import { viewList } from '../../aggrs/viewList'
   import { isDevtoolsOpen } from '../../aggrs/isDevtoolsOpen'
   import { devtoolsClosed } from '../../events'
 
   import NavButton from './NavButton.svelte'
 
-  const views = getContext('views')
+  const views$ = getSource(viewList)
 </script>
 
 <style lang="scss">
@@ -98,8 +100,8 @@
           Close
         </NavButton>
 
-        {#each views as view (view)}
-          <NavButton view={view.name}>{(views[view] && views[view].longname) || view.name}</NavButton>
+        {#each $views$ as view (view)}
+          <NavButton view={view.name}>{view.shortname || view.name}</NavButton>
         {/each}
       </nav>
     </div>

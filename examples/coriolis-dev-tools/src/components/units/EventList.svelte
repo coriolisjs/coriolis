@@ -1,15 +1,13 @@
 <script>
-  import { getContext } from 'svelte'
-
   import VirtualList from '@sveltejs/svelte-virtual-list';
 
-  import EventListItem from './EventListItem.svelte'
+  import { getSource } from '../../lib/svelte/coriolis'
 
   import { filteredEventList } from '../../aggrs/filteredEventList'
 
-  const getSource = getContext('getSource')
+  import EventListItem from './EventListItem.svelte'
 
-  let eventList$ = getSource(filteredEventList)
+  const eventList$ = getSource(filteredEventList)
 </script>
 
 <style lang="scss">

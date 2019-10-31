@@ -1,13 +1,11 @@
 <script>
-  import { getContext } from 'svelte'
-
-  import EventTypeListItem from './EventTypeListItem.svelte'
+  import { getSource } from '../../lib/svelte/coriolis'
 
   import { eventTypeList } from '../../aggrs/eventTypeList'
 
-  const getSource = getContext('getSource')
+  import EventTypeListItem from './EventTypeListItem.svelte'
 
-  let eventTypeList$ = getSource(eventTypeList)
+  const eventTypeList$ = getSource(eventTypeList)
 </script>
 
 <style lang="scss">

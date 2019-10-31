@@ -1,14 +1,11 @@
 <script>
-  import { getContext } from 'svelte'
+  import { getSource, createDispatch } from '../../lib/svelte/coriolis'
 
-  import { devtoolsEventListFilterChange } from '../../events'
   import { eventListFilter } from '../../aggrs/eventListFilter'
-
-  const getSource = getContext('getSource')
-  const dispatch = getContext('dispatch')
+  import { devtoolsEventListFilterChange } from '../../events'
 
   const filter$ = getSource(eventListFilter)
-  const setEventListFilter = event => dispatch(devtoolsEventListFilterChange(event.target.value))
+  const setEventListFilter = createDispatch(event => devtoolsEventListFilterChange(event.target.value))
 </script>
 
 <style>

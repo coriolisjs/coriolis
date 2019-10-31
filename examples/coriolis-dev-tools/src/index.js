@@ -1,2 +1,2 @@
-export { createCoriolisDevToolsEffect } from './effect'
+export { createCoriolisDevToolsEffect, disableCoriolisDevTools } from './effect'
 export { wrapCoriolisOptions } from './wrapCoriolisOptions'

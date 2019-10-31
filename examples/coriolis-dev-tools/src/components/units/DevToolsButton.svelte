@@ -2,7 +2,7 @@
   import { isDevtoolsOpen } from '../../aggrs/isDevtoolsOpen'
   import { devtoolsOpened } from '../../events'
 
-  import NavButton from '../units/NavButton.svelte'
+  import NavButton from './NavButton.svelte'
 </script>
 
 <style lang="scss">

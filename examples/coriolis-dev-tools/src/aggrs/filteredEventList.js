@@ -1,7 +1,7 @@
+import { compose } from '../lib/function/compose'
+
 import { eventList } from './eventList'
 import { eventListFilter } from './eventListFilter'
-
-import { compose } from '../lib/function/compose'
 
 const includes = needle => haystack => haystack.includes(needle)
 const loweredType = event => event.type.toLowerCase()

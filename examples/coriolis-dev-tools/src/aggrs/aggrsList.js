@@ -1,6 +1,12 @@
 import { get } from '../lib/object/get'
 
-import { devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled } from '../events'
+import {
+  devtoolsAggregatorCreated,
+  devtoolsAggrSetup,
+  devtoolsAggrCalled,
+  devtoolsAggregatorCalled
+} from '../events'
+
 import { currentStoreId } from './currentStoreId'
 
 const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior }}) => {
@@ -38,7 +44,7 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
   }
 }
 
-export const fullAggrsIndex = ({ useState, useEvent }) => (
+const fullAggrsIndex = ({ useState, useEvent }) => (
   useState(),
   useEvent(devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled),
   (list = {}, { type, payload }) => ({

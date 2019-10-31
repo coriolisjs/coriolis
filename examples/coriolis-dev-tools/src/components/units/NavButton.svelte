@@ -1,19 +1,16 @@
 <script>
-  import { getContext } from 'svelte'
+  import { getSource, createDispatch } from '../../lib/svelte/coriolis'
 
-  import { currentView } from '../../aggrs/currentView'
+  import { currentViewName } from '../../aggrs/currentViewName'
   import { viewChanged } from '../../events'
 
-  const getSource = getContext('getSource')
-  const dispatch = getContext('dispatch')
-
   export let view
-  export let aggr = currentView
+  export let aggr = currentViewName
   export let buildEvent = viewChanged
 
   const viewName$ = getSource(aggr)
 
-  const navAction = () => dispatch(buildEvent(view))
+  const navAction = createDispatch(() => buildEvent(view))
 </script>
 
 <button

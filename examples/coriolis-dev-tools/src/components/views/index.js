@@ -25,5 +25,3 @@ export const views = [
     component: EventTypeList,
   }
 ]
-
-export const viewNames = views.map(view => view.name)

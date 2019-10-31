@@ -1,9 +1,11 @@
-import { storeEvent } from '../events'
-import { currentStoreId } from './currentStoreId'
 import { first } from '../lib/array/first'
 import { last } from '../lib/array/last'
 import { unshift } from '../lib/array/unshift'
 import { get } from '../lib/object/get'
+
+import { storeEvent } from '../events'
+
+import { currentStoreId } from './currentStoreId'
 
 const getTimestampDelta = (timestamp2, timestamp1) => timestamp1
   ? timestamp2 - timestamp1

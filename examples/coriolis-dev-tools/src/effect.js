@@ -3,17 +3,14 @@ import { EMPTY } from 'rxjs'
 import { createStore, snapshot } from 'coriolis'
 
 import { createUI } from './effects/ui'
-import { createNav } from './effects/nav'
 import { storeEvent, storeAdded } from './events'
 
-import { viewNames } from './components/views'
-
+let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
   let devtoolsEventSource
 
-  createStore(
+  destroyDevtoolsStore = createStore(
     createUI(),
-    createNav(viewNames),
     ({ eventSource }) => {
       devtoolsEventSource = eventSource
     }
@@ -47,3 +44,5 @@ export const createCoriolisDevToolsEffect = (...args) => {
 
   return createDevtoolsEffect(...args)
 }
+
+export const disableCoriolisDevTools = () => destroyDevtoolsStore && destroyDevtoolsStore()
