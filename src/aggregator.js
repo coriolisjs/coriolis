@@ -5,6 +5,7 @@ import { objectFrom } from './lib/object/objectFrom'
 import { variableFunction } from './lib/function/variableFunction'
 import { chain } from './lib/function/chain'
 import { tryOrNull } from './lib/function/tryOrNull'
+import { withInitialDefault } from './lib/function/withInitialDefault'
 
 // snapshot is a unique aggr that will return all indexed aggregators' last state
 export const snapshot = () => {}
@@ -66,12 +67,18 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const using = {
     state: false,
     event: false,
-    aggregators: []
+    aggregators: [],
+    stateIndexes: []
   }
 
-  const useState = () => {
+  const useState = (initialValue) => {
     using.state = true
-    using.aggregators.push(getLastState)
+    using.stateIndexes.push(using.aggregators.length)
+    using.aggregators.push(
+      initialValue
+        ? withInitialDefault(getLastState, initialValue)
+        : getLastState
+    )
   }
 
   const useEvent = (...eventTypes) => {
@@ -118,7 +125,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const isNullSetup = () => using.aggregators.length === 0
 
   const isReducerSetup = () =>
-    (!using.aggregators[0] || using.aggregators[0] === getLastState) &&
+    (!using.aggregators[0] || (using.stateIndexes[0] === 0 && using.stateIndexes.length === 1)) &&
     (!using.aggregators[1] || using.aggregators[1] === identity)
 
   const isReducerLikeSetup = () =>
@@ -137,7 +144,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
     const anyChange = values.some((value, idx) =>
       // last state change is not a value change due to current event, it must not count as a change
-      using.aggregators[idx] !== getLastState &&
+      !using.stateIndexes.includes(idx) &&
       value !== lastValues[idx]
     )
     lastValues = values
