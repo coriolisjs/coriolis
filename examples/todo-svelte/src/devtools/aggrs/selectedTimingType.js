@@ -1,9 +1,7 @@
 import { devtoolsTimingTypeSelected } from '../events'
 
-export const selectedTimingType = (selected, event) => {
-  if (event.type !== devtoolsTimingTypeSelected.toString()) {
-    return selected
-  }
-
-  return event.payload
-}
+// TODO: this kind of aggr is common, a parametered aggr could do the job with event as param
+export const selectedTimingType = ({ useEvent }) => (
+  useEvent(devtoolsTimingTypeSelected),
+  ({ payload }) => payload
+)
