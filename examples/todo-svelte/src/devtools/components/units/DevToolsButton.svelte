@@ -10,11 +10,15 @@
     position: fixed;
     bottom: 24px;
     right: 48px;
-    border-radius: 100%;
-    width: 56px;
-    height: 56px;
+    border-radius: 90% 10%;
+    width: 130px;
+    height: 40px;
     overflow: hidden;
     cursor: pointer;
+    margin: 0;
+    font-size: .8em;
+    box-shadow: inset -3px -4px 10px -8px rgba(0,0,0,0.5);
+    color: rgba(0, 0, 0, .6);
   }
 </style>
 
@@ -24,5 +28,5 @@
   aggr={isDevtoolsOpen}
   buildEvent={devtoolsOpened}
 >
-  Open Coriolis dev tools
+  Coriolis dev tools
 </NavButton>

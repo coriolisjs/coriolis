@@ -13,12 +13,12 @@
 
   const viewName$ = getSource(aggr)
 
-  const openDevTools = () => dispatch(buildEvent(view))
+  const navAction = () => dispatch(buildEvent(view))
 </script>
 
 <button
   class="nav-button {$$props.class || ''}"
-  on:click={openDevTools}
+  on:click={navAction}
   disabled={$viewName$ === view}
 >
   <slot />
