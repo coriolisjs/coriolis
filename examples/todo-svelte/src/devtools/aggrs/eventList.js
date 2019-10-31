@@ -9,11 +9,12 @@ const getTimestampDelta = (timestamp2, timestamp1) => timestamp1
   ? timestamp2 - timestamp1
   : 0
 
-const createEventListItem = (event, previousEvent, firstEvent) => ({
+const createEventListItem = (event, isInitialEvent, previousEvent, firstEvent) => ({
   type: event.type,
   payload: event.payload,
   meta: event.meta,
   error: event.error,
+  isInitialEvent,
 
   date: (new Date(event.meta.timestamp)).toLocaleString(),
   timestamp: event.meta.timestamp,
@@ -24,12 +25,12 @@ const createEventListItem = (event, previousEvent, firstEvent) => ({
 const fullEventList = ({ useState, useEvent }) => (
   useState(),
   useEvent(storeEvent),
-  (lists = {}, { payload: { storeId, event: originalEvent }}) =>
+  (lists = {}, { payload: { storeId, event: originalEvent, isInitialEvent }}) =>
     ({
       ...lists,
       [storeId]: unshift(
         lists[storeId],
-        createEventListItem(originalEvent, first(lists[storeId]), last(lists[storeId])),
+        createEventListItem(originalEvent, isInitialEvent, first(lists[storeId]), last(lists[storeId])),
       )
     })
 )

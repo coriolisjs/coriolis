@@ -8,6 +8,7 @@
   export let payload
   export let meta
   export let error
+  export let isInitialEvent
 
   export let timestamp
   export let date
@@ -29,8 +30,16 @@
     display: flex;
     flex-direction: row;
     margin: 0;
-    padding: .5em .5em .5em .5em;
+    padding: .5em;
     cursor: default;
+
+    &.isInitialEvent {
+      opacity: .4;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
 
     .type {
       flex: 1 1 auto;
@@ -64,6 +73,7 @@
 
 <div
   class="eventListItem"
+  class:isInitialEvent
   on:click={logEvent}
 >
   <div class="type">

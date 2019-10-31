@@ -28,7 +28,7 @@ const initDevtoolsEventStore = () => {
       }))
 
       const aggregatorEventsSubscription = aggregatorEvents.subscribe(event => devtoolsEventSource.next(event))
-      const initialEventsSubscription = initialEvent$.subscribe(event => devtoolsEventSource.next(storeEvent({ storeId, event })))
+      const initialEventsSubscription = initialEvent$.subscribe(event => devtoolsEventSource.next(storeEvent({ storeId, event, isInitialEvent: true })))
       const eventsSubscription = eventSource.subscribe(event => devtoolsEventSource.next(storeEvent({ storeId, event })))
 
       return () => {
