@@ -11,7 +11,7 @@ const newTodoItem = produce(item => {
 const hasId = id => item => item.id === id
 
 export const todolist = ({ useState, useEvent }) => (
-  useState(),
+  useState([]),
   useEvent(added, edited, done, reset, removed),
   produce((draft, { type, payload, error}) => {
     if (error) {
@@ -46,7 +46,7 @@ export const todolist = ({ useState, useEvent }) => (
       default:
         break
     }
-  }, [])
+  })
 )
 
 export const todolistFilterName = ({ useState, useEvent }) => (
@@ -57,9 +57,10 @@ export const todolistFilterName = ({ useState, useEvent }) => (
     : payload
 )
 
-export const filteredTodolist = ({ useAggr }) => (
+export const filteredTodolist = ({ useState, useAggr }) => (
   useAggr(todolist),
   useAggr(todolistFilterName),
+  useState([]),
   produce((list, filterName) => {
     switch (filterName) {
       case 'active':
