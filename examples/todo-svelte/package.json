@@ -24,7 +24,9 @@
     "build": "rollup -c",
     "autobuild": "rollup -c -w",
     "dev": "run-p start:dev autobuild",
+    "dev:remote": "run-p start:dev:remote autobuild",
     "start": "sirv public --single",
-    "start:dev": "sirv public --single --dev"
+    "start:dev": "sirv public --single --dev",
+    "start:dev:remote": "npm run -s start:dev -- --host 0.0.0.0"
   }
 }
