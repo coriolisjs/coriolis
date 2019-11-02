@@ -5,7 +5,6 @@ import { objectFrom } from './lib/object/objectFrom'
 import { variableFunction } from './lib/function/variableFunction'
 import { chain } from './lib/function/chain'
 import { tryOrNull } from './lib/function/tryOrNull'
-import { withInitialDefault } from './lib/function/withInitialDefault'
 
 // snapshot is a unique aggr that will return all indexed aggregators' last state
 export const snapshot = () => {}
@@ -22,13 +21,13 @@ export const parameteredAggr = aggr =>
   }).get
 
 // Builds an aggregator function (receives an event, returns a state) from a reducer function
-const createReducerAggregator = reducer => {
+const createReducerAggregator = (reducer, initialState) => {
   if (typeof reducer !== 'function') {
     throw new TypeError('reducer must be a function')
   }
 
   let lastEvent
-  let lastState
+  let lastState = initialState
 
   return event => {
     // in any case, same event => last state, no event => last state
@@ -65,20 +64,19 @@ const combineEventAggregators = aggregators => createReducerAggregator(
 
 const createAggrSetupAPI = (getLastState, getAggregator) => {
   const using = {
-    state: false,
     event: false,
     aggregators: [],
-    stateIndexes: []
+    stateIndex: undefined,
+    initialState: undefined
   }
 
   const useState = (initialValue) => {
-    using.state = true
-    using.stateIndexes.push(using.aggregators.length)
-    using.aggregators.push(
-      initialValue
-        ? withInitialDefault(getLastState, initialValue)
-        : getLastState
-    )
+    if (using.stateIndex !== undefined) {
+      throw new Error('useState should be used only once in an aggr definition setup')
+    }
+    using.initialState = initialValue
+    using.stateIndex = using.aggregators.length
+    using.aggregators.push(getLastState)
   }
 
   const useEvent = (...eventTypes) => {
@@ -94,11 +92,14 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     using.allEvents = !eventTypes.length
 
     using.aggregators.push(
-      eventTypes.length
+      eventTypes.length > 1
         ? combineEventAggregators(
+          // TODO: use a parametered aggr for events instead of toAggr which is specific from eventBuilder
           eventTypes.map(eventType => getAggregator(eventType.toAggr()))
         )
-        : identity
+        : eventTypes.length
+          ? getAggregator(eventTypes[0].toAggr())
+          : identity
     )
   }
 
@@ -125,11 +126,15 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const isNullSetup = () => using.aggregators.length === 0
 
   const isReducerSetup = () =>
-    (!using.aggregators[0] || (using.stateIndexes[0] === 0 && using.stateIndexes.length === 1)) &&
-    (!using.aggregators[1] || using.aggregators[1] === identity)
+    (!using.aggregators[0] || using.stateIndex === 0) &&
+    (!using.aggregators[1] || using.aggregators[1] === identity) &&
+    using.aggregators.length <= 2
 
+  // reducer-like, means it's not in the right order
   const isReducerLikeSetup = () =>
-    using.aggregators.length === (using.state + using.allEvents)
+    using.aggregators.length === ((using.stateIndex !== undefined) + using.allEvents)
+
+  const getInitialState = () => using.initialState
 
   let lastValues = []
   const getValues = event => {
@@ -144,7 +149,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
     const anyChange = values.some((value, idx) =>
       // last state change is not a value change due to current event, it must not count as a change
-      !using.stateIndexes.includes(idx) &&
+      idx !== using.stateIndex &&
       value !== lastValues[idx]
     )
     lastValues = values
@@ -154,6 +159,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
   return {
     setupParams,
+    getInitialState,
     getValues,
     isNullSetup,
     isReducerSetup,
@@ -174,6 +180,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
   const {
     setupParams,
     getValues,
+    getInitialState,
     isNullSetup,
     isReducerSetup,
     isReducerLikeSetup,
@@ -202,15 +209,18 @@ const createComplexAggregator = (aggr, getAggregator) => {
     }
   }
 
-  aggregator = createReducerAggregator((lastState, event) => {
-    const values = getValues(event)
+  aggregator = createReducerAggregator(
+    (lastState, event) => {
+      const values = getValues(event)
 
-    if (!values) {
-      return lastState
-    }
+      if (!values) {
+        return lastState
+      }
 
-    return aggrBehavior(...values)
-  })
+      return aggrBehavior(...values)
+    },
+    getInitialState()
+  )
 
   return aggregator
 }
