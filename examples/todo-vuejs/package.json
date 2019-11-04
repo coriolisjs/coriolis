@@ -9,6 +9,7 @@
   "dependencies": {
     "core-js": "^2.6.5",
     "coriolis": "file:../../",
+    "coriolis-dev-tools": "file:../coriolis-dev-tools/",
     "vue": "^2.6.10"
   },
   "devDependencies": {
