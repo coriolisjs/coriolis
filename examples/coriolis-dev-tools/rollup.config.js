@@ -9,21 +9,23 @@ const production = !process.env.ROLLUP_WATCH
 
 export default {
   input: 'src/index.js',
-  output: {
-    sourcemap: true,
-    format: 'iife',
-    name: 'devtools',
-    file: 'public/bundle.js'
-  },
+  output: [
+    {
+      sourcemap: true,
+      format: 'cjs',
+      name: 'devtools-cjs',
+      dir: 'public/cjs'
+    },{
+      sourcemap: true,
+      format: 'esm',
+      name: 'devtools-esm',
+      dir: 'public/esm'
+    },
+  ],
   plugins: [
     svelte({
       // enable run-time checks when not in production
       dev: !production,
-      // we'll extract any component CSS out into
-      // a separate file — better for performance
-      css: css => {
-        css.write('public/bundle.css')
-      },
 
       preprocess: autoPreprocess(),
     }),

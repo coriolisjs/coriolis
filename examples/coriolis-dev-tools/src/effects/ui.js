@@ -1,7 +1,7 @@
+import { createCustomElement } from '../lib/browser/customElement'
+
 import Entry from '../components/Entry.svelte'
 import { views } from '../components/views'
-
-import { nav } from './nav'
 
 import { eventList } from '../aggrs/eventList'
 import { eventTypeList } from '../aggrs/eventTypeList'
@@ -12,6 +12,8 @@ import { viewList } from '../aggrs/viewList'
 import { enabledViewComponent } from '../aggrs/enabledViewComponent'
 
 import { viewAdded } from '../events'
+
+import { nav } from './nav'
 
 export const createUI = () => ({ addEffect, addSource, withAggr, eventSource }) => {
   addSource(views.map(viewAdded))
@@ -25,15 +27,32 @@ export const createUI = () => ({ addEffect, addSource, withAggr, eventSource }) 
   withAggr(currentStoreSnapshot).connect()
   withAggr(aggrsList).connect()
 
-  const app = new Entry({
-    target: document.body,
-    props: {
-      dispatch: event => eventSource.next(event),
-      getSource: withAggr
-    }
-  })
+  let elementMounted = false
 
-  return () => {
-    app.$destroy()
-  }
+  createCustomElement(
+    'coriolis-dev-tools',
+    () =>
+    class extends HTMLElement {
+      connectedCallback() {
+        if (elementMounted) {
+          // eslint-disable-next-line no-console
+          console.warn('Trying to mount Coriolis dev tools twice... useless');
+          return;
+        }
+        elementMounted = true;
+
+        this.app = new Entry({
+          target: this,
+          props: {
+            dispatch: event => eventSource.next(event),
+            getSource: withAggr
+          }
+        })
+      }
+
+      disconnectedCallback() {
+        this.app.$destroy()
+      }
+    }
+  )
 }
