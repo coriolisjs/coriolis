@@ -1,6 +1,6 @@
 import { createCustomElement } from '../lib/browser/customElement'
+import { ensureFeatures } from '../lib/browser/loadScript'
 
-import Entry from '../components/Entry.svelte'
 import { views } from '../components/views'
 
 import { eventList } from '../aggrs/eventList'
@@ -9,7 +9,7 @@ import { eventListFilter } from '../aggrs/eventListFilter'
 import { currentStoreSnapshot } from '../aggrs/currentStoreSnapshot'
 import { aggrsList } from '../aggrs/aggrsList'
 import { viewList } from '../aggrs/viewList'
-import { enabledViewComponent } from '../aggrs/enabledViewComponent'
+import { enabledViewName } from '../aggrs/enabledViewName'
 
 import { viewAdded } from '../events'
 
@@ -19,7 +19,7 @@ export const createUI = () => ({ addEffect, addSource, withAggr, eventSource }) 
   addSource(views.map(viewAdded))
   addEffect(nav)
 
-  withAggr(enabledViewComponent).connect()
+  withAggr(enabledViewName).connect()
   withAggr(viewList).connect()
   withAggr(eventList).connect()
   withAggr(eventTypeList).connect()
@@ -41,17 +41,40 @@ export const createUI = () => ({ addEffect, addSource, withAggr, eventSource }) 
         }
         elementMounted = true;
 
-        this.app = new Entry({
-          target: this,
-          props: {
-            dispatch: event => eventSource.next(event),
-            getSource: withAggr
+        ensureFeatures({
+          check: ({ default: Entry } = {}) => Entry,
+          load: () => import('../components/Entry.svelte'),
+        }).then(
+          ([Entry]) => {
+            if (!elementMounted) {
+              // element was unmounted while loading dependencies, don't go further
+              return;
+            }
+
+            this.app = new Entry({
+              target: this,
+              props: {
+                dispatch: event => eventSource.next(event),
+                getSource: withAggr
+              }
+            })
+          },
+          error => {
+            // eslint-disable-next-line no-console
+            console.error(
+              'Could not load all dependencies for Coriolis dev tools',
+              error
+            );
           }
-        })
+        );
       }
 
       disconnectedCallback() {
-        this.app.$destroy()
+        elementMounted = false;
+
+        if (this.app) {
+          this.app.$destroy()
+        }
       }
     }
   )

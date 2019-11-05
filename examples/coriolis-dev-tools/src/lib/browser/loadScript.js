@@ -48,8 +48,8 @@ export const ensureFeature = ({ check, src, load }) => {
     return Promise.resolve()
   }
 
-  const control = () =>
-    check() ||
+  const control = (...args) =>
+    check(...args) ||
     Promise.reject(
       new Error(`Feature not available after loading source: ${src}`)
     )
