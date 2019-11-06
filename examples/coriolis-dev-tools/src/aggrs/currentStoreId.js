@@ -1,11 +1,12 @@
 import { currentStoreChanged, storeAdded } from '../events'
 
-export const currentStoreId = ({ useEvent }) => (
-  useEvent(currentStoreChanged),
-  useEvent(storeAdded),
-  (
-    { payload: currentId } = {},
-    { payload: { storeId: addedId }} = { payload: {}}
-  ) =>
-    currentId || addedId
+export const currentStoreId = ({ useState, useEvent }) => (
+  useState(),
+  useEvent(currentStoreChanged, storeAdded),
+  (lastStoreId, { type, payload }) =>
+    type === currentStoreChanged.toString()
+      ? payload
+      : lastStoreId === undefined
+        ? payload.storeId
+        : lastStoreId
 )

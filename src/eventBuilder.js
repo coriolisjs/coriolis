@@ -35,18 +35,20 @@ export const createEventBuilder = (type, payloadBuilder = identity, metaBuilder)
   }
 
   // TODO: could use a parametered aggr here
-  const aggr = (lastEvent, event) =>
-    event.type === type
-      ? event
-      : lastEvent
+  // const aggr = (lastEvent, event) =>
+  //   event.type === type
+  //     ? event
+  //     : lastEvent
 
-  Object.defineProperty(aggr, 'name', {
-    value: `last event of type: ${type.toString()}`,
-    writable: false
-  })
+  // Object.defineProperty(aggr, 'name', {
+  //   value: `last event of type: ${type.toString()}`,
+  //   writable: false
+  // })
 
   eventBuilder.toString = () => type
-  eventBuilder.toAggr = () => aggr
+
+  // TODO: This should be replaced by a parametered aggr definition
+  // eventBuilder.toAggr = () => aggr
 
   return eventBuilder
 }
