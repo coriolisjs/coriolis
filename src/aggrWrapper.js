@@ -29,7 +29,7 @@ export const createAggrWrapperFactory = (event$, skipUntil$ = of(true), getAggre
     // For user, the request is to connect an aggregator, it should return a function to disconnect it
     aggr$.connect = () => simpleUnsub(event$.subscribe(aggregator))
 
-    aggr$.getValue = () => aggregator()
+    aggr$.getValue = aggregator.getValue
 
     Object.defineProperty(aggr$, 'value', {
       configurable: false,

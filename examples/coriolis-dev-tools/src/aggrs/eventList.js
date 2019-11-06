@@ -63,7 +63,7 @@ const eventListWithAggrs = ({ useState, useEvent, useAggr }) => (
             {
               ...aggrIndexes[storeId][aggrId],
               args,
-              previousState: aggrIndexes[storeId][aggrId].aggregator(),
+              previousState: aggrIndexes[storeId][aggrId].aggregator.value,
               newState
             }
           ]

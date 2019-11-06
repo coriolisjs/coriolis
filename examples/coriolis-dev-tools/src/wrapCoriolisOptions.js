@@ -100,6 +100,13 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
     }
 
     wrappedAggregator.initialState = aggregator.initialState
+    wrappedAggregator.getValue = aggregator.getValue
+
+    Object.defineProperty(wrappedAggregator, 'value', {
+      configurable: false,
+      enumerable: true,
+      get: aggregator.getValue
+    })
 
     return wrappedAggregator
   })

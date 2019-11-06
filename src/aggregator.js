@@ -48,8 +48,13 @@ const createReducerAggregator = (reducer, initialState) => {
 
   aggregator.initialState = initialState
 
-  // TODO: here we could also add a getter property for lastState to make it
-  // more clear it is the last state we are accessing (instead of calling aggregator without event)
+  aggregator.getValue = () => lastState
+
+  Object.defineProperty(aggregator, 'value', {
+    configurable: false,
+    enumerable: true,
+    get: aggregator.getValue
+  })
 
   return aggregator
 }
@@ -180,7 +185,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
   }
 
   let aggregator = noop
-  const getLastState = () => aggregator()
+  const getLastState = () => aggregator.value
 
   const {
     setupParams,
@@ -258,7 +263,7 @@ export const createAggregatorFactory = (aggregatorBuilder = createAggregator) =>
     factory.list()
       // we don't want to list snapshot aggregator's state as it would cause a recursive loop
       .filter(([aggr]) => aggr !== snapshot)
-      .map(([aggr, aggregator]) => [aggr.name, aggregator()])
+      .map(([aggr, aggregator]) => [aggr.name, aggregator.value])
   )
 
   return factory
