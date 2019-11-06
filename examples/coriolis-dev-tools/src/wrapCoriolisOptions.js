@@ -41,8 +41,14 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
       return aggrBehavior(...args)
     }
 
-    const wrappedaggr = (...args) => {
-      if (args.length === 1 && (args[0].useAggr || args[0].useEvent || args[0].useState)) {
+    const wrappedAggr = (...args) => {
+      if (args.length === 1 && (
+        args[0].useAggr ||
+        args[0].useEvent ||
+        args[0].useState ||
+        args[0].lazyAggr ||
+        args[0].useValue
+      )) {
         let aggrBehavior
         let shouldThrow = false
 
@@ -70,17 +76,17 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
       return aggr(...args)
     }
 
-    Object.defineProperty(wrappedaggr, 'name', {
+    Object.defineProperty(wrappedAggr, 'name', {
       value: aggr.name,
       writable: false
     })
 
-    Object.defineProperty(wrappedaggr, 'length', {
+    Object.defineProperty(wrappedAggr, 'length', {
       value: aggr.length,
       writable: false
     })
 
-    const aggregator = createAggregator(wrappedaggr, getAggregator)
+    const aggregator = createAggregator(wrappedAggr, getAggregator)
 
     return event => {
       aggregatorEvents.next(devtoolsAggregatorCalled({ storeId, aggrId, event }))

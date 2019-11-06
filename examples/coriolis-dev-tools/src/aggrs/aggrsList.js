@@ -56,8 +56,14 @@ const fullAggrsIndex = ({ useState, useEvent }) => (
   })
 )
 
-export const aggrsList = ({ useAggr }) => (
-  useAggr(currentStoreId),
+const aggrsIndex = ({ useAggr, lazyAggr, useState }) => (
   useAggr(fullAggrsIndex),
-  (storeId, fullIndex) => Object.values(get(fullIndex, storeId) || {})
+  lazyAggr(currentStoreId),
+  useState({}),
+  (fullIndex, storeId) => get(fullIndex, storeId)
+)
+
+export const aggrsList = ({ useAggr }) => (
+  useAggr(aggrsIndex),
+  index => Object.values(index)
 )

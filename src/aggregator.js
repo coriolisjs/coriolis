@@ -59,7 +59,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     eventTypes: undefined,
     aggregators: [],
     stateIndex: undefined,
-    initialState: undefined
+    initialState: undefined,
+    skipIndexes: []
   }
 
   const useState = (initialValue) => {
@@ -85,12 +86,18 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const useAggr = aggr =>
     using.aggregators.push(getAggregator(aggr))
 
+  const lazyAggr = aggr => {
+    using.skipIndexes.push(using.aggregators.length)
+    using.aggregators.push(getAggregator(aggr))
+  }
+
   const useValue = value => using.aggregators.push(() => value)
 
   const setupParamsRaw = Object.entries({
     useState,
     useEvent,
     useAggr,
+    lazyAggr,
     useValue
   })
     .map(([key, value]) => [key, variableFunction(value)])
@@ -141,6 +148,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
       const anyChange = values.some((value, idx) =>
         // last state change is not a value change due to current event, it must not count as a change
         idx !== using.stateIndex &&
+        !using.skipIndexes.includes(idx) &&
         value !== lastValues[idx]
       )
       lastValues = values
