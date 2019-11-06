@@ -3,13 +3,13 @@ import { ensureFeatures } from '../lib/browser/loadScript'
 
 import { views } from '../components/views'
 
+import { enabledViewName } from '../aggrs/enabledViewName'
+import { viewList } from '../aggrs/viewList'
 import { eventList } from '../aggrs/eventList'
 import { eventTypeList } from '../aggrs/eventTypeList'
 import { eventListFilter } from '../aggrs/eventListFilter'
 import { currentStoreSnapshot } from '../aggrs/currentStoreSnapshot'
 import { aggrsList } from '../aggrs/aggrsList'
-import { viewList } from '../aggrs/viewList'
-import { enabledViewName } from '../aggrs/enabledViewName'
 
 import { viewAdded } from '../events'
 
