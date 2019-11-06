@@ -13,11 +13,14 @@ export const snapshot = () => {}
 export const parameteredAggr = aggr =>
   createIndex((...args) => aggrAPI => {
     let count = 0
-    const useParam = () => aggrAPI.useValue(args[count++])
-    const useParameteredEvent = () => aggrAPI.useEvent(...args)
+
+    const useParam = (idx = count++) => aggrAPI.useValue(args[idx])
+    const useParameteredEvent = (from = 0, to) => aggrAPI.useEvent(...args.slice(from, to))
+    const useParameteredAggr = (parameteredAggr, from = 0, to) => aggrAPI.useAggr(parameteredAggr(...args.slice(from, to)))
     return aggr({
       useParam,
       useParameteredEvent,
+      useParameteredAggr,
       ...aggrAPI
     })
   }).get

@@ -7,3 +7,4 @@ export {
   snapshot
 } from './aggregator'
 export { lastOfType } from './aggr/lastOfType'
+export { lastPayloadOfType } from './aggr/lastPayloadOfType'
