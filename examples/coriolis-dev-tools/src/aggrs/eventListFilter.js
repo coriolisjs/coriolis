@@ -1,6 +1,5 @@
+import { lastPayloadOfType } from 'coriolis'
+
 import { devtoolsEventListFilterChange } from '../events'
 
-export const eventListFilter = ({ useEvent }) => (
-  useEvent(devtoolsEventListFilterChange),
-  ({ payload }) => payload
-)
+export const eventListFilter = lastPayloadOfType(devtoolsEventListFilterChange)

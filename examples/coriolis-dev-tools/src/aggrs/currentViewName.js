@@ -1,6 +1,5 @@
+import { lastPayloadOfType } from 'coriolis'
+
 import { viewChanged } from '../events'
 
-export const currentViewName = ({ useEvent }) => (
-  useEvent(viewChanged),
-  ({ payload }) => payload
-)
+export const currentViewName = lastPayloadOfType(viewChanged)
