@@ -10,7 +10,11 @@ import {
 import { createIndex } from './lib/map/objectIndex'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 
-export const createAggrWrapperFactory = (event$, skipUntil$ = of(true), getAggregator) =>
+export const createAggrWrapperFactory = (
+  event$,
+  skipUntil$ = of(true),
+  getAggregator
+) =>
   createIndex(aggr => {
     const aggregator = getAggregator(aggr)
 

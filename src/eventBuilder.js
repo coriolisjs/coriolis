@@ -1,6 +1,10 @@
-import { identity } from 'rxjs'
+const identity = arg => arg
 
-export const createEventBuilder = (type, payloadBuilder = identity, metaBuilder) => {
+export const createEventBuilder = (
+  type,
+  payloadBuilder = identity,
+  metaBuilder
+) => {
   const empty = {}
 
   const eventBuilder = (args = empty) => {

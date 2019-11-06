@@ -60,7 +60,8 @@ export const createEventSource = (
   let newevent$
   const neweventSubject = newevent$ = new Subject()
 
-  // log observer could be a Subject that emits events about log process (write error, log rotate events...)
+  // log observer could be a Subject that emits events about
+  // log process (write error, log rotate events...)
   if (logObserver && logObserver instanceof Subject) {
     newevent$ = merge(neweventSubject, logObserver)
   }

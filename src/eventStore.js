@@ -84,7 +84,8 @@ export const createStore = (_options, ...rest) => {
   )
 
   const initDone = eventCaster.pipe(
-    // Check is done on payload value, event object itself would have been changed (adding meta-data for example)
+    // Check is done on payload value, event object itself
+    // would have been changed (adding meta-data for example)
     filter(payloadEquals(firstEvent.payload)),
     take(1),
     shareReplay(1)
@@ -114,7 +115,8 @@ export const createStore = (_options, ...rest) => {
 
   const initDoneSubscription = initDone.subscribe(disableAddSource)
 
-  // EventCatcher must be connected to eventSource before effects are added, to be ready to catch all events
+  // EventCatcher must be connected to eventSource before effects
+  // are added, to be ready to catch all events
   const eventCatcherSubscription = eventCatcher
     .subscribe(eventSource)
 

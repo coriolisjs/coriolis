@@ -15,8 +15,10 @@ export const parameteredAggr = aggr =>
     let count = 0
 
     const useParam = (idx = count++) => aggrAPI.useValue(args[idx])
-    const useParameteredEvent = (from = 0, to) => aggrAPI.useEvent(...args.slice(from, to))
-    const useParameteredAggr = (parameteredAggr, from = 0, to) => aggrAPI.useAggr(parameteredAggr(...args.slice(from, to)))
+    const useParameteredEvent = (from = 0, to) =>
+      aggrAPI.useEvent(...args.slice(from, to))
+    const useParameteredAggr = (parameteredAggr, from = 0, to) =>
+      aggrAPI.useAggr(parameteredAggr(...args.slice(from, to)))
     return aggr({
       useParam,
       useParameteredEvent,
@@ -202,7 +204,12 @@ const createComplexAggregator = (aggr, getAggregator) => {
 
   if (isNullSetup() || typeof aggrBehavior !== 'function') {
     if (aggrBehavior === null) {
-      console.info('Aggr setup failure, let\'s use it as a reducer', aggr.name, aggr, aggrBehavior)
+      console.info(
+        'Aggr setup failure, let\'s use it as a reducer',
+        aggr.name,
+        aggr,
+        aggrBehavior
+      )
     }
     // reducer aggr with optional parameters could lead here.
     // let's assume aggr is in fact a reducer
@@ -211,7 +218,10 @@ const createComplexAggregator = (aggr, getAggregator) => {
 
   // if given aggregator definition expects only state and event (or less), it should be a reducer
   if (isReducerLikeSetup()) {
-    console.info('Prefer using simple reducer signature " (state, event) => newstate " when you only need state and/or event')
+    console.info(
+      'Prefer using simple reducer signature " (state, event) => newstate " ' +
+      'when you only need state and/or event'
+    )
 
     // Replace with getAggregator in case signature matches reducer signature (state, event)
     if (isReducerSetup()) {

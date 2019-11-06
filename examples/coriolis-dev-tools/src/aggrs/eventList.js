@@ -32,7 +32,12 @@ const fullEventList = ({ useState, useEvent }) => (
     ...lists,
     [storeId]: unshift(
       lists[storeId],
-      createEventListItem(originalEvent, isInitialEvent, first(lists[storeId]), last(lists[storeId])),
+      createEventListItem(
+        originalEvent,
+        isInitialEvent,
+        first(lists[storeId]),
+        last(lists[storeId])
+      ),
     )
   })
 )
