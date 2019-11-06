@@ -14,8 +14,10 @@ export const parameteredAggr = aggr =>
   createIndex((...args) => aggrAPI => {
     let count = 0
     const useParam = () => aggrAPI.useValue(args[count++])
+    const useParameteredEvent = () => aggrAPI.useEvent(...args)
     return aggr({
       useParam,
+      useParameteredEvent,
       ...aggrAPI
     })
   }).get
