@@ -88,10 +88,14 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
 
     const aggregator = createAggregator(wrappedAggr, getAggregator)
 
-    return event => {
+    const wrappedAggregator = event => {
       aggregatorEvents.next(devtoolsAggregatorCalled({ storeId, aggrId, event }))
       return aggregator(event)
     }
+
+    wrappedAggregator.initialState = aggregator.initialState
+
+    return wrappedAggregator
   })
 
   return options
