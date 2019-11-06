@@ -4,7 +4,7 @@ import { createAggregator, createAggregatorFactory } from 'coriolis'
 
 import { createCoriolisDevToolsEffect } from './effect'
 
-import { devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled } from './events'
+import { aggregatorCreated, aggrSetup, aggrCalled, aggregatorCalled } from './events'
 import { lossless } from './lib/rx/operator/lossless'
 
 let lastStoreId = 0
@@ -37,7 +37,7 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
 
     const aggrBehaviorWrapper = aggrBehavior => (...args) => {
       const newState = aggrBehavior(...args)
-      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args, newState }))
+      aggregatorEvents.next(aggrCalled({ storeId, aggrId, args, newState }))
 
       return newState
     }
@@ -60,7 +60,7 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
           aggrBehavior = error
         }
 
-        aggregatorEvents.next(devtoolsAggrSetup({ storeId, aggrId, aggrBehavior }))
+        aggregatorEvents.next(aggrSetup({ storeId, aggrId, aggrBehavior }))
 
         // result is not expected type.... maybe this was not a complex aggr but a reducer... return what we got
         if (typeof aggrBehavior !== 'function') {
@@ -75,7 +75,7 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
       }
 
       const newState = aggr(...args)
-      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args, newState }))
+      aggregatorEvents.next(aggrCalled({ storeId, aggrId, args, newState }))
 
       return newState
     }
@@ -92,10 +92,10 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
 
     const aggregator = createAggregator(wrappedAggr, getAggregator)
 
-    aggregatorEvents.next(devtoolsAggregatorCreated({ storeId, aggrId, aggr, aggregator }))
+    aggregatorEvents.next(aggregatorCreated({ storeId, aggrId, aggr, aggregator }))
 
     const wrappedAggregator = event => {
-      aggregatorEvents.next(devtoolsAggregatorCalled({ storeId, aggrId, event }))
+      aggregatorEvents.next(aggregatorCalled({ storeId, aggrId, event }))
       return aggregator(event)
     }
 

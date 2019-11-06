@@ -3,7 +3,7 @@ import { last } from '../lib/array/last'
 import { unshift } from '../lib/array/unshift'
 import { get } from '../lib/object/get'
 
-import { storeEvent, devtoolsAggrCalled } from '../events'
+import { storeEvent, aggrCalled } from '../events'
 
 import { currentStoreId } from './currentStoreId'
 import { fullAggrsIndex } from './aggrsList'
@@ -44,7 +44,7 @@ const fullEventList = ({ useState, useEvent }) => (
 
 const eventListWithAggrs = ({ useState, useEvent, useAggr }) => (
   useState({}),
-  useEvent(devtoolsAggrCalled),
+  useEvent(aggrCalled),
   useAggr(fullEventList),
   useAggr(fullAggrsIndex),
   (lists, { payload: { storeId, aggrId, args, newState }}, allEvents, aggrIndexes) => {

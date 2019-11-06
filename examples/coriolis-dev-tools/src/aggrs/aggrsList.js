@@ -1,17 +1,17 @@
 import { get } from '../lib/object/get'
 
 import {
-  devtoolsAggregatorCreated,
-  devtoolsAggrSetup,
-  devtoolsAggrCalled,
-  devtoolsAggregatorCalled
+  aggregatorCreated,
+  aggrSetup,
+  aggrCalled,
+  aggregatorCalled
 } from '../events'
 
 import { currentStoreId } from './currentStoreId'
 
 const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior, event, aggregator }}) => {
   switch(type) {
-    case devtoolsAggregatorCreated.toString():
+    case aggregatorCreated.toString():
       return {
         aggrId,
         aggr,
@@ -19,7 +19,7 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
         aggregator
       }
 
-    case devtoolsAggrSetup.toString():
+    case aggrSetup.toString():
       return {
         ...state,
         aggrBehavior: get(aggrBehavior, 'message') || aggrBehavior,
@@ -27,7 +27,7 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
         isReducer: typeof aggrBehavior !== 'function'
       }
 
-    case devtoolsAggrCalled.toString():
+    case aggrCalled.toString():
       return {
         ...state,
         aggrCalls: (state.aggrCalls || 0) + 1,
@@ -36,7 +36,7 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
       }
 
 
-    case devtoolsAggregatorCalled.toString():
+    case aggregatorCalled.toString():
       return {
         ...state,
         aggregatorCalls: (state.aggregatorCalls || 0) + 1,
@@ -48,7 +48,7 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
 
 export const fullAggrsIndex = ({ useState, useEvent }) => (
   useState({}),
-  useEvent(devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled),
+  useEvent(aggregatorCreated, aggrSetup, aggrCalled, aggregatorCalled),
   (list, { type, payload }) => ({
     ...list,
     [payload.storeId]: {

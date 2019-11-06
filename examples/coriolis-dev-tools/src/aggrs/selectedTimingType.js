@@ -1,5 +1,5 @@
 import { lastPayloadOfType } from 'coriolis'
 
-import { devtoolsTimingTypeSelected } from '../events'
+import { timingTypeSelected } from '../events'
 
-export const selectedTimingType = lastPayloadOfType(devtoolsTimingTypeSelected)
+export const selectedTimingType = lastPayloadOfType(timingTypeSelected)
