@@ -6,3 +6,4 @@ export {
   parameteredAggr,
   snapshot
 } from './aggregator'
+export { lastOfType } from './aggr/lastOfType'
