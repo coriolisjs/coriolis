@@ -1,6 +1,6 @@
 import { createEventBuilder } from 'coriolis'
 
-export const viewAdded = createEventBuilder('Coriolis devtools new view added', ({ name, longname, component }) => ({ name, longname, component }))
+export const viewAdded = createEventBuilder('Coriolis devtools new view added', ({ name, longname }) => ({ name, longname }))
 export const viewChanged = createEventBuilder('Coriolis devtools current view changed', viewname => viewname)
 
 export const devtoolsOpened = createEventBuilder('Coriolis devtools have been opened')
