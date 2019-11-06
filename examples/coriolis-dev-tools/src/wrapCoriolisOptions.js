@@ -34,11 +34,12 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
 
   options.aggregatorFactory = createAggregatorFactory((aggr, getAggregator) => {
     const aggrId = getAggrId()
-    aggregatorEvents.next(devtoolsAggregatorCreated({ storeId, aggrId, aggr }))
 
     const aggrBehaviorWrapper = aggrBehavior => (...args) => {
-      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args }))
-      return aggrBehavior(...args)
+      const newState = aggrBehavior(...args)
+      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args, newState }))
+
+      return newState
     }
 
     const wrappedAggr = (...args) => {
@@ -61,6 +62,7 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
 
         aggregatorEvents.next(devtoolsAggrSetup({ storeId, aggrId, aggrBehavior }))
 
+        // result is not expected type.... maybe this was not a complex aggr but a reducer... return what we got
         if (typeof aggrBehavior !== 'function') {
           if (shouldThrow) {
             throw aggrBehavior
@@ -72,8 +74,10 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
         return aggrBehaviorWrapper(aggrBehavior)
       }
 
-      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args }))
-      return aggr(...args)
+      const newState = aggr(...args)
+      aggregatorEvents.next(devtoolsAggrCalled({ storeId, aggrId, args, newState }))
+
+      return newState
     }
 
     Object.defineProperty(wrappedAggr, 'name', {
@@ -87,6 +91,8 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
     })
 
     const aggregator = createAggregator(wrappedAggr, getAggregator)
+
+    aggregatorEvents.next(devtoolsAggregatorCreated({ storeId, aggrId, aggr, aggregator }))
 
     const wrappedAggregator = event => {
       aggregatorEvents.next(devtoolsAggregatorCalled({ storeId, aggrId, event }))

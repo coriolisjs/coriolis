@@ -9,13 +9,14 @@ import {
 
 import { currentStoreId } from './currentStoreId'
 
-const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior, event }}) => {
+const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior, event, aggregator }}) => {
   switch(type) {
     case devtoolsAggregatorCreated.toString():
       return {
         aggrId,
         aggr,
-        name: aggr.name || 'unnamed'
+        name: aggr.name || 'unnamed',
+        aggregator
       }
 
     case devtoolsAggrSetup.toString():
@@ -45,7 +46,7 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
   }
 }
 
-const fullAggrsIndex = ({ useState, useEvent }) => (
+export const fullAggrsIndex = ({ useState, useEvent }) => (
   useState({}),
   useEvent(devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled),
   (list, { type, payload }) => ({

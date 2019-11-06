@@ -9,6 +9,7 @@
   export let meta
   export let error
   export let isInitialEvent
+  export let aggrCalls
 
   export let timestamp
   export let date
@@ -19,7 +20,7 @@
 
   const selectTimingType = createDispatch(event => devtoolsTimingTypeSelected(event.target.value))
 
-  const logEvent = () => console.log(`${error ? 'ERROR - ' : ''}${type}\npayload: `, payload, '\nmeta: ', meta)
+  const logEvent = () => console.log(`${error ? 'ERROR - ' : ''}${type}\npayload: `, payload, '\nmeta: ', meta, '\naggrs calls: ', aggrCalls)
 </script>
 
 <style lang="scss">
