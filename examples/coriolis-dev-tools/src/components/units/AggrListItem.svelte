@@ -6,6 +6,7 @@
   export let setupCalls = 0
   export let aggregatorCalls = 0
   export let cachedCalls = 0
+  export let stateCalls = 0
   export let aggrCalls = 0
   export let isReducer = false
 </script>
@@ -37,5 +38,6 @@
   <div class="aggrSetupCalls"><span class="label">setup calls:</span> {setupCalls}</div>
   <div class="aggrCalls"><span class="label">executions:</span> {aggrCalls}</div>
   <div class="cachedCalls"><span class="label">cached calls:</span> {cachedCalls}</div>
+  <div class="stateCalls"><span class="label">state calls:</span> {stateCalls}</div>
   <div class="totalCalls"><span class="label">total calls:</span> {aggregatorCalls}</div>
 </li>

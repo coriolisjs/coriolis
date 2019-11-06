@@ -9,7 +9,7 @@ import {
 
 import { currentStoreId } from './currentStoreId'
 
-const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior }}) => {
+const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior, event }}) => {
   switch(type) {
     case devtoolsAggregatorCreated.toString():
       return {
@@ -39,7 +39,8 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
       return {
         ...state,
         aggregatorCalls: (state.aggregatorCalls || 0) + 1,
-        cachedCalls: (state.cachedCalls || 0) + 1
+        cachedCalls: (state.cachedCalls || 0) + !!event,
+        stateCalls: (state.stateCalls || 0) + !event,
       }
   }
 }
