@@ -29,7 +29,7 @@ const createReducerAggregator = (reducer, initialState) => {
   let lastEvent
   let lastState = initialState
 
-  return event => {
+  const aggregator = event => {
     // in any case, same event => last state, no event => last state
     if (!event || (lastEvent && event === lastEvent.value)) {
       return lastState
@@ -40,6 +40,13 @@ const createReducerAggregator = (reducer, initialState) => {
 
     return lastState
   }
+
+  aggregator.initialState = initialState
+
+  // TODO: here we could also add a getter property for lastState to make it
+  // more clear it is the last state we are accessing (instead of calling aggregator without event)
+
+  return aggregator
 }
 
 const throwUnexpectedScope = funcName => () => {
@@ -127,7 +134,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
       }
     }
 
-    let lastValues = []
+    let lastValues = using.aggregators.map(aggregator => aggregator.initialState)
     return event => {
       const values = processAggregators(event)
 

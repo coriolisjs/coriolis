@@ -25,20 +25,19 @@ const createEventListItem = (event, isInitialEvent, previousEvent, firstEvent) =
 })
 
 const fullEventList = ({ useState, useEvent }) => (
-  useState(),
+  useState({}),
   useEvent(storeEvent),
-  (lists = {}, { payload: { storeId, event: originalEvent, isInitialEvent }}) =>
-    ({
-      ...lists,
-      [storeId]: unshift(
-        lists[storeId],
-        createEventListItem(originalEvent, isInitialEvent, first(lists[storeId]), last(lists[storeId])),
-      )
-    })
+  (lists, { payload: { storeId, event: originalEvent, isInitialEvent }}) => ({
+    ...lists,
+    [storeId]: unshift(
+      lists[storeId],
+      createEventListItem(originalEvent, isInitialEvent, first(lists[storeId]), last(lists[storeId])),
+    )
+  })
 )
 
 export const eventList = ({ useAggr }) => (
   useAggr(currentStoreId),
   useAggr(fullEventList),
-  (currentStoreId, allEvents) => get(allEvents, currentStoreId)
+  (storeId, allEvents) => get(allEvents, storeId)
 )

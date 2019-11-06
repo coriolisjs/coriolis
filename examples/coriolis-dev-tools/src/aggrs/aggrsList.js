@@ -45,9 +45,9 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
 }
 
 const fullAggrsIndex = ({ useState, useEvent }) => (
-  useState(),
+  useState({}),
   useEvent(devtoolsAggregatorCreated, devtoolsAggrSetup, devtoolsAggrCalled, devtoolsAggregatorCalled),
-  (list = {}, { type, payload }) => ({
+  (list, { type, payload }) => ({
     ...list,
     [payload.storeId]: {
       ...list[payload.storeId],
