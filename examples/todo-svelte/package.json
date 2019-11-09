@@ -16,7 +16,7 @@
   "dependencies": {
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "coriolis": "file:../../",
-    "coriolis-dev-tools": "file:../coriolis-dev-tools/",
+    "coriolis-dev-tools": "file:../../tools/coriolis-dev-tools/",
     "immer": "^4.0.1",
     "sirv-cli": "^0.4.4"
   },
