@@ -1,4 +1,4 @@
-import { parameteredAggr } from '../aggregator'
+import { parameteredAggr } from './parameteredAggr'
 
 export const lastOfType = parameteredAggr(({ useParameteredEvent }) => (
   useParameteredEvent(),
