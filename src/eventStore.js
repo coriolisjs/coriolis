@@ -12,15 +12,15 @@ import {
   endWith
 } from 'rxjs/operators'
 
-import { createEventSource } from './eventSource'
-import { createAggregatorFactory } from './aggregator'
-import { createAggrWrapperFactory } from './aggrWrapper'
-
 import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { variableFunction } from './lib/function/variableFunction'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { payloadEquals } from './lib/event/payloadEquals'
+
+import { createEventSource } from './eventSource'
+import { createAggregatorFactory } from './aggregator'
+import { createAggrWrapperFactory } from './aggrWrapper'
 
 export const FIRST_EVENT_TYPE = 'All initial events have been read'
 
