@@ -8,7 +8,8 @@ describe(`Coriolis event store
   describe('destroy store', () => {
     it(`Given a store is created
         When the returned function is executed
-        Then the store is destroyed`, () => {
+        Then the store is destroyed
+    `, () => {
       const destroyStore = createStore(() => {})
 
       destroyStore()
@@ -17,14 +18,16 @@ describe(`Coriolis event store
 
   it(`Given no effect function
       When store is created
-      Then an error should explain that an app without effect is useless`, () => {
+      Then an error should explain that an app without effect is useless
+  `, () => {
     expect(() => createStore()).to.throw()
   })
 
   it(`Given a spy effect function
       When store is created
       Then the spy effect have been called with the expected API
-      And then returned value is a function (to stop the store)`, () => {
+      And then returned value is a function (to stop the store)
+  `, () => {
     const spyDestroy = sinon.spy()
     const spyEffect = sinon.spy(() => spyDestroy)
 

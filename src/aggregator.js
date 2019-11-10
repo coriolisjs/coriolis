@@ -181,6 +181,9 @@ const createComplexAggregator = (aggr, getAggregator) => {
     preventOutOfScopeUsage
   } = createAggrSetupAPI(getLastState, getAggregator)
 
+  // aggr could be a reducer, calling it with setupParams could lead to an exception
+  // If we get an exception, we will handle aggr as a reducer, so we don't need
+  // resulting Error, we just need to know there was one. Let's try, or get null
   const aggrBehavior = tryOrNull(() => aggr(setupParams))
   preventOutOfScopeUsage()
 
