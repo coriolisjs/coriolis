@@ -24,7 +24,7 @@ const preventLoops = (secretKey = uniqSymbol()) => event => {
     ...event,
     meta: Object.defineProperty({ ...event.meta }, secretKey, {
       configurable: false,
-      enumerable: false,
+      enumerable: true,
       writable: false,
       value: true
     })
