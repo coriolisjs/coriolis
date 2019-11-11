@@ -15,25 +15,25 @@
   "author": "Nicolas Deveaud",
   "license": "GPL-3.0",
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/node": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
-    "eslint": "^6.2.2",
+    "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-chai-expect": "^2.0.1",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^9.2.0",
+    "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^6.2.0",
-    "sinon": "^7.4.2",
+    "mocha": "^6.2.2",
+    "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0"
   },
   "dependencies": {
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.3"
   }
 }
