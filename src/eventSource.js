@@ -72,13 +72,20 @@ export const createEventSource = (
       tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
       map(preventLoops()),
       lossless,
+
+      // stampEvent and eventEnhancer are both included after lossless operator
+      // to ensure it executes after all initial events are done
       map(stampEvent),
       eventEnhancer,
+
+      // events are logged after every enhancement
       tap(logObserver)
     )
 
   const event$ = initialSource
     .pipe(
+      // in case an initial event source provides not-timestamped events, we add
+      // a timestamp here to be sure every event have one
       map(stampEvent),
       eventEnhancer,
       concat(startoverNewevent$),
