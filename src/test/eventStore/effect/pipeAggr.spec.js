@@ -1,8 +1,8 @@
-import { createStore } from '../..'
+import { createStore } from '../../..'
 
 import {
   matchFirstEvent
-} from '../utils'
+} from '../../utils'
 
 describe('Effect withAggr', () => {
   it(`Given a reducer with a length=0 signature

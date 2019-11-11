@@ -2,7 +2,7 @@ import { pipe } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { createEventSource } from '../eventSource'
 
-describe('createEventSource', () => {
+describe('eventSource', () => {
   it(`Basic event dispatch
 
       Given an eventSource
@@ -167,4 +167,7 @@ describe('createEventSource', () => {
   })
 
   // To add: logObserver can emit events
+
+  // To add: tests on initialSource
+  it('should contain more tests')
 })

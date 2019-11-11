@@ -13,6 +13,7 @@ export const createBroadcastSubject = () => {
     const targetEvents = eventsEntry.subscribe(target)
 
     if (target instanceof Observable) {
+      // target's feedback completion should not complete feedback entry
       const targetFeedback = target.subscribe(
         payload => feedbacksEntry.next(payload),
         error => feedbacksEntry.error(error)

@@ -1,6 +1,6 @@
-import { createStore } from '..'
+import { createStore } from '../..'
 
-import { matchCoriolisEffectAPI } from './utils'
+import { matchCoriolisEffectAPI } from '../utils'
 
 describe(`Coriolis event store
   Basic store creation and destroy behaviors

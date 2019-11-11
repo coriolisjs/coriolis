@@ -1,12 +1,12 @@
 import { of } from 'rxjs'
 
-import { createStore } from '../..'
+import { createStore } from '../../..'
 
 import {
   matchFirstEvent,
   createTrackedObservable,
   randomEventsObservable
-} from '../utils'
+} from '../../utils'
 
 describe('Effect eventSource', () => {
   it(`Given a spy effect

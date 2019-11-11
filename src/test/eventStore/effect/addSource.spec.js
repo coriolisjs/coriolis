@@ -1,8 +1,8 @@
-import { createStore } from '../..'
+import { createStore } from '../../..'
 
 import {
   matchCoriolisEffectAPI
-} from '../utils'
+} from '../../utils'
 
 describe('Effect addSource', () => {
   it(`Given a spy effect function
