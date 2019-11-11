@@ -38,7 +38,7 @@ export const createAggrWrapperFactory = (
     Object.defineProperty(aggr$, 'value', {
       configurable: false,
       enumerable: true,
-      get: aggr$.getValue
+      get: aggregator.getValue
     })
 
     return aggr$
