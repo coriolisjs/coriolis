@@ -3,8 +3,8 @@ export { createEventBuilder } from './eventBuilder'
 export {
   createAggregator,
   createAggregatorFactory,
-  parameteredAggr,
   snapshot
 } from './aggregator'
+export { parameteredAggr } from '../tools/aggr/parameteredAggr'
 export { lastOfType } from '../tools/aggr/lastOfType'
 export { lastPayloadOfType } from '../tools/aggr/lastPayloadOfType'
