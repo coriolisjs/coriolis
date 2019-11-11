@@ -33,7 +33,7 @@
 <li
   on:click={() => console.log(aggr, aggrBehavior)}
 >
-  <h3>{name}</h3>
+  <h3>{name} ({aggrId})</h3>
   <div class="aggrType"><span class="label">type:</span> {isReducer ? 'reducer' : 'custom'}</div>
   <div class="aggrSetupCalls"><span class="label">setup calls:</span> {setupCalls}</div>
   <div class="aggrCalls"><span class="label">executions:</span> {aggrCalls}</div>
