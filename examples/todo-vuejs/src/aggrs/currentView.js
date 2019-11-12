@@ -1,8 +1,6 @@
 import { changed } from '../events/view'
 
-const initialView = location.pathname.replace(/^\//, '')
-
-export const currentView = (view = initialView, { type, payload }) => {
+export const currentView = (view, { type, payload }) => {
   if (type !== changed.toString()) {
     return view
   }
