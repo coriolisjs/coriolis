@@ -21,48 +21,56 @@ const newTodoItem = item => ({
 
 const hasId = id => item => item.id === id
 
-export const todolist = (state = [], { type, payload, error }) => {
-  if (error) {
-    return state
-  }
-
-  switch (type) {
-    case added.toString():
-      return [
-        ...state,
-        newTodoItem(payload)
-      ]
-
-    case edited.toString():
-      return findAndReplace(
-        state,
-        hasId(payload.id),
-        setTodoText(payload.text)
-      )
-
-    case done.toString():
-    case reset.toString():
-      return findAndReplace(
-        state,
-        hasId(payload),
-        setTodoDone(type === done.toString())
-      )
-
-    case removed.toString():
-      return state.filter(not(hasId(payload)))
-
-    default:
+export const todolist = ({ useState, useEvent }) => (
+  useState([]),
+  useEvent(added, edited, done, reset, removed),
+  (state, { type, payload, error }) => {
+    if (error) {
       return state
-  }
-}
+    }
 
-export const todolistFilterName = (filterName = filters[0], { type, payload, error }) => {
-  if (error || type !== filter.toString()) {
-    return filterName
-  }
+    switch (type) {
+      case added.toString():
+        return [
+          ...state,
+          newTodoItem(payload)
+        ]
 
-  return payload
-}
+      case edited.toString():
+        return findAndReplace(
+          state,
+          hasId(payload.id),
+          setTodoText(payload.text)
+        )
+
+      case done.toString():
+      case reset.toString():
+        return findAndReplace(
+          state,
+          hasId(payload),
+          setTodoDone(type === done.toString())
+        )
+
+      case removed.toString():
+        return state.filter(not(hasId(payload)))
+
+      default:
+        break
+    }
+  }
+)
+
+export const todolistFilterName = ({ useState, useEvent }) => (
+  useState(filters[0]),
+  useEvent(filter),
+  (filterName, { payload, error }) => {
+    if (error) {
+      return filterName
+    }
+
+    return payload
+  }
+)
 
 export const filteredTodolist = ({ useAggr }) => (
   useAggr(todolist),
