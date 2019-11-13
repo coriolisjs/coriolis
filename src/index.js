@@ -5,6 +5,3 @@ export {
   createAggregatorFactory,
   snapshot
 } from './aggregator'
-export { parameteredAggr } from '../tools/aggr/parameteredAggr'
-export { lastOfType } from '../tools/aggr/lastOfType'
-export { lastPayloadOfType } from '../tools/aggr/lastPayloadOfType'

@@ -1,4 +1,4 @@
-import { lastPayloadOfType } from 'coriolis'
+import { lastPayloadOfType } from 'coriolis-parametered-aggr'
 
 import { changed } from '../events/view'
 
