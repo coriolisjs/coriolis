@@ -54,7 +54,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     aggregators: [],
     stateIndex: undefined,
     initialState: undefined,
-    skipIndexes: []
+    skipIndexes: [],
+    name: undefined
   }
 
   const useState = (initialValue) => {
@@ -87,12 +88,15 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
   const useValue = value => using.aggregators.push(() => value)
 
+  const setName = name => { using.name = name }
+
   const setupParamsRaw = Object.entries({
     useState,
     useEvent,
     useAggr,
     lazyAggr,
-    useValue
+    useValue,
+    setName
   })
     .map(([key, value]) => [key, variableFunction(value)])
 
@@ -115,6 +119,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     using.aggregators.length === ((using.stateIndex !== undefined) + using.allEvents)
 
   const getInitialState = () => using.initialState
+
+  const getName = () => using.name
 
   const createValuesGetter = () => {
     const processAggregators = event => using.aggregators.map(aggregator => aggregator(event))
@@ -158,7 +164,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     isNullSetup,
     isReducerSetup,
     isReducerLikeSetup,
-    preventOutOfScopeUsage
+    preventOutOfScopeUsage,
+    getName
   }
 }
 
@@ -178,7 +185,8 @@ const createComplexAggregator = (aggr, getAggregator) => {
     isNullSetup,
     isReducerSetup,
     isReducerLikeSetup,
-    preventOutOfScopeUsage
+    preventOutOfScopeUsage,
+    getName
   } = createAggrSetupAPI(getLastState, getAggregator)
 
   // aggr could be a reducer, calling it with setupParams could lead to an exception
@@ -199,6 +207,14 @@ const createComplexAggregator = (aggr, getAggregator) => {
     // reducer aggr with optional parameters could lead here.
     // let's assume aggr is in fact a reducer
     return createReducerAggregator(aggr)
+  }
+
+  const name = getName()
+  if (name) {
+    Object.defineProperty(aggr, 'name', {
+      value: name,
+      writable: false
+    })
   }
 
   // if given aggregator definition expects only state and event (or less), it should be a reducer

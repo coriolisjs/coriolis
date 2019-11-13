@@ -13,6 +13,24 @@ const getStoreId = () => ++lastStoreId
 let lastAggrId = 0
 const getAggrId = () => ++lastAggrId
 
+const getAggrName = aggr => {
+  try {
+    let foundName
+    aggr({
+      useState: () => {},
+      useEvent: () => {},
+      useAggr: () => {},
+      lazyAggr: () => {},
+      useValue: () => {},
+      setName: name => { foundName = name }
+    })
+
+    return foundName || aggr.name
+  } catch(error) {
+    return aggr.name
+  }
+}
+
 export const wrapCoriolisOptions = (_options, ...rest) => {
   let options = _options
   let effects
@@ -34,6 +52,14 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
 
   options.aggregatorFactory = createAggregatorFactory((aggr, getAggregator) => {
     const aggrId = getAggrId()
+    const aggrName = getAggrName(aggr)
+
+    if (aggrName !== aggr.name) {
+      Object.defineProperty(aggr, 'name', {
+        value: aggrName,
+        writable: false
+      })
+    }
 
     const aggrBehaviorWrapper = aggrBehavior => (...args) => {
       const newState = aggrBehavior(...args)
@@ -81,7 +107,7 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
     }
 
     Object.defineProperty(wrappedAggr, 'name', {
-      value: aggr.name,
+      value: aggrName,
       writable: false
     })
 
