@@ -197,6 +197,9 @@ const createComplexAggregator = (aggr, getAggregator) => {
 
   if (isNullSetup() || typeof aggrBehavior !== 'function') {
     if (aggrBehavior === null) {
+      // If it's null, we got an error. To avoid making an error completely disapear it
+      // is probably better to display this information in console
+      // TODO: ensure this behavior is the good one
       console.info(
         'Aggr setup failure, let\'s use it as a reducer',
         aggr.name,
