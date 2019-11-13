@@ -2,7 +2,6 @@ import { Subject, merge, noop, identity, EMPTY } from 'rxjs'
 import {
   concat,
   map,
-  share,
   tap
 } from 'rxjs/operators'
 
@@ -88,8 +87,7 @@ export const createEventSubject = (
       // a timestamp here to be sure every event have one
       map(stampEvent),
       eventEnhancer,
-      concat(startoverNewevent$),
-      share()
+      concat(startoverNewevent$)
     )
 
   return Subject.create(neweventSubject, event$)
