@@ -1,4 +1,5 @@
-export { createStore, FIRST_EVENT_TYPE } from './eventStore'
+export { FIRST_EVENT_TYPE } from './extensibleEventSubject'
+export { createStore } from './eventStore'
 export { createEventBuilder } from './eventBuilder'
 export {
   createAggregator,
