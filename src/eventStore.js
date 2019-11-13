@@ -19,7 +19,6 @@ import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { payloadEquals } from './lib/event/payloadEquals'
 
 import { createEventSubject } from './eventSubject'
-import { createAggregatorFactory } from './aggregator'
 import { createAggrWrapperFactory } from './aggrWrapper'
 
 export const FIRST_EVENT_TYPE = 'All initial events have been read'
@@ -91,11 +90,11 @@ export const createStore = (_options, ...rest) => {
     shareReplay(1)
   )
 
-  const aggregatorFactory = options.aggregatorFactory || createAggregatorFactory()
-
-  const {
-    get: withAggr
-  } = createAggrWrapperFactory(replayCaster, initDone, aggregatorFactory.get)
+  const withAggr = createAggrWrapperFactory(
+    replayCaster,
+    initDone,
+    options.aggregatorFactory
+  )
 
   const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 

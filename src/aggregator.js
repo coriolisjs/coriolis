@@ -261,5 +261,5 @@ export const createAggregatorFactory = (aggregatorBuilder = createAggregator) =>
       .map(([aggr, aggregator]) => [aggr.name, aggregator.value])
   )
 
-  return factory
+  return factory.get
 }
