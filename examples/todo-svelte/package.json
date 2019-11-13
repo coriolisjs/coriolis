@@ -22,6 +22,7 @@
     "sirv-cli": "^0.4.4"
   },
   "scripts": {
+    "clear": "rm -rf node_modules public/bundle.css public/*.js public/*.map",
     "build": "rollup -c",
     "autobuild": "rollup -c -w",
     "dev": "run-p start:dev autobuild",

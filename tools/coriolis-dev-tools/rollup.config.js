@@ -14,12 +14,12 @@ export default {
       sourcemap: true,
       format: 'cjs',
       name: 'devtools-cjs',
-      dir: 'public/cjs'
+      dir: 'dist/cjs'
     },{
       sourcemap: true,
       format: 'esm',
       name: 'devtools-esm',
-      dir: 'public/esm'
+      dir: 'dist/esm'
     },
   ],
   plugins: [
@@ -36,14 +36,14 @@ export default {
     // consult the documentation for details:
     // https://github.com/rollup/rollup-plugin-commonjs
     resolve({
-      browser: true,
+      // browser: true,
       dedupe: importee => importee === 'svelte' || importee.startsWith('svelte/')
     }),
     commonjs(),
 
     // Watch the `public` directory and refresh the
     // browser on changes when not in production
-    !production && livereload('public'),
+    !production && livereload('dist'),
 
     // If we're building for production (npm run build
     // instead of npm run dev), minify
