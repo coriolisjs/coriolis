@@ -1,4 +1,3 @@
-import { pipe } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { createEventSubject } from '../eventSubject'
 
@@ -119,7 +118,7 @@ describe('eventSubject', () => {
 
   it(`Enhancer can be setup to enhance every new event
 
-      Given an eventSubject created with an enhancer rx pipe
+      Given an eventSubject created with an enhancer (rx pipable operator)
       When an event is dispatched
       Then the enhancer is executed
       And changes done by enhancer on the event are passed to subscribers
@@ -127,7 +126,7 @@ describe('eventSubject', () => {
   `, () => {
     const eventsSpy = sinon.spy()
     const enhancerMapStub = sinon.stub().callsFake(event => ({ ...event, payload: 'enhanced payload' }))
-    const enhancer = pipe(map(enhancerMapStub))
+    const enhancer = map(enhancerMapStub)
 
     const eventSubject = createEventSubject(undefined, undefined, enhancer)
 
@@ -151,7 +150,7 @@ describe('eventSubject', () => {
   `, () => {
     const eventsSpy = sinon.spy()
     const logSpy = sinon.spy()
-    const enhancerStub = sinon.stub().callsFake(pipe(map(event => ({ ...event, payload: 'enhanced payload' }))))
+    const enhancerStub = sinon.stub().callsFake(map(event => ({ ...event, payload: 'enhanced payload' })))
 
     const eventSubject = createEventSubject(undefined, logSpy, enhancerStub)
 
