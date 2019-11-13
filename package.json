@@ -8,9 +8,8 @@
     "lint": "eslint .",
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
     "test:watch": "npm run -s test -- --watch",
-    "start": "babel-node src/run/usage",
-    "build": "babel src -d dist --ignore 'src/**/*.spec.js','src/run','src/test'",
-    "build:concat": "babel src --out-file dist/bundle.js --ignore 'src/**/*.spec.js','src/run','src/test'"
+    "build": "babel src -d dist --ignore 'src/**/*.spec.js','src/test'",
+    "build:concat": "babel src --out-file dist/bundle.js --ignore 'src/**/*.spec.js','src/test'"
   },
   "author": "Nicolas Deveaud",
   "license": "GPL-3.0",
