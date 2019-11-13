@@ -2,7 +2,7 @@
   "name": "coriolis",
   "version": "1.0.0",
   "description": "Event sourced effect management",
-  "module": "src/index.js",
+  "module": "dist/index.js",
   "scripts": {
     "clear": "rm -rf node_modules",
     "lint": "eslint .",
@@ -30,6 +30,9 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "mocha": "^6.2.2",
+    "rollup": "^1.27.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-visualizer": "^2.7.2",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0"
   },
