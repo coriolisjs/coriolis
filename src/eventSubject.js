@@ -43,16 +43,16 @@ const stampEvent = event => ({
 })
 
 /*
-EventSource behaviour:
+eventSubject behaviour:
   Immediatly every input event is kept in a buffer until input events subscription
   then subscribes to log subject's output if any, taking this as input events
 
-  On eventSource subscription, subscribes initialSource
+  On eventSubject subscription, subscribes initialSource
   When initialSource completes, subscribes to input events (flushes buffer, then gets new events)
 
   Share's subscriptions to ensure upstream subscriptions are done only once
 */
-export const createEventSource = (
+export const createEventSubject = (
   initialSource = EMPTY,
   logObserver = noop,
   eventEnhancer = identity

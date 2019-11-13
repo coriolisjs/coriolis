@@ -7,7 +7,7 @@ const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
 const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 
-export const urlbar = viewNames => ({ addSource, eventSource, withAggr }) => {
+export const urlbar = viewNames => ({ addSource, eventSubject, withAggr }) => {
   const removeSource = addSource([changed({ view: getCurrentUrlView() || viewNames[0] || UNDEFINED_VIEW_NAME })])
 
   const aggrSubscription = withAggr(currentView)
@@ -23,7 +23,7 @@ export const urlbar = viewNames => ({ addSource, eventSource, withAggr }) => {
     })
 
   const popstateUnsubscribe = subscribeEvent(window, 'popstate', () =>
-    eventSource.next(changed({ view: getCurrentUrlView() })))
+    eventSubject.next(changed({ view: getCurrentUrlView() })))
 
   return () => {
     aggrSubscription.unsubscribe()

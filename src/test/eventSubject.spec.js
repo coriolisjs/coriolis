@@ -1,21 +1,21 @@
 import { pipe } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { createEventSource } from '../eventSource'
+import { createEventSubject } from '../eventSubject'
 
-describe('eventSource', () => {
+describe('eventSubject', () => {
   it(`Basic event dispatch
 
-      Given an eventSource
+      Given an eventSubject
       When an event is dispatched
       Then this event will be received by subscribers
   `, () => {
     const eventsSpy = sinon.spy()
 
-    const eventSource = createEventSource()
+    const eventSubject = createEventSubject()
 
-    const subscription = eventSource.subscribe(eventsSpy)
+    const subscription = eventSubject.subscribe(eventsSpy)
 
-    eventSource.next({ type: 'event type' })
+    eventSubject.next({ type: 'event type' })
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type' }))
@@ -23,7 +23,7 @@ describe('eventSource', () => {
 
   it(`Invalid events handling
 
-      Given an eventSource
+      Given an eventSubject
       When an invalid event is dispatched
       Then an error is raised
   `, () => {
@@ -31,15 +31,15 @@ describe('eventSource', () => {
     const errorSpy = sinon.spy()
     const completeSpy = sinon.spy()
 
-    const eventSource = createEventSource()
+    const eventSubject = createEventSubject()
 
-    const subscription = eventSource.subscribe(
+    const subscription = eventSubject.subscribe(
       eventsSpy,
       errorSpy,
       completeSpy
     )
 
-    eventSource.next({ no: 'event type' })
+    eventSubject.next({ no: 'event type' })
     subscription.unsubscribe()
 
     expect(eventsSpy).not.to.have.been.called()
@@ -49,24 +49,24 @@ describe('eventSource', () => {
 
   it(`Prevent loops
 
-      Given an eventSource
+      Given an eventSubject
       When an event is dispatched
       And a subscriber dispatches again this event
       Then an error is raised
   `, () => {
-    const eventsSpy = sinon.stub().callsFake(event => eventSource.next(event))
+    const eventsSpy = sinon.stub().callsFake(event => eventSubject.next(event))
     const errorSpy = sinon.spy()
     const completeSpy = sinon.spy()
 
-    const eventSource = createEventSource()
+    const eventSubject = createEventSubject()
 
-    const subscription = eventSource.subscribe(
+    const subscription = eventSubject.subscribe(
       eventsSpy,
       errorSpy,
       completeSpy
     )
 
-    eventSource.next({ type: 'event type' })
+    eventSubject.next({ type: 'event type' })
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledOnce()
@@ -78,16 +78,16 @@ describe('eventSource', () => {
 
   it(`Buffering first events
 
-      Given an eventSource
+      Given an eventSubject
       When an event is dispatched before any subscriber subscribes
       Then First subscriber will get the event on subscription
   `, () => {
     const eventsSpy = sinon.spy()
 
-    const eventSource = createEventSource()
+    const eventSubject = createEventSubject()
 
-    eventSource.next({ type: 'event type' })
-    const subscription = eventSource.subscribe(eventsSpy)
+    eventSubject.next({ type: 'event type' })
+    const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type' }))
@@ -99,17 +99,17 @@ describe('eventSource', () => {
 
   it(`Timestamp every new event
 
-      Given an eventSource
+      Given an eventSubject
       When an event is dispatch on it
       Then subscribers receive the event with a timestamp in meta-data
     `, () => {
     const eventsSpy = sinon.spy()
 
-    const eventSource = createEventSource()
+    const eventSubject = createEventSubject()
 
-    eventSource.next({ type: 'event type' })
+    eventSubject.next({ type: 'event type' })
 
-    const subscription = eventSource.subscribe(eventsSpy)
+    const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type', meta: { timestamp: sinon.match(Number) } }))
@@ -119,7 +119,7 @@ describe('eventSource', () => {
 
   it(`Enhancer can be setup to enhance every new event
 
-      Given an eventSource created with an enhancer rx pipe
+      Given an eventSubject created with an enhancer rx pipe
       When an event is dispatched
       Then the enhancer is executed
       And changes done by enhancer on the event are passed to subscribers
@@ -129,11 +129,11 @@ describe('eventSource', () => {
     const enhancerMapStub = sinon.stub().callsFake(event => ({ ...event, payload: 'enhanced payload' }))
     const enhancer = pipe(map(enhancerMapStub))
 
-    const eventSource = createEventSource(undefined, undefined, enhancer)
+    const eventSubject = createEventSubject(undefined, undefined, enhancer)
 
-    eventSource.next({ type: 'event type' })
+    eventSubject.next({ type: 'event type' })
 
-    const subscription = eventSource.subscribe(eventsSpy)
+    const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type', payload: 'enhanced payload' }))
@@ -144,7 +144,7 @@ describe('eventSource', () => {
 
   it(`LogObserver logs events
 
-      Given an eventSource created with a logObserver function parameter
+      Given an eventSubject created with a logObserver function parameter
       When an event is dispatched
       Then the logObserver function is called with this event
       And the event has already been timestamped and enhanced
@@ -153,11 +153,11 @@ describe('eventSource', () => {
     const logSpy = sinon.spy()
     const enhancerStub = sinon.stub().callsFake(pipe(map(event => ({ ...event, payload: 'enhanced payload' }))))
 
-    const eventSource = createEventSource(undefined, logSpy, enhancerStub)
+    const eventSubject = createEventSubject(undefined, logSpy, enhancerStub)
 
-    eventSource.next({ type: 'event type' })
+    eventSubject.next({ type: 'event type' })
 
-    const subscription = eventSource.subscribe(eventsSpy)
+    const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type' }))

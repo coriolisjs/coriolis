@@ -15,7 +15,7 @@ import { viewAdded } from '../events'
 
 import { nav } from './nav'
 
-export const createUI = () => ({ addEffect, addSource, withAggr, eventSource }) => {
+export const createUI = () => ({ addEffect, addSource, withAggr, eventSubject }) => {
   addSource(views.map(viewAdded))
   addEffect(nav)
 
@@ -54,7 +54,7 @@ export const createUI = () => ({ addEffect, addSource, withAggr, eventSource }) 
             this.app = new Entry({
               target: this,
               props: {
-                dispatch: event => eventSource.next(event),
+                dispatch: event => eventSubject.next(event),
                 getSource: withAggr
               }
             })

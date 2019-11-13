@@ -20,8 +20,8 @@ Rules about Coriolis
     - Ajouter une source d'event initiaux
     - Ajouter un logger d'event
     - S'abonner aux events initiaux
-    - S'abonner aux events autres que initiaux (via eventSource)
-    - Émettre des events (via eventSource)
+    - S'abonner aux events autres que initiaux (via eventSubject)
+    - Émettre des events (via eventSubject)
       - Émission d'event invalide -> erreur générale
       - Émission d'erreur -> erreur générale
       - Émission de complétion -> complétion générale // CHECK IF REALLY EXPECTING THIS...
@@ -49,10 +49,10 @@ Rules about Coriolis
   - mise en cache du premier event non initial
   - mise en cache des tout event émit dans un premier temps
   - diffusion aux aggrégateurs et via l'observable initialEvent$ des "events initiaux"
-  - log puis transmission (aux aggregateurs et via eventSource d'effet) des événements buffurisés
-  - log puis transmission (aux aggregateurs et via eventSource d'effet) des nouveaux events
+  - log puis transmission (aux aggregateurs et via eventSubject d'effet) des événements buffurisés
+  - log puis transmission (aux aggregateurs et via eventSubject d'effet) des nouveaux events
 
-  - un eventSource d'effet n'émet donc jamais aucun "event initial"
+  - un eventSubject d'effet n'émet donc jamais aucun "event initial"
   - les aggregateurs voient passer tous les events, même les "initiaux"
 
 - La ré-émition d'un event émit par event store cause une erreur

@@ -7,26 +7,26 @@ import { storeEvent, storeAdded } from './events'
 
 let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
-  let devtoolsEventSource
+  let devtoolsEventSubject
 
   destroyDevtoolsStore = createStore(
     createUI(),
-    ({ eventSource }) => {
-      devtoolsEventSource = eventSource
+    ({ eventSubject }) => {
+      devtoolsEventSubject = eventSubject
     }
   )
 
   return (storeId, storeName = 'unnamed', aggregatorEvents = EMPTY) =>
-    ({ eventSource, initialEvent$, withAggr }) => {
-      devtoolsEventSource.next(storeAdded({
+    ({ eventSubject, initialEvent$, withAggr }) => {
+      devtoolsEventSubject.next(storeAdded({
         storeId,
         storeName,
         snapshot$: withAggr(snapshot)
       }))
 
-      const aggregatorEventsSubscription = aggregatorEvents.subscribe(event => devtoolsEventSource.next(event))
-      const initialEventsSubscription = initialEvent$.subscribe(event => devtoolsEventSource.next(storeEvent({ storeId, event, isInitialEvent: true })))
-      const eventsSubscription = eventSource.subscribe(event => devtoolsEventSource.next(storeEvent({ storeId, event })))
+      const aggregatorEventsSubscription = aggregatorEvents.subscribe(event => devtoolsEventSubject.next(event))
+      const initialEventsSubscription = initialEvent$.subscribe(event => devtoolsEventSubject.next(storeEvent({ storeId, event, isInitialEvent: true })))
+      const eventsSubscription = eventSubject.subscribe(event => devtoolsEventSubject.next(storeEvent({ storeId, event })))
 
       return () => {
         aggregatorEventsSubscription.unsubscribe()

@@ -8,9 +8,9 @@ import {
   randomEventsObservable
 } from '../../utils'
 
-describe('Effect eventSource', () => {
+describe('Effect eventSubject', () => {
   it(`Given a spy effect
-      with an infinit source of events sent to eventSource subject
+      with an infinit source of events sent to eventSubject subject
       When store is created
       Then calling the returned stop function should stop everything
   `, () => {
@@ -20,8 +20,8 @@ describe('Effect eventSource', () => {
       unsubscribeSpy
     } = createTrackedObservable(randomEventsObservable)
 
-    const spyeffect = sinon.spy(({ eventSource }) => {
-      return infinitSource.subscribe(eventSource)
+    const spyeffect = sinon.spy(({ eventSubject }) => {
+      return infinitSource.subscribe(eventSubject)
     })
 
     const stopStore = createStore(spyeffect)
@@ -33,13 +33,13 @@ describe('Effect eventSource', () => {
   })
 
   it(`Given a store with an effect
-      When the effect subscribes to eventSource
+      When the effect subscribes to eventSubject
       Then it receives the coriolis first event
   `, () => {
     const spy = sinon.spy()
 
-    const effect = sinon.spy(({ eventSource }) => {
-      eventSource.subscribe(spy)
+    const effect = sinon.spy(({ eventSubject }) => {
+      eventSubject.subscribe(spy)
     })
 
     createStore(effect)
@@ -49,14 +49,14 @@ describe('Effect eventSource', () => {
   })
 
   it(`Given a store with an effect
-      When the effect dispatches an event on eventSource
-      Then it receives it from eventSource
+      When the effect dispatches an event on eventSubject
+      Then it receives it from eventSubject
   `, () => {
     const spy = sinon.spy()
 
-    const effect = ({ eventSource }) => {
-      eventSource.subscribe(spy)
-      eventSource.next({ type: 'type' })
+    const effect = ({ eventSubject }) => {
+      eventSubject.subscribe(spy)
+      eventSubject.next({ type: 'type' })
     }
 
     createStore(effect)
@@ -67,7 +67,7 @@ describe('Effect eventSource', () => {
   })
 
   it(`Given a spy effect
-      and a source of one event sent immediatly on subscription to eventSource subject
+      and a source of one event sent immediatly on subscription to eventSubject subject
       When store is created
       Then output spy should receive the store first event and then the new event
   `, () => {
@@ -79,9 +79,9 @@ describe('Effect eventSource', () => {
 
     const effectEventSpy = sinon.spy()
 
-    const spyeffect = sinon.spy(({ eventSource }) => {
-      eventSource.subscribe(effectEventSpy)
-      return oneEvent.subscribe(eventSource)
+    const spyeffect = sinon.spy(({ eventSubject }) => {
+      eventSubject.subscribe(effectEventSpy)
+      return oneEvent.subscribe(eventSubject)
     })
 
     const stopStore = createStore(spyeffect)

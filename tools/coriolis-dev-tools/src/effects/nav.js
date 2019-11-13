@@ -8,7 +8,7 @@ import { viewChanged } from '../events'
 
 const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
-export const nav = ({ addSource, withAggr, eventSource }) => {
+export const nav = ({ addSource, withAggr, eventSubject }) => {
   const currentViewName$ = withAggr(currentViewName)
   const defaultViewName$ = withAggr(defaultViewName)
 
@@ -20,7 +20,7 @@ export const nav = ({ addSource, withAggr, eventSource }) => {
   }))
 
   const replaceViewSubscription = withAggr(replacementViewName)
-    .subscribe(viewName => viewName && eventSource.next(viewChanged(viewName)))
+    .subscribe(viewName => viewName && eventSubject.next(viewChanged(viewName)))
 
   return () => {
     removeSource()

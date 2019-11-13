@@ -18,7 +18,7 @@ import { variableFunction } from './lib/function/variableFunction'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { payloadEquals } from './lib/event/payloadEquals'
 
-import { createEventSource } from './eventSource'
+import { createEventSubject } from './eventSubject'
 import { createAggregatorFactory } from './aggregator'
 import { createAggrWrapperFactory } from './aggrWrapper'
 
@@ -48,9 +48,9 @@ export const createStore = (_options, ...rest) => {
   const firstEvent = buildFirstEvent()
 
   // Use subjects to have single subscription points to connect all together (one for input, one for output)
-  // eventCaster will handle events coming from eventSource to aggregators and effects
+  // eventCaster will handle events coming from eventSubject to aggregators and effects
   const eventCaster = new Subject()
-  // eventCatcher will handle events coming from effects to eventSource
+  // eventCatcher will handle events coming from effects to eventSubject
   const eventCatcher = new Subject()
 
   // replayCaster is the same as eventCaster but always replaying last event
@@ -77,7 +77,7 @@ export const createStore = (_options, ...rest) => {
 
   // From the moment this event source is created, it starts buffering all events it receives
   // until it gets a subscription and passes them
-  const eventSource = createEventSource(
+  const eventSubject = createEventSubject(
     mainSource.pipe(endWith(firstEvent)),
     logger,
     options.eventEnhancer
@@ -99,7 +99,7 @@ export const createStore = (_options, ...rest) => {
 
   const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
 
-  const effectEventSource = Subject.create(
+  const effectEventSubject = Subject.create(
     eventCatcher,
     eventCaster.pipe(skipUntil(initDone))
   )
@@ -109,16 +109,16 @@ export const createStore = (_options, ...rest) => {
     addSource,
     addLogger,
     initialEvent$,
-    eventSource: effectEventSource,
+    eventSubject: effectEventSubject,
     withAggr
   }))
 
   const initDoneSubscription = initDone.subscribe(disableAddSource)
 
-  // EventCatcher must be connected to eventSource before effects
+  // EventCatcher must be connected to eventSubject before effects
   // are added, to be ready to catch all events
   const eventCatcherSubscription = eventCatcher
-    .subscribe(eventSource)
+    .subscribe(eventSubject)
 
   // connect each defined effect and buid a disconnect function that disconnect all effects
   const removeEffects = effects
@@ -129,7 +129,7 @@ export const createStore = (_options, ...rest) => {
     )
 
   // Once everything is pieced together, subscribe it to event source to start the process
-  const eventCasterSubscription = eventSource
+  const eventCasterSubscription = eventSubject
     .subscribe(eventCaster)
 
   return () => {

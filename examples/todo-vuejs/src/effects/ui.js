@@ -18,14 +18,14 @@ const viewNames = Object.keys(views)
 export const createUi = () => {
   Vue.config.productionTip = false
 
-  return ({ eventSource, withAggr, addEffect }) => {
+  return ({ eventSubject, withAggr, addEffect }) => {
     addEffect(urlbar(viewNames))
     withAggr(todolist).connect()
     withAggr(todolistFilterName).connect()
 
     const vue = new Vue({
       provide: {
-        dispatch: event => eventSource.next(event),
+        dispatch: event => eventSubject.next(event),
         getSource: withAggr
       },
       render: createElement => createElement(ViewSwitch, { props: { views } })
