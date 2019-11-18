@@ -6,7 +6,8 @@ import { variableFunction } from './lib/function/variableFunction'
 import { chain } from './lib/function/chain'
 import { tryOrNull } from './lib/function/tryOrNull'
 
-// snapshot is a unique aggr that will return all indexed aggregators' last state
+// snapshot is a unique aggr that will return every indexed aggregators' last state
+// this function must stay uniq, so as an example we must not use noop here
 export const snapshot = () => {}
 
 // Builds an aggregator function (receives an event, returns a state) from a reducer function
@@ -32,6 +33,10 @@ const createReducerAggregator = (reducer, initialState) => {
 
   aggregator.initialState = initialState
 
+  // We define both getValue and value getter because, depending on context, one
+  // can be more readable than the other.
+  // getValue is suited when we need to pass a reference to the function, and
+  // value getter is best when accessing directly the value
   aggregator.getValue = () => lastState
 
   Object.defineProperty(aggregator, 'value', {
@@ -124,6 +129,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
   const createValuesGetter = () => {
     const processAggregators = event => using.aggregators.map(aggregator => aggregator(event))
+
     if (using.eventTypes) {
       if (using.allEvents) {
         return processAggregators
