@@ -42,21 +42,19 @@ export const createUI = () => ({ addEffect, addSource, withAggr, eventSubject })
         elementMounted = true;
 
         ensureFeatures({
-          check: ({ default: Entry } = {}) => Entry,
+          check: ({ default: Entry, setStoreAPI } = {}) => Entry && setStoreAPI && { Entry, setStoreAPI },
           load: () => import('../components/Entry.svelte'),
         }).then(
-          ([Entry]) => {
+          ([{ Entry, setStoreAPI }]) => {
             if (!elementMounted) {
               // element was unmounted while loading dependencies, don't go further
               return;
             }
 
+            setStoreAPI({ eventSubject, withAggr })
+
             this.app = new Entry({
               target: this,
-              props: {
-                dispatch: event => eventSubject.next(event),
-                getSource: withAggr
-              }
             })
           },
           error => {

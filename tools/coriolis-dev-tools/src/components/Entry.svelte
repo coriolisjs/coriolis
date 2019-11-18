@@ -1,16 +1,20 @@
-<script>
-  import { setContext } from 'svelte'
+<script context="module">
+  import { getSource, createStoreAPIRegisterer } from '../lib/svelte/coriolis'
 
+  const {
+    setStoreAPI,
+    shareStoreAPI
+  } = createStoreAPIRegisterer()
+
+  export { setStoreAPI }
+</script>
+<script>
   import * as componentIndex from './views/componentIndex'
   import DevToolsButton from './units/DevToolsButton.svelte'
 
   import { enabledViewName } from '../aggrs/enabledViewName'
 
-  export let dispatch
-  export let getSource
-
-  setContext('dispatch', dispatch)
-  setContext('getSource', getSource)
+  shareStoreAPI()
 
   const CurrentView$ = getSource(enabledViewName)
 </script>
