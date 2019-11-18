@@ -16,7 +16,7 @@ import { payloadEquals } from './lib/event/payloadEquals'
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createAggrWrapperFactory } from './aggrWrapper'
 
-export const createStore = (_options, ...rest) => {
+export const withSimpleStoreSignature = callback => (_options, ...rest) => {
   let options = _options
   let effects
   if (typeof options === 'function') {
@@ -28,6 +28,10 @@ export const createStore = (_options, ...rest) => {
     effects = rest
   }
 
+  return callback(options, ...effects)
+}
+
+export const createStore = withSimpleStoreSignature((options, ...effects) => {
   if (!effects.length) {
     throw new Error('No effect defined. This app is useless, let\'s stop right now')
   }
@@ -104,4 +108,4 @@ export const createStore = (_options, ...rest) => {
     eventCasterSubscription.unsubscribe()
     removeEffects()
   }
-}
+})

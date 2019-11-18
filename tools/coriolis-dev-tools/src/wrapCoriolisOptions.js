@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs'
 
-import { createAggregator, createAggregatorFactory } from 'coriolis'
+import { createAggregator, createAggregatorFactory, withSimpleStoreSignature } from 'coriolis'
 
 import { createCoriolisDevToolsEffect } from './effect'
 
@@ -31,18 +31,7 @@ const getAggrName = aggr => {
   }
 }
 
-export const wrapCoriolisOptions = (_options, ...rest) => {
-  let options = _options
-  let effects
-  if (typeof options === 'function') {
-    effects = [options, ...rest]
-    options = {}
-  } else if (options.effects && Array.isArray(options.effects)) {
-    effects = [...options.effects, ...rest]
-  } else {
-    effects = rest
-  }
-
+export const wrapCoriolisOptions = withSimpleStoreSignature((options, ...effects) => {
   const storeId = getStoreId()
   const aggregatorEvents = new Subject()
 
@@ -138,4 +127,4 @@ export const wrapCoriolisOptions = (_options, ...rest) => {
   })
 
   return options
-}
+})
