@@ -1,7 +1,7 @@
 <script>
   import formatHighlight from 'json-format-highlight'
 
-  import { getSource } from '../../lib/svelte/coriolis'
+  import { getSource } from 'coriolis-svelte'
 
   import { currentStoreSnapshot } from '../../aggrs/currentStoreSnapshot'
 

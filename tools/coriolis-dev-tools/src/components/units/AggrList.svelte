@@ -1,5 +1,5 @@
 <script>
-  import { getSource } from '../../lib/svelte/coriolis'
+  import { getSource } from 'coriolis-svelte'
 
   import { aggrsList } from '../../aggrs/aggrsList.js'
 

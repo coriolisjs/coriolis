@@ -1,7 +1,7 @@
 <script>
   import VirtualList from '@sveltejs/svelte-virtual-list';
 
-  import { getSource } from '../../lib/svelte/coriolis'
+  import { getSource } from 'coriolis-svelte'
 
   import { filteredEventList } from '../../aggrs/filteredEventList'
 

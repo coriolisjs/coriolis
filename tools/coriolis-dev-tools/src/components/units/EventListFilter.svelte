@@ -1,5 +1,5 @@
 <script>
-  import { getSource, createDispatch } from '../../lib/svelte/coriolis'
+  import { getSource, createDispatch } from 'coriolis-svelte'
 
   import { eventListFilter } from '../../aggrs/eventListFilter'
   import { eventListFilterChange } from '../../events'

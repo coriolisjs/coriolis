@@ -1,10 +1,10 @@
 <script context="module">
-  import { getSource, createStoreAPIRegisterer } from '../lib/svelte/coriolis'
+  import { getSource, createStoreAPIProvider } from 'coriolis-svelte'
 
   const {
     setStoreAPI,
     shareStoreAPI
-  } = createStoreAPIRegisterer()
+  } = createStoreAPIProvider()
 
   export { setStoreAPI }
 </script>

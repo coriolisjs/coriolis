@@ -1,13 +1,16 @@
 import { getContext, setContext } from 'svelte'
 
-export const getSource = (...args) => getContext('getSource')(...args)
+const KEY_GET_SOURCE = 'Coriolis store reference withAggr'
+const KEY_DISPATCH = 'Coriolis store reference dispatch'
+
+export const getSource = (...args) => getContext(KEY_GET_SOURCE)(...args)
 
 export const createDispatch = builder => {
-  const dispatch =  getContext('dispatch')
+  const dispatch = getContext(KEY_DISPATCH)
   return (...args) => dispatch(builder(...args))
 }
 
-export const createStoreAPIRegisterer = () => {
+export const createStoreAPIProvider = () => {
   let receivedStoreAPI
   const setStoreAPI = storeAPI => { receivedStoreAPI = storeAPI }
 
@@ -18,8 +21,8 @@ export const createStoreAPIRegisterer = () => {
 
     const { eventSubject, withAggr } = receivedStoreAPI
 
-    setContext('getSource', withAggr)
-    setContext('dispatch', event => eventSubject.next(event))
+    setContext(KEY_GET_SOURCE, withAggr)
+    setContext(KEY_DISPATCH, event => eventSubject.next(event))
   }
 
   return {
