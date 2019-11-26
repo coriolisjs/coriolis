@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
     "test:watch": "npm run -s test -- --watch",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "autobuild": "rollup -c -w"
   },
   "author": "Nicolas Deveaud",
   "license": "GPL-3.0",
