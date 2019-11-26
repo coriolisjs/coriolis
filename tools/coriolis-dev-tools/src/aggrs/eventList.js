@@ -8,79 +8,86 @@ import { storeEvent, aggrCalled } from '../events'
 import { currentStoreId } from './currentStoreId'
 import { fullAggrsIndex } from './aggrsList'
 
-const getTimestampDelta = (timestamp2, timestamp1) => timestamp1
-  ? timestamp2 - timestamp1
-  : 0
+const getTimestampDelta = (timestamp2, timestamp1) =>
+  timestamp1 ? timestamp2 - timestamp1 : 0
 
-const createEventListItem = (event, isInitialEvent, previousEvent, firstEvent) => ({
+const createEventListItem = (
+  event,
+  isInitialEvent,
+  previousEvent,
+  firstEvent,
+) => ({
   type: event.type,
   payload: event.payload,
   meta: event.meta,
   error: event.error,
   isInitialEvent,
+  aggrCalls: [],
 
-  date: (new Date(event.meta.timestamp)).toLocaleString(),
+  date: new Date(event.meta.timestamp).toLocaleString(),
   timestamp: event.meta.timestamp,
-  deltaN: getTimestampDelta(event.meta.timestamp, get(previousEvent, 'timestamp')),
-  delta0: getTimestampDelta(event.meta.timestamp, get(firstEvent, 'timestamp'))
+  deltaN: getTimestampDelta(
+    event.meta.timestamp,
+    get(previousEvent, 'timestamp'),
+  ),
+  delta0: getTimestampDelta(event.meta.timestamp, get(firstEvent, 'timestamp')),
 })
 
-const fullEventList = ({ useState, useEvent }) => (
+const fullEventList = ({ useState, useEvent, useAggr }) => (
   useState({}),
-  useEvent(storeEvent),
-  (lists, { payload: { storeId, event: originalEvent, isInitialEvent }}) => ({
-    ...lists,
-    [storeId]: unshift(
-      lists[storeId],
-      createEventListItem(
-        originalEvent,
-        isInitialEvent,
-        first(lists[storeId]),
-        last(lists[storeId])
-      ),
-    )
-  })
-)
-
-const eventListWithAggrs = ({ useState, useEvent, useAggr }) => (
-  useState({}),
-  useEvent(aggrCalled),
-  useAggr(fullEventList),
+  useEvent(aggrCalled, storeEvent),
   useAggr(fullAggrsIndex),
-  (lists, { payload: { storeId, aggrId, args, newState }}, allEvents, aggrIndexes) => {
-    const storeList = lists[storeId] || []
-    const lastEvent = allEvents[storeId][0]
-    const lastPassedEvent = storeList[0]
+  (lists, event, aggrIndexes) => {
+    const eventList = lists[storeId]
+    let newEventlist
 
-    const isNewEvent = !lastPassedEvent || lastEvent.meta !== lastPassedEvent.meta
+    if (event.type === storeEvent.toString()) {
+      const {
+        payload: { storeId, event: originalEvent, isInitialEvent },
+      } = event
+      newEventlist = unshift(
+        lists[storeId],
+        createEventListItem(
+          originalEvent,
+          isInitialEvent,
+          first(lists[storeId]),
+          last(lists[storeId]),
+        ),
+      )
+    } else {
+      const {
+        payload: { storeId, aggrId, args, newState },
+      } = event
 
-    const aggrCalls = isNewEvent
-      ? []
-      : lastPassedEvent.aggrCalls
+      const lastEvent = eventList[0]
+      const aggrData = aggrIndexes[storeId][aggrId]
 
-    return ({
-      ...lists,
-      [storeId]: [
+      newEventlist = [
         {
           ...lastEvent,
           aggrCalls: [
-            ...aggrCalls,
+            ...lastEvent.aggrCalls,
             {
-              ...aggrIndexes[storeId][aggrId],
+              ...aggrData,
               args,
-              previousState: aggrIndexes[storeId][aggrId].aggregator.value,
-              newState
-            }
-          ]
+              previousState: aggrData.aggregator.value,
+              newState,
+            },
+          ],
         },
-        ...storeList.slice(isNewEvent ? 0 : 1)
+        ...eventList.slice(1),
       ]
-    })
+    }
+
+    return {
+      ...lists,
+      [storeId]: newEventlist,
+    }
   }
 )
 
 export const eventList = ({ useAggr, lazyAggr }) => (
-  useAggr(eventListWithAggrs),
+  useAggr(fullEventList),
   lazyAggr(currentStoreId),
   (allEvents, storeId) => get(allEvents, storeId)
 )
