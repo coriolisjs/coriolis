@@ -38,6 +38,9 @@ const fullEventList = ({ useState, useEvent, useAggr }) => (
   useEvent(aggrCalled, storeEvent),
   useAggr(fullAggrsIndex),
   (lists, event, aggrIndexes) => {
+    const {
+      payload: { storeId },
+    } = event
     const eventList = lists[storeId]
     let newEventlist
 
@@ -46,12 +49,12 @@ const fullEventList = ({ useState, useEvent, useAggr }) => (
         payload: { storeId, event: originalEvent, isInitialEvent },
       } = event
       newEventlist = unshift(
-        lists[storeId],
+        eventList,
         createEventListItem(
           originalEvent,
           isInitialEvent,
-          first(lists[storeId]),
-          last(lists[storeId]),
+          first(eventList),
+          last(eventList),
         ),
       )
     } else {
