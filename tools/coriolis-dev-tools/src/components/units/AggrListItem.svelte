@@ -9,6 +9,7 @@
   export let stateCalls = 0
   export let aggrCalls = 0
   export let isReducer = false
+  export let aggregator
 </script>
 
 <style lang="scss">
