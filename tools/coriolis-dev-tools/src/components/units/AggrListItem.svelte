@@ -32,7 +32,7 @@
 </style>
 
 <li
-  on:click={() => console.log(aggr, aggrBehavior)}
+  on:click={() => console.log(aggr, aggrBehavior, aggregator)}
 >
   <h3>{name} ({aggrId})</h3>
   <div class="aggrType"><span class="label">type:</span> {isReducer ? 'reducer' : 'custom'}</div>
