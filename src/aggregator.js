@@ -20,8 +20,12 @@ const createReducerAggregator = (reducer, initialState) => {
   let lastState = initialState
 
   const aggregator = event => {
-    // in any case, same event => last state, no event => last state
-    if (!event || (lastEvent && event === lastEvent.value)) {
+    if (!event) {
+      throw new Error('Aggregator called with no event')
+    }
+
+    // same event => last state
+    if (lastEvent && event === lastEvent.value) {
       return lastState
     }
 
