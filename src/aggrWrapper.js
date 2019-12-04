@@ -9,6 +9,7 @@ import {
 
 import { createIndex } from './lib/map/objectIndex'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
+import { ensureInitial } from './lib/rx/operator/ensureInitial'
 
 import { createAggregatorFactory } from './aggregator'
 
@@ -26,6 +27,8 @@ export const createAggrWrapperFactory = (
       // while init is not finished (old events replaying), we expect aggrs to
       // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
       skipUntil(skipUntil$),
+
+      ensureInitial(() => aggregator.value),
 
       // if event does not lead to a new aggregate, we don't want to emit
       distinctUntilChanged()

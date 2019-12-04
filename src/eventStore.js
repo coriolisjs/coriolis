@@ -50,9 +50,6 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   // eventCatcher will handle events coming from effects to eventSubject
   const eventCatcher = new Subject()
 
-  // replayCaster is the same as eventCaster but always replaying last event
-  const replayCaster = eventCaster.pipe(shareReplay(1))
-
   const initDone = eventCaster.pipe(
     // Check is done on payload value, event object itself
     // would have been changed (adding meta-data for example)
@@ -62,7 +59,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   )
 
   const withAggr = createAggrWrapperFactory(
-    replayCaster,
+    eventCaster,
     initDone,
     options.aggregatorFactory
   )
