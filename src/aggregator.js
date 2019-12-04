@@ -123,6 +123,11 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const isReducerLikeSetup = () =>
     using.aggregators.length === ((using.stateIndex !== undefined) + using.allEvents)
 
+  const getInitialStates = () =>
+    using.aggregators.map(aggregator => aggregator.initialState)
+
+  const usesEvents = () => using.eventTypes !== undefined
+
   const getInitialState = () => using.initialState
 
   const getName = () => using.name
@@ -147,7 +152,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
       }
     }
 
-    let lastValues = using.aggregators.map(aggregator => aggregator.initialState)
+    let lastValues = getInitialStates()
     return event => {
       const values = processAggregators(event)
 
@@ -170,6 +175,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     isNullSetup,
     isReducerSetup,
     isReducerLikeSetup,
+    getInitialStates,
+    usesEvents,
     preventOutOfScopeUsage,
     getName
   }
@@ -191,6 +198,8 @@ const createComplexAggregator = (aggr, getAggregator) => {
     isNullSetup,
     isReducerSetup,
     isReducerLikeSetup,
+    getInitialStates,
+    usesEvents,
     preventOutOfScopeUsage,
     getName
   } = createAggrSetupAPI(getLastState, getAggregator)
@@ -241,6 +250,15 @@ const createComplexAggregator = (aggr, getAggregator) => {
 
   const getValues = createValuesGetter()
 
+  const initialState = getInitialState()
+
+  const finalInitialState =
+    initialState !== undefined
+      ? initialState
+      : usesEvents()
+        ? undefined
+        : aggrBehavior(...getInitialStates())
+
   aggregator = createReducerAggregator(
     (lastState, event) => {
       const values = getValues(event)
@@ -251,7 +269,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
 
       return aggrBehavior(...values)
     },
-    getInitialState()
+    finalInitialState
   )
 
   return aggregator
