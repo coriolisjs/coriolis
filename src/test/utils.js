@@ -26,17 +26,17 @@ export const matchCoriolisEffectAPI = sinon.match({
 export const matchCoriolisAggregatorSetupAPI = sinon.match({
   useAggr: sinon.match.func,
   useEvent: sinon.match.func,
-  useState: sinon.match.func
+  useState: sinon.match.func,
+  lazyAggr: sinon.match.func,
+  setName: sinon.match.func,
+  useValue: sinon.match.func
 })
 
 export const createTrackedObservable = observable => {
   const unsubscribeSpy = sinon.spy()
   const subscribeSpy = sinon.stub().returns(unsubscribeSpy)
 
-  const spyObservable = merge(
-    observable,
-    Observable.create(subscribeSpy)
-  )
+  const spyObservable = merge(observable, Observable.create(subscribeSpy))
 
   return {
     spyObservable,
@@ -48,7 +48,11 @@ export const createTrackedObservable = observable => {
 export const randomEventsObservable = Observable.create(observer => {
   let timeout
   const next = () => {
-    observer.next({ type: Math.random().toString(36).substring(2, 15) })
+    observer.next({
+      type: Math.random()
+        .toString(36)
+        .substring(2, 15)
+    })
     timeout = setTimeout(next, Math.random() * 10)
   }
   next()
