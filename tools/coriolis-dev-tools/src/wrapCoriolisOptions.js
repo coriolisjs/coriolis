@@ -1,10 +1,19 @@
 import { Subject } from 'rxjs'
 
-import { createAggregator, createAggregatorFactory, withSimpleStoreSignature } from 'coriolis'
+import {
+  createAggregator,
+  createAggregatorFactory,
+  withSimpleStoreSignature,
+} from 'coriolis'
 
 import { createCoriolisDevToolsEffect } from './effect'
 
-import { aggregatorCreated, aggrSetup, aggrCalled, aggregatorCalled } from './events'
+import {
+  aggregatorCreated,
+  aggrSetup,
+  aggrCalled,
+  aggregatorCalled,
+} from './events'
 import { lossless } from './lib/rx/operator/lossless'
 
 let lastStoreId = 0
@@ -22,11 +31,13 @@ const getAggrName = aggr => {
       useAggr: () => {},
       lazyAggr: () => {},
       useValue: () => {},
-      setName: name => { foundName = name }
+      setName: name => {
+        foundName = name
+      },
     })
 
     return foundName || aggr.name
-  } catch(error) {
+  } catch (error) {
     return aggr.name
   }
 }
@@ -121,17 +132,23 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
   return wrappedAggregator
 }
 
-export const wrapCoriolisOptions = withSimpleStoreSignature((options, ...effects) => {
-  const storeId = getStoreId()
-  const aggregatorEvents = new Subject()
+export const wrapCoriolisOptions = withSimpleStoreSignature(
+  (options, ...effects) => {
+    const storeId = getStoreId()
+    const aggregatorEvents = new Subject()
 
-  const devtoolsEffect = createCoriolisDevToolsEffect(storeId, options.storeName, aggregatorEvents.pipe(lossless))
+    const devtoolsEffect = createCoriolisDevToolsEffect(
+      storeId,
+      options.storeName,
+      aggregatorEvents.pipe(lossless),
+    )
 
-  options.effects = [devtoolsEffect, ...effects]
+    options.effects = [devtoolsEffect, ...effects]
 
-  options.aggregatorFactory = createAggregatorFactory(
-    createTrackingAggregatorFactory(storeId, aggregatorEvents),
-  )
+    options.aggregatorFactory = createAggregatorFactory(
+      createTrackingAggregatorFactory(storeId, aggregatorEvents),
+    )
 
-  return options
-})
+    return options
+  },
+)

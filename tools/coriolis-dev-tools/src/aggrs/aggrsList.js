@@ -4,19 +4,22 @@ import {
   aggregatorCreated,
   aggrSetup,
   aggrCalled,
-  aggregatorCalled
+  aggregatorCalled,
 } from '../events'
 
 import { currentStoreId } from './currentStoreId'
 
-const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavior, event, aggregator }}) => {
-  switch(type) {
+const reduceAggrState = (
+  state = {},
+  { type, payload: { aggrId, aggr, aggrBehavior, event, aggregator } },
+) => {
+  switch (type) {
     case aggregatorCreated.toString():
       return {
         aggrId,
         aggr,
         name: aggr.name || 'unnamed',
-        aggregator
+        aggregator,
       }
 
     case aggrSetup.toString():
@@ -24,7 +27,7 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
         ...state,
         aggrBehavior: get(aggrBehavior, 'message') || aggrBehavior,
         setupCalls: (state.setupCalls || 0) + 1,
-        isReducer: typeof aggrBehavior !== 'function'
+        isReducer: typeof aggrBehavior !== 'function',
       }
 
     case aggrCalled.toString():
@@ -32,9 +35,8 @@ const reduceAggrState = (state = {}, { type, payload: { aggrId, aggr, aggrBehavi
         ...state,
         aggrCalls: (state.aggrCalls || 0) + 1,
         cachedCalls: (state.cachedCalls || 0) - 1,
-        isReducer: state.isReducer || !state.setupCalls
+        isReducer: state.isReducer || !state.setupCalls,
       }
-
 
     case aggregatorCalled.toString():
       return {
@@ -53,8 +55,11 @@ export const fullAggrsIndex = ({ useState, useEvent }) => (
     ...list,
     [payload.storeId]: {
       ...list[payload.storeId],
-      [payload.aggrId]: reduceAggrState(get(list, payload.storeId, payload.aggrId), { type, payload })
-    }
+      [payload.aggrId]: reduceAggrState(
+        get(list, payload.storeId, payload.aggrId),
+        { type, payload },
+      ),
+    },
   })
 )
 
@@ -65,6 +70,5 @@ const aggrsIndex = ({ useAggr }) => (
 )
 
 export const aggrsList = ({ useAggr }) => (
-  useAggr(aggrsIndex),
-  index => Object.values(index)
+  useAggr(aggrsIndex), index => Object.values(index)
 )

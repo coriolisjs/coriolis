@@ -7,12 +7,12 @@ import { currentStoreId } from './currentStoreId'
 const allEventTypeIndex = ({ useState, useEvent }) => (
   useState({}),
   useEvent(storeEvent),
-  (index, { payload: { storeId, event: originalEvent }}) => ({
+  (index, { payload: { storeId, event: originalEvent } }) => ({
     ...index,
     [storeId]: {
       ...index[storeId],
-      [originalEvent.type]: (get(index, storeId, originalEvent.type) || 0) + 1
-    }
+      [originalEvent.type]: (get(index, storeId, originalEvent.type) || 0) + 1,
+    },
   })
 )
 

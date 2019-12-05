@@ -7,5 +7,8 @@ export const currentStoreSnapshot = ({ useAggr }) => (
   useAggr(currentStoreId),
   useAggr(storeList),
   (storeId, storeList) =>
-    get(storeList.find(storeData => storeData.storeId === storeId), 'snapshot$')
+    get(
+      storeList.find(storeData => storeData.storeId === storeId),
+      'snapshot$',
+    )
 )

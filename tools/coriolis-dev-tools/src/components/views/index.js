@@ -13,6 +13,6 @@ export const views = [
   },
   {
     name: 'EventTypeList',
-    longname: 'Liste des types d\' event',
-  }
+    longname: "Liste des types d' event",
+  },
 ]

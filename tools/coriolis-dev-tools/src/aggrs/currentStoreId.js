@@ -7,6 +7,6 @@ export const currentStoreId = ({ useState, useEvent }) => (
     type === currentStoreChanged.toString()
       ? payload
       : lastStoreId === undefined
-        ? payload.storeId
-        : lastStoreId
+      ? payload.storeId
+      : lastStoreId
 )

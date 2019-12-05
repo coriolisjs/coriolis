@@ -12,15 +12,20 @@ export const nav = ({ addSource, withAggr, eventSubject }) => {
   const currentViewName$ = withAggr(currentViewName)
   const defaultViewName$ = withAggr(defaultViewName)
 
-  const removeSource = addSource(Observable.create(observer => {
-    if (!currentViewName$.value) {
-      observer.next(viewChanged(defaultViewName$.value || UNDEFINED_VIEW_NAME))
-    }
-    observer.complete()
-  }))
+  const removeSource = addSource(
+    Observable.create(observer => {
+      if (!currentViewName$.value) {
+        observer.next(
+          viewChanged(defaultViewName$.value || UNDEFINED_VIEW_NAME),
+        )
+      }
+      observer.complete()
+    }),
+  )
 
-  const replaceViewSubscription = withAggr(replacementViewName)
-    .subscribe(viewName => viewName && eventSubject.next(viewChanged(viewName)))
+  const replaceViewSubscription = withAggr(replacementViewName).subscribe(
+    viewName => viewName && eventSubject.next(viewChanged(viewName)),
+  )
 
   return () => {
     removeSource()

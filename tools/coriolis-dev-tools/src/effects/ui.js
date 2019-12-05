@@ -16,8 +16,14 @@ import { viewAdded } from '../events'
 
 import { nav } from './nav'
 
-export const createUI = () => ({ addEffect, addSource, withAggr, eventSubject }) => {
+export const createUI = () => ({
+  addEffect,
+  addSource,
+  withAggr,
+  eventSubject,
+}) => {
   addSource(views.map(viewAdded))
+
   addEffect(nav)
 
   withAggr(isDevtoolsOpen).connect()
@@ -34,48 +40,49 @@ export const createUI = () => ({ addEffect, addSource, withAggr, eventSubject })
   createCustomElement(
     'coriolis-dev-tools',
     () =>
-    class extends HTMLElement {
-      connectedCallback() {
-        if (elementMounted) {
-          // eslint-disable-next-line no-console
-          console.warn('Trying to mount Coriolis dev tools twice... useless');
-          return;
-        }
-        elementMounted = true;
-
-        ensureFeatures({
-          check: ({ default: Entry, setStoreAPI } = {}) => Entry && setStoreAPI && { Entry, setStoreAPI },
-          load: () => import('../components/Entry.svelte'),
-        }).then(
-          ([{ Entry, setStoreAPI }]) => {
-            if (!elementMounted) {
-              // element was unmounted while loading dependencies, don't go further
-              return;
-            }
-
-            setStoreAPI({ eventSubject, withAggr })
-
-            this.app = new Entry({
-              target: this,
-            })
-          },
-          error => {
+      class extends HTMLElement {
+        connectedCallback() {
+          if (elementMounted) {
             // eslint-disable-next-line no-console
-            console.error(
-              'Could not load all dependencies for Coriolis dev tools',
-              error
-            );
+            console.warn('Trying to mount Coriolis dev tools twice... useless')
+            return
           }
-        );
-      }
+          elementMounted = true
 
-      disconnectedCallback() {
-        elementMounted = false;
+          ensureFeatures({
+            check: ({ default: Entry, setStoreAPI } = {}) =>
+              Entry && setStoreAPI && { Entry, setStoreAPI },
+            load: () => import('../components/Entry.svelte'),
+          }).then(
+            ([{ Entry, setStoreAPI }]) => {
+              if (!elementMounted) {
+                // element was unmounted while loading dependencies, don't go further
+                return
+              }
 
-        if (this.app) {
-          this.app.$destroy()
+              setStoreAPI({ eventSubject, withAggr })
+
+              this.app = new Entry({
+                target: this,
+              })
+            },
+            error => {
+              // eslint-disable-next-line no-console
+              console.error(
+                'Could not load all dependencies for Coriolis dev tools',
+                error,
+              )
+            },
+          )
         }
-      }
-    }
+
+        disconnectedCallback() {
+          elementMounted = false
+
+          if (this.app) {
+            this.app.$destroy()
+          }
+        }
+      },
   )
 }

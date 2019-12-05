@@ -10,8 +10,12 @@ export const lossless = source => {
   const bufferize = () => {
     bufferSubscription = source.subscribe(
       event => buffer.push(event),
-      err => { error = err },
-      _ => { completed = true }
+      err => {
+        error = err
+      },
+      () => {
+        completed = true
+      },
     )
   }
 

@@ -6,7 +6,5 @@ export const replacementViewName = ({ useAggr }) => (
   useAggr(isDevtoolsOpen),
   useAggr(currentView),
   useAggr(defaultViewName),
-  (isOpen, view, defaultName) => !view && isOpen
-    ? defaultName
-    : undefined
+  (isOpen, view, defaultName) => (!view && isOpen ? defaultName : undefined)
 )

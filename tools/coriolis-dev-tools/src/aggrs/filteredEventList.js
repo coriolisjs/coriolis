@@ -9,8 +9,8 @@ const loweredType = event => event.type.toLowerCase()
 export const filteredEventList = ({ useAggr }) => (
   useAggr(eventList),
   useAggr(eventListFilter),
-  (events, filter) => filter
-    ? events
-      .filter(compose(loweredType, includes(filter.toLowerCase())))
-    : events
+  (events, filter) =>
+    filter
+      ? events.filter(compose(loweredType, includes(filter.toLowerCase())))
+      : events
 )

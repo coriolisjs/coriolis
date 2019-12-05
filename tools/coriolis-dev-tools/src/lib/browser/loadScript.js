@@ -1,6 +1,5 @@
 export const loadScript = (src, maxTimeout = 10000) =>
   new Promise((resolve, reject) => {
-    let timeout
     const script = document.createElement('script')
 
     const done = event => {
@@ -37,9 +36,9 @@ export const loadScript = (src, maxTimeout = 10000) =>
 
     document.head.appendChild(script)
 
-    timeout = setTimeout(
+    const timeout = setTimeout(
       () => done({ type: 'timeout', target: script }),
-      maxTimeout
+      maxTimeout,
     )
   })
 
@@ -51,7 +50,7 @@ export const ensureFeature = ({ check, src, load }) => {
   const control = (...args) =>
     check(...args) ||
     Promise.reject(
-      new Error(`Feature not available after loading source: ${src}`)
+      new Error(`Feature not available after loading source: ${src}`),
     )
 
   if (!load) {
@@ -62,6 +61,4 @@ export const ensureFeature = ({ check, src, load }) => {
 }
 
 export const ensureFeatures = (...features) =>
-  Promise.all(
-    features.map(ensureFeature)
-  )
+  Promise.all(features.map(ensureFeature))

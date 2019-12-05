@@ -46,7 +46,7 @@ const fullEventList = ({ useState, useEvent, useAggr }) => (
 
     if (event.type === storeEvent.toString()) {
       const {
-        payload: { storeId, event: originalEvent, isInitialEvent },
+        payload: { event: originalEvent, isInitialEvent },
       } = event
       newEventlist = unshift(
         eventList,
