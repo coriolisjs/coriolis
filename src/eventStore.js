@@ -1,14 +1,5 @@
-import {
-  Subject,
-  noop
-} from 'rxjs'
-import {
-  filter,
-  shareReplay,
-  skipUntil,
-  take,
-  takeUntil
-} from 'rxjs/operators'
+import { Subject, noop } from 'rxjs'
+import { filter, shareReplay, skipUntil, take, takeUntil } from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { payloadEquals } from './lib/event/payloadEquals'
@@ -33,7 +24,9 @@ export const withSimpleStoreSignature = callback => (_options, ...rest) => {
 
 export const createStore = withSimpleStoreSignature((options, ...effects) => {
   if (!effects.length) {
-    throw new Error('No effect defined. This app is useless, let\'s stop right now')
+    throw new Error(
+      "No effect defined. This app is useless, let's stop right now"
+    )
   }
 
   const {
@@ -71,33 +64,31 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     eventCaster.pipe(skipUntil(initDone))
   )
 
-  const addEffect = effect => simpleUnsub(effect({
-    addEffect,
-    addSource,
-    addLogger,
-    initialEvent$,
-    eventSubject: effectEventSubject,
-    withAggr
-  }))
+  const addEffect = effect =>
+    simpleUnsub(
+      effect({
+        addEffect,
+        addSource,
+        addLogger,
+        initialEvent$,
+        eventSubject: effectEventSubject,
+        withAggr
+      })
+    )
 
   const initDoneSubscription = initDone.subscribe(disableAddSource)
 
   // EventCatcher must be connected to eventSubject before effects
   // are added, to be ready to catch all events
-  const eventCatcherSubscription = eventCatcher
-    .subscribe(eventSubject)
+  const eventCatcherSubscription = eventCatcher.subscribe(eventSubject)
 
   // connect each defined effect and buid a disconnect function that disconnect all effects
   const removeEffects = effects
     .map(addEffect)
-    .reduce(
-      (prev, removeEffect) => () => (prev(), removeEffect()),
-      noop
-    )
+    .reduce((prev, removeEffect) => () => (prev(), removeEffect()), noop)
 
   // Once everything is pieced together, subscribe it to event source to start the process
-  const eventCasterSubscription = eventSubject
-    .subscribe(eventCaster)
+  const eventCasterSubscription = eventSubject.subscribe(eventCaster)
 
   return () => {
     initDoneSubscription.unsubscribe()

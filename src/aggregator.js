@@ -65,9 +65,11 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     name: undefined
   }
 
-  const useState = (initialValue) => {
+  const useState = initialValue => {
     if (using.stateIndex !== undefined) {
-      throw new Error('useState should be used only once in an aggr definition setup')
+      throw new Error(
+        'useState should be used only once in an aggr definition setup'
+      )
     }
     using.initialState = initialValue
     using.stateIndex = using.aggregators.length
@@ -76,7 +78,9 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
   const useEvent = (...eventTypes) => {
     if (using.eventTypes !== undefined) {
-      throw new Error('useEvent should not be called more than once in an aggr definition setup')
+      throw new Error(
+        'useEvent should not be called more than once in an aggr definition setup'
+      )
     }
     // flag true if catching all events (means skip filtering interesting events)
     using.allEvents = !eventTypes.length
@@ -85,8 +89,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     using.aggregators.push(identity)
   }
 
-  const useAggr = aggr =>
-    using.aggregators.push(getAggregator(aggr))
+  const useAggr = aggr => using.aggregators.push(getAggregator(aggr))
 
   const lazyAggr = aggr => {
     using.skipIndexes.push(using.aggregators.length)
@@ -95,7 +98,9 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
   const useValue = value => using.aggregators.push(() => value)
 
-  const setName = name => { using.name = name }
+  const setName = name => {
+    using.name = name
+  }
 
   const setupParamsRaw = Object.entries({
     useState,
@@ -104,14 +109,16 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     lazyAggr,
     useValue,
     setName
-  })
-    .map(([key, value]) => [key, variableFunction(value)])
+  }).map(([key, value]) => [key, variableFunction(value)])
 
-  const setupParams = objectFrom(setupParamsRaw.map(([key, { func }]) => [key, func]))
+  const setupParams = objectFrom(
+    setupParamsRaw.map(([key, { func }]) => [key, func])
+  )
 
   const preventOutOfScopeUsage = chain(
-    ...setupParamsRaw
-      .map(([key, { setup }]) => () => setup(throwUnexpectedScope(key)))
+    ...setupParamsRaw.map(([key, { setup }]) => () =>
+      setup(throwUnexpectedScope(key))
+    )
   )
 
   const isNullSetup = () => using.aggregators.length === 0
@@ -123,7 +130,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
 
   // reducer-like, means it's not in the right order
   const isReducerLikeSetup = () =>
-    using.aggregators.length === ((using.stateIndex !== undefined) + using.allEvents)
+    using.aggregators.length ===
+    (using.stateIndex !== undefined) + using.allEvents
 
   const getLastValues = () =>
     using.aggregators.map(aggregator => aggregator.value)
@@ -135,7 +143,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const getName = () => using.name
 
   const createValuesGetter = () => {
-    const processAggregators = event => using.aggregators.map(aggregator => aggregator(event))
+    const processAggregators = event =>
+      using.aggregators.map(aggregator => aggregator(event))
 
     if (using.eventTypes) {
       if (using.allEvents) {
@@ -158,11 +167,12 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     return event => {
       const values = processAggregators(event)
 
-      const anyChange = values.some((value, idx) =>
-        // last state change is not a value change due to current event, it must not count as a change
-        idx !== using.stateIndex &&
-        !using.skipIndexes.includes(idx) &&
-        value !== lastValues[idx]
+      const anyChange = values.some(
+        (value, idx) =>
+          // last state change is not a value change due to current event, it must not count as a change
+          idx !== using.stateIndex &&
+          !using.skipIndexes.includes(idx) &&
+          value !== lastValues[idx]
       )
       lastValues = values
 
@@ -218,7 +228,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
       // is probably better to display this information in console
       // TODO: ensure this behavior is the good one
       console.info(
-        'Aggr setup failure, let\'s use it as a reducer',
+        "Aggr setup failure, let's use it as a reducer",
         aggr.name,
         aggr,
         aggrBehavior
@@ -241,7 +251,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
   if (isReducerLikeSetup()) {
     console.info(
       'Prefer using simple reducer signature " (state, event) => newstate " ' +
-      'when you only need state and/or event'
+        'when you only need state and/or event'
     )
 
     // Replace with getAggregator in case signature matches reducer signature (state, event)
@@ -261,18 +271,15 @@ const createComplexAggregator = (aggr, getAggregator) => {
         ? aggrBehavior(...getLastValues())
         : undefined
 
-  aggregator = createReducerAggregator(
-    (lastState, event) => {
-      const values = getValues(event)
+  aggregator = createReducerAggregator((lastState, event) => {
+    const values = getValues(event)
 
-      if (!values) {
-        return lastState
-      }
+    if (!values) {
+      return lastState
+    }
 
-      return aggrBehavior(...values)
-    },
-    finalInitialState
-  )
+    return aggrBehavior(...values)
+  }, finalInitialState)
 
   return aggregator
 }
@@ -284,27 +291,28 @@ const createComplexAggregator = (aggr, getAggregator) => {
 // If this guess is not accurate, we should handle aggregator definition as complex aggregator because in
 // complex aggregator handling process there's fallbacks to ensure it works even if a reducer is passed
 export const createAggregator = (aggr, getAggregator = createAggregator) =>
-  (aggr && aggr.length === 2)
+  aggr && aggr.length === 2
     ? createReducerAggregator(aggr)
     : createComplexAggregator(aggr, getAggregator)
 
-export const createAggregatorFactory = (aggregatorBuilder = createAggregator) => {
-  const factory = createIndex(
-    aggr =>
-      aggr === snapshot
-        ? getSnapshot
-        : aggregatorBuilder(aggr, factory.get)
+export const createAggregatorFactory = (
+  aggregatorBuilder = createAggregator
+) => {
+  const factory = createIndex(aggr =>
+    aggr === snapshot ? getSnapshot : aggregatorBuilder(aggr, factory.get)
   )
 
   // to build a snapshot, we get the current state from each aggregator and put
   // all this in an object, using aggregator definition's name as keys. If any conflicts
   // on names, numbers are concatenated on conflicting keys (aKey, aKey-2, aKey-3...)
-  const getSnapshot = () => objectFrom(
-    factory.list()
-      // we don't want to list snapshot aggregator's state as it would cause a recursive loop
-      .filter(([aggr]) => aggr !== snapshot)
-      .map(([aggr, aggregator]) => [aggr.name, aggregator.value])
-  )
+  const getSnapshot = () =>
+    objectFrom(
+      factory
+        .list()
+        // we don't want to list snapshot aggregator's state as it would cause a recursive loop
+        .filter(([aggr]) => aggr !== snapshot)
+        .map(([aggr, aggregator]) => [aggr.name, aggregator.value])
+    )
 
   getSnapshot.getValue = getSnapshot
 

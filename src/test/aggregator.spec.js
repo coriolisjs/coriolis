@@ -2,7 +2,9 @@
 
 describe('aggregator', () => {
   describe('from reducer aggr', () => {
-    it('Gets new state from each event, using previous state and given reducer function')
+    it(
+      'Gets new state from each event, using previous state and given reducer function'
+    )
 
     it('Gets previous state if the same event is dispatched twice in a raw')
 
@@ -22,13 +24,15 @@ describe('aggregator', () => {
     })
 
     describe('useAggr', () => {
-      it('Makes aggr executed each time given aggr\'s result changes (if useEvent not used)')
-      it('Gives access to aggr\'s last result')
+      it(
+        "Makes aggr executed each time given aggr's result changes (if useEvent not used)"
+      )
+      it("Gives access to aggr's last result")
     })
 
     describe('lazyAggr', () => {
-      it('Doesn\'t make aggr executed each time aggr\'s result changes')
-      it('Gives access to aggr\'s last result')
+      it("Doesn't make aggr executed each time aggr's result changes")
+      it("Gives access to aggr's last result")
     })
 
     describe('useValue', () => {
@@ -37,13 +41,13 @@ describe('aggregator', () => {
   })
 
   describe('getValue', () => {
-    it('Gets agregator\'s last result value')
+    it("Gets agregator's last result value")
   })
 })
 
 describe('aggregatorFactory', () => {
   describe('get', () => {
-    it('Creates aggregators with it\'s own get function')
+    it("Creates aggregators with it's own get function")
     it('handles specific aggr snapshot')
   })
 })

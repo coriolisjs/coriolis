@@ -9,11 +9,13 @@ import { localStorage } from './effects/localStorage'
 
 const storageKey = 'storedEventsForTodoListApp'
 
-createStore(wrapCoriolisOptions(
-  {
-    storeName: 'todo-svelte',
-    eventEnhancer: map(produce(identity))
-  },
-  localStorage(storageKey),
-  createUi()
-))
+createStore(
+  wrapCoriolisOptions(
+    {
+      storeName: 'todo-svelte',
+      eventEnhancer: map(produce(identity)),
+    },
+    localStorage(storageKey),
+    createUi(),
+  ),
+)

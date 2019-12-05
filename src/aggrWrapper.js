@@ -1,11 +1,5 @@
-import {
-  of
-} from 'rxjs'
-import {
-  distinctUntilChanged,
-  map,
-  skipUntil
-} from 'rxjs/operators'
+import { of } from 'rxjs'
+import { distinctUntilChanged, map, skipUntil } from 'rxjs/operators'
 
 import { createIndex } from './lib/map/objectIndex'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
