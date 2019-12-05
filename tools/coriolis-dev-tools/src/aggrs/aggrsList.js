@@ -58,11 +58,10 @@ export const fullAggrsIndex = ({ useState, useEvent }) => (
   })
 )
 
-const aggrsIndex = ({ useAggr, lazyAggr, useState }) => (
+const aggrsIndex = ({ useAggr }) => (
   useAggr(fullAggrsIndex),
-  lazyAggr(currentStoreId),
-  useState({}),
-  (fullIndex, storeId) => get(fullIndex, storeId)
+  useAggr(currentStoreId),
+  (fullIndex, storeId) => get(fullIndex, storeId) || {}
 )
 
 export const aggrsList = ({ useAggr }) => (

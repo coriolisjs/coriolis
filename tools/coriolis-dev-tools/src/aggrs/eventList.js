@@ -89,8 +89,8 @@ const fullEventList = ({ useState, useEvent, useAggr }) => (
   }
 )
 
-export const eventList = ({ useAggr, lazyAggr }) => (
+export const eventList = ({ useAggr }) => (
   useAggr(fullEventList),
-  lazyAggr(currentStoreId),
-  (allEvents, storeId) => get(allEvents, storeId)
+  useAggr(currentStoreId),
+  (allEvents, storeId) => get(allEvents, storeId) || []
 )

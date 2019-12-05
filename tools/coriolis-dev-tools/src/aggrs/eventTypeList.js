@@ -5,9 +5,9 @@ import { storeEvent } from '../events'
 import { currentStoreId } from './currentStoreId'
 
 const allEventTypeIndex = ({ useState, useEvent }) => (
-  useState(),
+  useState({}),
   useEvent(storeEvent),
-  (index = {}, { payload: { storeId, event: originalEvent }}) => ({
+  (index, { payload: { storeId, event: originalEvent }}) => ({
     ...index,
     [storeId]: {
       ...index[storeId],
@@ -19,7 +19,7 @@ const allEventTypeIndex = ({ useState, useEvent }) => (
 const eventTypeIndex = ({ useAggr }) => (
   useAggr(currentStoreId),
   useAggr(allEventTypeIndex),
-  (storeId, index) => get(index, storeId)
+  (storeId, index) => get(index, storeId) || {}
 )
 
 export const eventTypeList = ({ useAggr }) => (

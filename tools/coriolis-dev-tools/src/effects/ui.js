@@ -3,6 +3,7 @@ import { ensureFeatures } from '../lib/browser/loadScript'
 
 import { views } from '../components/views'
 
+import { isDevtoolsOpen } from '../aggrs/isDevtoolsOpen'
 import { enabledViewName } from '../aggrs/enabledViewName'
 import { viewList } from '../aggrs/viewList'
 import { eventList } from '../aggrs/eventList'
@@ -19,6 +20,7 @@ export const createUI = () => ({ addEffect, addSource, withAggr, eventSubject })
   addSource(views.map(viewAdded))
   addEffect(nav)
 
+  withAggr(isDevtoolsOpen).connect()
   withAggr(enabledViewName).connect()
   withAggr(viewList).connect()
   withAggr(eventList).connect()
