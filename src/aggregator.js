@@ -35,8 +35,6 @@ const createReducerAggregator = (reducer, initialState) => {
     return lastState
   }
 
-  aggregator.initialState = initialState
-
   // We define both getValue and value getter because, depending on context, one
   // can be more readable than the other.
   // getValue is suited when we need to pass a reference to the function, and
@@ -127,8 +125,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const isReducerLikeSetup = () =>
     using.aggregators.length === ((using.stateIndex !== undefined) + using.allEvents)
 
-  const getInitialStates = () =>
-    using.aggregators.map(aggregator => aggregator.initialState)
+  const getLastValues = () =>
+    using.aggregators.map(aggregator => aggregator.value)
 
   const usesEvents = () => using.eventTypes !== undefined
 
@@ -156,7 +154,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
       }
     }
 
-    let lastValues = getInitialStates()
+    let lastValues = getLastValues()
     return event => {
       const values = processAggregators(event)
 
@@ -179,7 +177,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     isNullSetup,
     isReducerSetup,
     isReducerLikeSetup,
-    getInitialStates,
+    getLastValues,
     usesEvents,
     preventOutOfScopeUsage,
     getName
@@ -202,7 +200,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
     isNullSetup,
     isReducerSetup,
     isReducerLikeSetup,
-    getInitialStates,
+    getLastValues,
     usesEvents,
     preventOutOfScopeUsage,
     getName
@@ -259,9 +257,9 @@ const createComplexAggregator = (aggr, getAggregator) => {
   const finalInitialState =
     initialState !== undefined
       ? initialState
-      : usesEvents()
-        ? undefined
-        : aggrBehavior(...getInitialStates())
+      : !usesEvents()
+        ? aggrBehavior(...getLastValues())
+        : undefined
 
   aggregator = createReducerAggregator(
     (lastState, event) => {
@@ -307,6 +305,12 @@ export const createAggregatorFactory = (aggregatorBuilder = createAggregator) =>
       .filter(([aggr]) => aggr !== snapshot)
       .map(([aggr, aggregator]) => [aggr.name, aggregator.value])
   )
+
+  getSnapshot.getValue = getSnapshot
+
+  Object.defineProperty(getSnapshot, 'value', {
+    get: getSnapshot
+  })
 
   return factory.get
 }

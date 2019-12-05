@@ -36,10 +36,6 @@ describe('aggregator', () => {
     })
   })
 
-  describe('initialState', () => {
-    it('Gets agregator\'s initial state')
-  })
-
   describe('getValue', () => {
     it('Gets agregator\'s last result value')
   })
