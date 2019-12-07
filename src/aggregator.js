@@ -155,6 +155,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
         // So even if we return nothing, we have to process this
         const values = processAggregators(event)
 
+        // we had to execute aggregators and get values, but if the event is not of an interesting
+        // type, we just return nothing: this aggregator has nothing to do with this event
         if (!using.eventTypes.includes(event.type)) {
           return
         }

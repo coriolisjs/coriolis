@@ -3,9 +3,10 @@
 Rules about Coriolis
 
 - Un event doit avoir un format standard:
+
   - un type
   - optionnel: un payload
-  - des meta-données (optionnel mais coriolis va systématiquement en ajouter)
+  - des meta-données (optionnel mais coriolis va systématiquement en ajouter certaines)
   - si c'est une erreur, error: true
 
 - Events du passé
@@ -14,6 +15,7 @@ Rules about Coriolis
     abonnements ni les effets
 
 - EventSubject
+
   - Entité interne à Coriolis accessible uniquement indirectement via l'API Effect
   - Subject selon la terminologie RxJS: entité pouvant à la fois recevoir et émettre des événements
   - Émet un ensemble d'events initiaux, PUIS retransmet les events qu'il reçoit
@@ -29,6 +31,7 @@ Rules about Coriolis
   qu'il y ait des abonements à cette définition.
 
 - Une définition d'aggrégat peut prendre deux formes
+
   - simple sous forme d'un reducer
   - complexe en utilisant l'API aggr
 
@@ -36,7 +39,9 @@ Rules about Coriolis
   Un eventStore met en relation un eventSubject et des effets
 
 - Définition d'un effet
+
   - Un effet peut :
+
     - Ajouter d'autres effets
     - Ajouter une source d'events initiaux
     - Ajouter un logger d'events
@@ -54,11 +59,13 @@ Rules about Coriolis
   - Un effet doit retourner une fonction de désactivation
 
 - Définition d'un logger
+
   - reçoit des event via une méthode next
   - peut être un observable d'event
   - erreur émise par logger -> erreur de eventSubject -> erreur générale
 
 - Définition d'une source d'event initiaux
+
   - peut être un array d'events
   - peut être un observable d'events
 
@@ -79,31 +86,47 @@ Rules about Coriolis
 
 - La ré-émition directe d'un event émit par eventSubject cause une erreur (prévention de boucle)
 
-
 - EventBuilder
   - metaBuilder est optionel
   - payloadBuilder est optionel, on peut uniquement définir un type
   - payloadBuilder par défaut est identity
 
-## Définition d'aggrégat
+## Définition d'aggrégat (Aggr)
+
+La définition d'un aggrégat se fait par une règle d'aggregation (aggregation rule, raccourci en aggr)
 
 Quel que soit la forme de définition, Coriolis construira à partir de cette définition un
 aggrégateur qui pourra être alimenté par les events de l'eventSubject.
 
 ### Définition d'aggrégat sous forme de reducer:
 
-Pour cette forme, on défini la nouvelle valeur de l'aggrégat à partir de:
+Pour cette forme, on défini la nouvelle valeur de l'aggrégat (nouvel état) à partir de:
+
 - state: dernière valeur de cet aggrégat
 - event: dernier evenement emit
 
 ### Définition d'aggrégat sous forme complexe:
 
 Pour cette forme, on défini dans un premier temps les sources de données dont a besoin l'aggrégateur:
-- useState: dernière valeur de cet aggrégat (on peut spécifier la valeur initial)
+
+- useState: dernière valeur de cet aggrégat (on peut spécifier une valeur initial)
 - useEvent: dernier evenement emit (on peut spécifier quels événements on souhaite traiter)
-- useAggr/lazyAggr: utiliser la valeur d'un aggrégat, désigné par sa fonction de définition
+- useAggr/lazyAggr: utiliser la valeur d'un aggrégat, désigné par son aggr (aggregation rule)
+- useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API)
+- setName: Attribue un nom à l'aggregateur, dans un but de debug
 
 ensuite on défini le résultat en fonction de ces sources de données
+
+#### Pour une meilleur compréhension du fonctionnement
+
+Chaque définition d'aggrégat complexe peut être transformée en une définition d'aggrégat de type reducer
+
+Ce reducer operera en deux étapes:
+
+- premièrement il collectera les données d'input attendues en fonction de l'event, ce qui revient à exécuter un
+  aggregateur pour chaque input
+- ensuite, si les données d'input ainsi obtenu sont différentes de la précédente itération, il exécutera la fonction
+  d'aggregation avec ces inputs.
 
 ## Aggrégateur
 
@@ -113,7 +136,16 @@ les précédents reçu
 Les aggrégateurs ne sont normalement pas manipulés lors de l'usage de Coriolis. Ils sont utilisés en interne par
 la librairie, mais cette définition apporte une meilleure compréhension du fonctionnement global.
 
+Chaque Aggr (aggregation rule, définition d'aggrégat) est converti en interne par Coriolis en aggregateur, auquel sera
+transmi chaque event traité par Coriolis
+
+Chaque aggrégateur expose sont état courant par le biais d'une méthode "getValue" et également d'un getter "value"
+
 ### memoization
 
 Si l'aggrégateur est appelé plusieurs fois de suite avec strictement le même événement, seul le premier appel
-aura un effet sur la valeur de l'aggrégat. Les appels suivant retourneront directement la valeur sans la modifier.
+aura un effet sur la valeur de l'aggrégat. Les appels suivant retourneront directement la valeur de
+l'aggrégat sans la modifier.
+
+Cette spécificité permet d'utiliser les aggregateurs dans de multiples usages, sans pour autant multiplié
+les exécutions de processus d'aggregation
