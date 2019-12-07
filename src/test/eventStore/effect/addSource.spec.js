@@ -1,18 +1,16 @@
 import { createStore } from '../../..'
 
-import {
-  matchCoriolisEffectAPI
-} from '../../utils'
+import { matchCoriolisEffectAPI } from '../../utils'
 
 describe('Effect addSource', () => {
   it(`Given a spy effect function
       With a source added emitting one event
       When store is created
-      Then the spy effect can catch this event on initialEvent$`, () => {
-    const spyInitialEvents = sinon.spy()
-    const spyEffect = sinon.spy(({ addSource, initialEvent$ }) => {
+      Then the spy effect can catch this event on pastEvent$`, () => {
+    const spyPastEvents = sinon.spy()
+    const spyEffect = sinon.spy(({ addSource, pastEvent$ }) => {
       addSource([{ type: 'event' }])
-      initialEvent$.subscribe(spyInitialEvents)
+      pastEvent$.subscribe(spyPastEvents)
     })
 
     const stopStore = createStore(spyEffect)
@@ -20,7 +18,9 @@ describe('Effect addSource', () => {
     expect(stopStore).to.be.a('function')
     expect(spyEffect).to.have.been.calledOnce()
     expect(spyEffect).to.have.been.calledWith(matchCoriolisEffectAPI)
-    expect(spyInitialEvents).to.have.been.calledWith(sinon.match({ type: 'event' }))
+    expect(spyPastEvents).to.have.been.calledWith(
+      sinon.match({ type: 'event' })
+    )
 
     stopStore()
   })

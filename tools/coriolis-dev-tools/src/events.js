@@ -63,9 +63,9 @@ export const currentStoreChanged = createEventBuilder(
 )
 export const storeEvent = createEventBuilder(
   'Coriolis devtools detected an event',
-  ({ storeId, event, isInitialEvent }) => ({
+  ({ storeId, event, isPastEvent }) => ({
     storeId,
     event,
-    isInitialEvent: !!isInitialEvent,
+    isPastEvent: !!isPastEvent,
   }),
 )

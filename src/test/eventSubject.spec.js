@@ -17,7 +17,9 @@ describe('eventSubject', () => {
     eventSubject.next({ type: 'event type' })
     subscription.unsubscribe()
 
-    expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type' }))
+    expect(eventsSpy).to.have.been.calledWith(
+      sinon.match({ type: 'event type' })
+    )
   })
 
   it(`Invalid events handling
@@ -69,7 +71,9 @@ describe('eventSubject', () => {
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledOnce()
-    expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type' }))
+    expect(eventsSpy).to.have.been.calledWith(
+      sinon.match({ type: 'event type' })
+    )
     expect(errorSpy).to.have.been.calledOnce()
 
     expect(completeSpy).not.to.have.been.called()
@@ -89,11 +93,13 @@ describe('eventSubject', () => {
     const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
-    expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type' }))
+    expect(eventsSpy).to.have.been.calledWith(
+      sinon.match({ type: 'event type' })
+    )
   })
 
   // Previous test asserts buffering of events before any subscription.
-  // we still have to test buffering of new events is done while initial events
+  // we still have to test buffering of new events is done while past events
   // are being emitted
 
   it(`Timestamp every new event
@@ -111,7 +117,12 @@ describe('eventSubject', () => {
     const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
-    expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type', meta: { timestamp: sinon.match(Number) } }))
+    expect(eventsSpy).to.have.been.calledWith(
+      sinon.match({
+        type: 'event type',
+        meta: { timestamp: sinon.match(Number) }
+      })
+    )
   })
 
   // To add: events dispatched with already a timestamp should keep existing timestamp
@@ -125,7 +136,9 @@ describe('eventSubject', () => {
       And the event has already been timestamped before enhancer
   `, () => {
     const eventsSpy = sinon.spy()
-    const enhancerMapStub = sinon.stub().callsFake(event => ({ ...event, payload: 'enhanced payload' }))
+    const enhancerMapStub = sinon
+      .stub()
+      .callsFake(event => ({ ...event, payload: 'enhanced payload' }))
     const enhancer = map(enhancerMapStub)
 
     const eventSubject = createEventSubject(undefined, undefined, enhancer)
@@ -135,9 +148,14 @@ describe('eventSubject', () => {
     const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
-    expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type', payload: 'enhanced payload' }))
+    expect(eventsSpy).to.have.been.calledWith(
+      sinon.match({ type: 'event type', payload: 'enhanced payload' })
+    )
     expect(enhancerMapStub).to.have.been.calledWith(
-      sinon.match({ type: 'event type', meta: { timestamp: sinon.match(Number) } })
+      sinon.match({
+        type: 'event type',
+        meta: { timestamp: sinon.match(Number) }
+      })
     )
   })
 
@@ -150,7 +168,9 @@ describe('eventSubject', () => {
   `, () => {
     const eventsSpy = sinon.spy()
     const logSpy = sinon.spy()
-    const enhancerStub = sinon.stub().callsFake(map(event => ({ ...event, payload: 'enhanced payload' })))
+    const enhancerStub = sinon
+      .stub()
+      .callsFake(map(event => ({ ...event, payload: 'enhanced payload' })))
 
     const eventSubject = createEventSubject(undefined, logSpy, enhancerStub)
 
@@ -159,14 +179,20 @@ describe('eventSubject', () => {
     const subscription = eventSubject.subscribe(eventsSpy)
     subscription.unsubscribe()
 
-    expect(eventsSpy).to.have.been.calledWith(sinon.match({ type: 'event type' }))
+    expect(eventsSpy).to.have.been.calledWith(
+      sinon.match({ type: 'event type' })
+    )
     expect(logSpy).to.have.been.calledWith(
-      sinon.match({ type: 'event type', payload: 'enhanced payload', meta: { timestamp: sinon.match(Number) } })
+      sinon.match({
+        type: 'event type',
+        payload: 'enhanced payload',
+        meta: { timestamp: sinon.match(Number) }
+      })
     )
   })
 
   // To add: logObserver can emit events
 
-  // To add: tests on initialSource
+  // To add: tests on pastSource
   it('should contain more tests')
 })

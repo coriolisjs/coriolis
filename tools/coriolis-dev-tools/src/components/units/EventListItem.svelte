@@ -8,7 +8,7 @@
   export let payload
   export let meta
   export let error
-  export let isInitialEvent
+  export let isPastEvent
   export let aggrCalls
 
   export let timestamp
@@ -31,7 +31,7 @@
     padding: .5em;
     cursor: default;
 
-    &.isInitialEvent {
+    &.isPastEvent {
       opacity: .4;
 
       &:hover {
@@ -71,7 +71,7 @@
 
 <div
   class="eventListItem"
-  class:isInitialEvent
+  class:isPastEvent
   on:click={logEvent}
 >
   <div class="type">

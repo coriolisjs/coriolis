@@ -4,9 +4,10 @@ import { matchFirstEvent, matchCoriolisAggregatorSetupAPI } from '../../utils'
 
 describe('Effect withAggr', () => {
   it(`Given a reducer with a length=0 signature
+      And a Coriolis store in which just the first event will flow
       When this reducer is piped
       Then it is tested as an aggregator setup
-      And then it is finally used as a reducer
+      And finally it is used as a reducer with the store's event
   `, () => {
     const reducer = sinon.stub().returns('state')
     const dataSpy = sinon.spy()
@@ -29,9 +30,10 @@ describe('Effect withAggr', () => {
   })
 
   it(`Given a reducer with a length=1 signature
+      And a Coriolis store in which just the first event will flow
       When this reducer is piped
       Then it is tested as an aggregator setup
-      And finally it is used as a reducer with the initial coriolis event
+      And finally it is used as a reducer with the store's event
   `, () => {
     const reducer = sinon.stub().returns('state')
     const dataSpy = sinon.spy()
@@ -59,9 +61,10 @@ describe('Effect withAggr', () => {
   })
 
   it(`Given a reducer with a length=2 signature
+      And a Coriolis store in which just the first event will flow
       When this reducer is piped
       Then it is not tested as an aggregator setup
-      And it is used as a reducer with the initial coriolis event
+      And it is used as a reducer with the the store's event
   `, () => {
     const reducer = sinon.stub().returns('state')
     const dataSpy = sinon.spy()

@@ -7,14 +7,14 @@ import { variableFunction } from './lib/function/variableFunction'
 
 import { createEventSubject } from './eventSubject'
 
-export const FIRST_EVENT_TYPE = 'All initial events have been read'
+export const FIRST_EVENT_TYPE = 'All past events have been read'
 
 const buildFirstEvent = () => ({
   type: FIRST_EVENT_TYPE,
   payload: {}
 })
 
-export const createExtensibleEventSubject = (eventEnhancer) => {
+export const createExtensibleEventSubject = eventEnhancer => {
   const firstEvent = buildFirstEvent()
 
   const {
@@ -27,14 +27,14 @@ export const createExtensibleEventSubject = (eventEnhancer) => {
     add: addSourceToMainSource
   } = createExtensibleObservable()
 
-  const {
-    func: addSource,
-    setup: setupAddSource
-  } = variableFunction(source => addSourceToMainSource(from(source)))
+  const { func: addSource, setup: setupAddSource } = variableFunction(source =>
+    addSourceToMainSource(from(source))
+  )
 
-  const disableAddSource = () => setupAddSource(() => {
-    throw new Error('addSource must be called before all sources completed')
-  })
+  const disableAddSource = () =>
+    setupAddSource(() => {
+      throw new Error('addSource must be called before all sources completed')
+    })
 
   // From the moment this event source is created, it starts buffering all events it receives
   // until it gets a subscription and passes them

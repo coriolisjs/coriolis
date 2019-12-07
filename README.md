@@ -8,8 +8,10 @@ Rules about Coriolis
   - des meta-données (optionnel mais coriolis va systématiquement en ajouter)
   - si c'est une erreur, error: true
 
-- Event initial
-  - Event du passé, alimentant les aggrégats mais sans alimenter leurs abonnements
+- Events du passé
+
+  - Event du passé, joués à l'initialisation du store et alimentant les aggrégats mais sans alimenter leurs
+    abonnements ni les effets
 
 - EventSubject
   - Entité interne à Coriolis accessible uniquement indirectement via l'API Effect
@@ -65,14 +67,15 @@ Rules about Coriolis
   - Il n'est pas possible de définir une source d'events initiaux après que tous les events initiaux aient étés émits
 
 - L'instanciation d'un store suit la procédure suivante:
-  - mise en cache du premier event non initial
+
+  - mise en cache du premier event non passé
   - mise en cache des tout event émit dans un premier temps
-  - diffusion aux aggrégateurs et via l'observable initialEvent$ des "events initiaux"
-  - log puis transmission (aux aggregateurs et via eventSubject d'effet) des événements buffurisés
+  - diffusion aux aggrégateurs et via l'observable pastEvent\$ des "events du passé"
+  - log puis transmission (aux aggregateurs et via eventSubject d'effet) des events buffurisés
   - log puis transmission (aux aggregateurs et via eventSubject d'effet) des nouveaux events
 
-  - un eventSubject d'effet n'émet donc jamais aucun "event initial"
-  - les aggregateurs voient passer tous les events, même les "initiaux"
+  - un eventSubject d'effet n'émet donc jamais aucun "event passé"
+  - les aggregateurs voient passer tous les events, même les "passés"
 
 - La ré-émition directe d'un event émit par eventSubject cause une erreur (prévention de boucle)
 

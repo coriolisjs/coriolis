@@ -13,7 +13,7 @@ const getTimestampDelta = (timestamp2, timestamp1) =>
 
 const createEventListItem = (
   event,
-  isInitialEvent,
+  isPastEvent,
   previousEvent,
   firstEvent,
 ) => ({
@@ -21,7 +21,7 @@ const createEventListItem = (
   payload: event.payload,
   meta: event.meta,
   error: event.error,
-  isInitialEvent,
+  isPastEvent,
   aggrCalls: [],
 
   date: new Date(event.meta.timestamp).toLocaleString(),
@@ -46,13 +46,13 @@ const fullEventList = ({ useState, useEvent, useAggr }) => (
 
     if (event.type === storeEvent.toString()) {
       const {
-        payload: { event: originalEvent, isInitialEvent },
+        payload: { event: originalEvent, isPastEvent },
       } = event
       newEventlist = unshift(
         eventList,
         createEventListItem(
           originalEvent,
-          isInitialEvent,
+          isPastEvent,
           first(eventList),
           last(eventList),
         ),

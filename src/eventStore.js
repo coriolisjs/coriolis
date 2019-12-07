@@ -57,7 +57,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     options.aggregatorFactory
   )
 
-  const initialEvent$ = eventCaster.pipe(takeUntil(initDone))
+  const pastEvent$ = eventCaster.pipe(takeUntil(initDone))
 
   const effectEventSubject = Subject.create(
     eventCatcher,
@@ -70,7 +70,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         addEffect,
         addSource,
         addLogger,
-        initialEvent$,
+        pastEvent$,
         eventSubject: effectEventSubject,
         withAggr
       })

@@ -15,7 +15,7 @@ const initDevtoolsEventStore = () => {
 
   return (storeId, storeName = 'unnamed', aggregatorEvents = EMPTY) => ({
     eventSubject,
-    initialEvent$,
+    pastEvent$,
     withAggr,
   }) => {
     devtoolsEventSubject.next(
@@ -29,9 +29,9 @@ const initDevtoolsEventStore = () => {
     const aggregatorEventsSubscription = aggregatorEvents.subscribe(event =>
       devtoolsEventSubject.next(event),
     )
-    const initialEventsSubscription = initialEvent$.subscribe(event =>
+    const pastEventsSubscription = pastEvent$.subscribe(event =>
       devtoolsEventSubject.next(
-        storeEvent({ storeId, event, isInitialEvent: true }),
+        storeEvent({ storeId, event, isPastEvent: true }),
       ),
     )
     const eventsSubscription = eventSubject.subscribe(event =>
@@ -40,7 +40,7 @@ const initDevtoolsEventStore = () => {
 
     return () => {
       aggregatorEventsSubscription.unsubscribe()
-      initialEventsSubscription.unsubscribe()
+      pastEventsSubscription.unsubscribe()
       eventsSubscription.unsubscribe()
     }
   }
