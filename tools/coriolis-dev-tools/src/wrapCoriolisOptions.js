@@ -48,6 +48,7 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
 ) => {
   const aggrId = getAggrId()
   const aggrName = getAggrName(aggr)
+  let aggregator
 
   if (aggrName !== aggr.name) {
     Object.defineProperty(aggr, 'name', {
@@ -58,7 +59,13 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
 
   const aggrBehaviorWrapper = aggrBehavior => (...args) => {
     const newState = aggrBehavior(...args)
-    trackingSubject.next(aggrCalled({ storeId, aggrId, args, newState }))
+    if (aggregator) {
+      // During aggregator creation, this aggrBehaviour wrapper can be called to get initial state
+      // this initial call is not triggered by an event, so we don't track it as an aggrCalled event
+      //
+      // TODO: maybe we could track this with an event like "aggrInitialStateCall"
+      trackingSubject.next(aggrCalled({ storeId, aggrId, args, newState }))
+    }
 
     return newState
   }
@@ -97,7 +104,13 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
     }
 
     const newState = aggr(...args)
-    trackingSubject.next(aggrCalled({ storeId, aggrId, args, newState }))
+    if (aggregator) {
+      // During aggregator creation, this aggr wrapper can be called to get initial state
+      // this initial call is not triggered by an event, so we don't track it as an aggrCalled event
+      //
+      // TODO: maybe we could track this with an event like "aggrInitialStateCall"
+      trackingSubject.next(aggrCalled({ storeId, aggrId, args, newState }))
+    }
 
     return newState
   }
@@ -112,7 +125,7 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
     writable: false,
   })
 
-  const aggregator = createAggregator(wrappedAggr, getAggregator)
+  aggregator = createAggregator(wrappedAggr, getAggregator)
 
   trackingSubject.next(aggregatorCreated({ storeId, aggrId, aggr, aggregator }))
 
