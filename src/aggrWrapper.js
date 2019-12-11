@@ -10,7 +10,7 @@ import { createAggregatorFactory } from './aggregator'
 export const createAggrWrapperFactory = (
   event$,
   skipUntil$ = of(true),
-  getAggregator = createAggregatorFactory()
+  getAggregator = createAggregatorFactory(),
 ) =>
   createIndex(aggr => {
     const aggregator = getAggregator(aggr)
@@ -19,13 +19,15 @@ export const createAggrWrapperFactory = (
       map(aggregator),
 
       // while init is not finished (old events replaying), we expect aggrs to
-      // catch all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
+      // get all events, but we don't want any new state emited (it's not new states, it's old state reaggregated)
       skipUntil(skipUntil$),
 
+      // On subscription before skipUntil emmited, subscriber would get nothing.
+      // We prefere subscriber to get an initial value, this value being the current aggregator value
       ensureInitial(() => aggregator.value),
 
       // if event does not lead to a new aggregate, we don't want to emit
-      distinctUntilChanged()
+      distinctUntilChanged(),
     )
 
     // We don't return directly subscription because user is not aware it's an observable under the hood
@@ -37,7 +39,7 @@ export const createAggrWrapperFactory = (
     Object.defineProperty(aggr$, 'value', {
       configurable: false,
       enumerable: true,
-      get: aggregator.getValue
+      get: aggregator.getValue,
     })
 
     return aggr$

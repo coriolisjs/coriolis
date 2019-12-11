@@ -25,7 +25,7 @@ export const withSimpleStoreSignature = callback => (_options, ...rest) => {
 export const createStore = withSimpleStoreSignature((options, ...effects) => {
   if (!effects.length) {
     throw new Error(
-      "No effect defined. This app is useless, let's stop right now"
+      "No effect defined. This app is useless, let's stop right now",
     )
   }
 
@@ -34,7 +34,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     addLogger,
     addSource,
     disableAddSource,
-    firstEvent
+    firstEvent,
   } = createExtensibleEventSubject(options.eventEnhancer)
 
   // Use subjects to have single subscription points to connect all together (one for input, one for output)
@@ -48,20 +48,20 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     // would have been changed (adding meta-data for example)
     filter(payloadEquals(firstEvent.payload)),
     take(1),
-    shareReplay(1)
+    shareReplay(1),
   )
 
   const withAggr = createAggrWrapperFactory(
-    eventCaster,
+    eventCaster.pipe(shareReplay(1)),
     initDone,
-    options.aggregatorFactory
+    options.aggregatorFactory,
   )
 
   const pastEvent$ = eventCaster.pipe(takeUntil(initDone))
 
   const effectEventSubject = Subject.create(
     eventCatcher,
-    eventCaster.pipe(skipUntil(initDone))
+    eventCaster.pipe(skipUntil(initDone)),
   )
 
   const addEffect = effect =>
@@ -72,8 +72,8 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         addLogger,
         pastEvent$,
         eventSubject: effectEventSubject,
-        withAggr
-      })
+        withAggr,
+      }),
     )
 
   const initDoneSubscription = initDone.subscribe(disableAddSource)
