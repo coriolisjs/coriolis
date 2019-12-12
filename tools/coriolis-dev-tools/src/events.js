@@ -69,3 +69,8 @@ export const storeEvent = createEventBuilder(
     isPastEvent: !!isPastEvent,
   }),
 )
+
+export const panelWidthChanged = createEventBuilder(
+  'Coriolis devtools panel width changed',
+  width => width,
+)

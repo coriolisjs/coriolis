@@ -2,6 +2,7 @@ import { EMPTY } from 'rxjs'
 
 import { createStore, snapshot } from 'coriolis'
 
+import { storage } from './effects/storage'
 import { createUI } from './effects/ui'
 import { storeEvent, storeAdded } from './events'
 
@@ -9,9 +10,13 @@ let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
   let devtoolsEventSubject
 
-  destroyDevtoolsStore = createStore(createUI(), ({ eventSubject }) => {
-    devtoolsEventSubject = eventSubject
-  })
+  destroyDevtoolsStore = createStore(
+    createUI(),
+    storage,
+    ({ eventSubject }) => {
+      devtoolsEventSubject = eventSubject
+    },
+  )
 
   return (storeId, storeName = 'unnamed', aggregatorEvents = EMPTY) => ({
     eventSubject,

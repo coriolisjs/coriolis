@@ -1,3 +1,5 @@
+import { lastPayloadOfType } from 'coriolis-parametered-aggr'
+
 import { createCustomElement } from '../lib/browser/customElement'
 import { ensureFeatures } from '../lib/browser/loadScript'
 
@@ -12,7 +14,7 @@ import { eventListFilter } from '../aggrs/eventListFilter'
 import { currentStoreSnapshot } from '../aggrs/currentStoreSnapshot'
 import { aggrsList } from '../aggrs/aggrsList'
 
-import { viewAdded } from '../events'
+import { viewAdded, panelWidthChanged } from '../events'
 
 import { nav } from './nav'
 
@@ -26,6 +28,7 @@ export const createUI = () => ({
 
   addEffect(nav)
 
+  withAggr(lastPayloadOfType(panelWidthChanged)).connect()
   withAggr(isDevtoolsOpen).connect()
   withAggr(enabledViewName).connect()
   withAggr(viewList).connect()
