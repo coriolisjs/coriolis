@@ -4,10 +4,12 @@
   import { getSource } from 'coriolis-svelte'
 
   import { filteredEventList } from '../../aggrs/filteredEventList'
+  import { eventListSelectedEvent } from '../../aggrs/eventList'
 
   import EventListItem from './EventListItem.svelte'
 
   const eventList$ = getSource(filteredEventList)
+  const eventListSelectedEvent$ = getSource(eventListSelectedEvent)
 </script>
 
 <style lang="scss">
@@ -40,7 +42,7 @@
 <div class="eventList">
 {#if ($eventList$ && $eventList$.length)}
   <VirtualList items={$eventList$} let:item>
-    <EventListItem {...item} />
+    <EventListItem {item} selected={$eventListSelectedEvent$ === item} />
   </VirtualList>
 {:else}
   <div class="empty">No event to display</div>

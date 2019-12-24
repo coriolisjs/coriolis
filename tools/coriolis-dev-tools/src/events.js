@@ -21,6 +21,11 @@ export const eventListFilterChange = createEventBuilder(
   filter => filter,
 )
 
+export const selectedEventListItem = createEventBuilder(
+  'Coriolis devtools item selected in event list',
+  eventListItem => eventListItem,
+)
+
 export const timingTypeSelected = createEventBuilder(
   'Coriolis devtools timing type for event display have been selected',
   type => type,

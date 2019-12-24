@@ -1,9 +1,11 @@
+import { lastPayloadOfType } from 'coriolis-parametered-aggr'
+
 import { first } from '../lib/array/first'
 import { last } from '../lib/array/last'
 import { unshift } from '../lib/array/unshift'
 import { get } from '../lib/object/get'
 
-import { storeEvent, aggrCalled } from '../events'
+import { storeEvent, aggrCalled, selectedEventListItem } from '../events'
 
 import { currentStoreId } from './currentStoreId'
 import { fullAggrsIndex } from './aggrsList'
@@ -32,6 +34,8 @@ const createEventListItem = (
   ),
   delta0: getTimestampDelta(event.meta.timestamp, get(firstEvent, 'timestamp')),
 })
+
+export const eventListSelectedEvent = lastPayloadOfType(selectedEventListItem)
 
 const fullEventList = ({ useState, useEvent, useAggr }) => (
   useState({}),

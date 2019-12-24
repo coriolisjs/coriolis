@@ -5,6 +5,5 @@
 
 <DevToolsContainer>
   <h2 slot="title">Liste des aggrégats</h2>
-
   <AggrList />
 </DevToolsContainer>

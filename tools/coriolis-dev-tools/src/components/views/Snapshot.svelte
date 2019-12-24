@@ -13,7 +13,7 @@
 </script>
 
 <style>
-  pre {
+  .content {
     height: 100%;
     overflow: auto;
     background: rgba(0, 0, 0, .4);
@@ -23,10 +23,12 @@
 
 <DevToolsContainer>
   <h2 slot="title">Snapshot</h2>
-  <pre>
-    {@html formatHighlight($snapshot$, {
-      keyColor: 'rgb(138, 204, 114)',
-      stringColor: 'rgb(235, 235, 227)'
-    })}
-  </pre>
+  <div class="content">
+    <pre>
+      {@html formatHighlight($snapshot$, {
+        keyColor: 'rgb(138, 204, 114)',
+        stringColor: 'rgb(235, 235, 227)'
+      })}
+    </pre>
+  </div>
 </DevToolsContainer>

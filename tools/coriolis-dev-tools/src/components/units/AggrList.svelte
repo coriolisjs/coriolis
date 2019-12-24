@@ -9,7 +9,7 @@
 </script>
 
 <style lang="scss">
-  ul {
+  ul.content {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -17,7 +17,7 @@
   }
 </style>
 
-<ul>
+<ul class="content">
 {#each $aggrsList$ as aggrstate (aggrstate.aggrId)}
   <AggrListItem {...aggrstate} />
 {/each}

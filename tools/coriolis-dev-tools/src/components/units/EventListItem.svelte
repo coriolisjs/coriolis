@@ -2,25 +2,16 @@
   import { getSource, createDispatch } from 'coriolis-svelte'
 
   import { selectedTimingType } from '../../aggrs/selectedTimingType'
-  import { timingTypeSelected } from '../../events'
+  import { timingTypeSelected, selectedEventListItem } from '../../events'
 
-  export let type
-  export let payload
-  export let meta
-  export let error
-  export let isPastEvent
-  export let aggrCalls
-
-  export let timestamp
-  export let date
-  export let deltaN
-  export let delta0
+  export let item
+  export let selected
 
   const selectedTimingType$ = getSource(selectedTimingType)
 
   const selectTimingType = createDispatch(event => timingTypeSelected(event.target.value))
 
-  const logEvent = () => console.log(`${error ? 'ERROR - ' : ''}${type}\npayload: `, payload, '\nmeta: ', meta, '\naggrs calls: ', aggrCalls)
+  const selectEventListItem = createDispatch(() => selectedEventListItem(item))
 </script>
 
 <style lang="scss">
@@ -37,6 +28,15 @@
       &:hover {
         opacity: 1;
       }
+    }
+
+    &.isError {
+      color: #f66578;
+    }
+
+    &.isSelected {
+      opacity: 1;
+      background-color: #99845e;
     }
 
     .type {
@@ -71,11 +71,13 @@
 
 <div
   class="eventListItem"
-  class:isPastEvent
-  on:click={logEvent}
+  class:isPastEvent={item.isPastEvent}
+  class:isError={item.error}
+  class:isSelected={selected}
+  on:click={selectEventListItem}
 >
   <div class="type">
-    {type}
+    {item.type}
   </div>
   <div
     class="timing"
@@ -85,10 +87,10 @@
       class="timing-select"
       on:change={selectTimingType}
     >
-      <option value="deltaN" selected={$selectedTimingType$ === 'deltaN'}>+{deltaN}ms</option>
-      <option value="delta0" selected={$selectedTimingType$ === 'delta0'}>+{delta0}ms</option>
-      <option value="date" selected={$selectedTimingType$ === 'date'}>{date}</option>
-      <option value="timestamp" selected={$selectedTimingType$ === 'timestamp'}>{timestamp}</option>
+      <option value="deltaN" selected={$selectedTimingType$ === 'deltaN'}>+{item.deltaN}ms</option>
+      <option value="delta0" selected={$selectedTimingType$ === 'delta0'}>+{item.delta0}ms</option>
+      <option value="date" selected={$selectedTimingType$ === 'date'}>{item.date}</option>
+      <option value="timestamp" selected={$selectedTimingType$ === 'timestamp'}>{item.timestamp}</option>
     </select>
   </div>
 </div>
