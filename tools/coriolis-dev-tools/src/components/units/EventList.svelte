@@ -7,6 +7,7 @@
   import { eventListSelectedEvent } from '../../aggrs/eventList'
 
   import EventListItem from './EventListItem.svelte'
+  import EventDetails from './EventDetails.svelte'
 
   const eventList$ = getSource(filteredEventList)
   const eventListSelectedEvent$ = getSource(eventListSelectedEvent)
@@ -48,3 +49,6 @@
   <div class="empty">No event to display</div>
 {/if}
 </div>
+{#if $eventListSelectedEvent$}
+<EventDetails details={$eventListSelectedEvent$} />
+{/if}
