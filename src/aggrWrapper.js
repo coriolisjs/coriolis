@@ -10,7 +10,7 @@ import { createAggregatorFactory } from './aggregator'
 export const createAggrWrapperFactory = (
   event$,
   skipUntil$ = of(true),
-  getAggregator = createAggregatorFactory(),
+  getAggregator = createAggregatorFactory()
 ) =>
   createIndex(aggr => {
     const aggregator = getAggregator(aggr)
@@ -27,7 +27,7 @@ export const createAggrWrapperFactory = (
       ensureInitial(() => aggregator.value),
 
       // if event does not lead to a new aggregate, we don't want to emit
-      distinctUntilChanged(),
+      distinctUntilChanged()
     )
 
     // We don't return directly subscription because user is not aware it's an observable under the hood
@@ -39,7 +39,7 @@ export const createAggrWrapperFactory = (
     Object.defineProperty(aggr$, 'value', {
       configurable: false,
       enumerable: true,
-      get: aggregator.getValue,
+      get: aggregator.getValue
     })
 
     return aggr$
