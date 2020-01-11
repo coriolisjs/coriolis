@@ -1,7 +1,7 @@
 <script>
   import { setContext } from 'svelte'
 
-  import { currentView } from '../aggrs/currentView'
+  import { currentView } from '../projections/currentView'
 
   export let dispatch
   export let getSource

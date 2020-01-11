@@ -15,7 +15,7 @@ import TodoItem from './TodoItem'
 
 import { connect } from '../../libs/vuejs/connect'
 
-import { filteredTodolist } from '../../aggrs/todo'
+import { filteredTodolist } from '../../projections/todo'
 
 const TodoList = {
   name: 'TodoList',

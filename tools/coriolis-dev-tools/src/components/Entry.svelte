@@ -12,7 +12,7 @@
   import * as componentIndex from './views/componentIndex'
   import DevToolsButton from './units/DevToolsButton.svelte'
 
-  import { enabledViewName } from '../aggrs/enabledViewName'
+  import { enabledViewName } from '../projections/enabledViewName'
 
   shareStoreAPI()
 

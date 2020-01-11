@@ -3,7 +3,7 @@
 
   import TodoItem from './TodoItem.svelte'
 
-  import { filteredTodolist } from '../../aggrs/todo'
+  import { filteredTodolist } from '../../projections/todo'
 
   const getSource = getContext('getSource')
 

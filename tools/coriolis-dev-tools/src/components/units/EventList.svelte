@@ -3,8 +3,8 @@
 
   import { getSource } from 'coriolis-svelte'
 
-  import { filteredEventList } from '../../aggrs/filteredEventList'
-  import { eventListSelectedEvent } from '../../aggrs/eventList'
+  import { filteredEventList } from '../../projections/filteredEventList'
+  import { eventListSelectedEvent } from '../../projections/eventList'
 
   import EventListItem from './EventListItem.svelte'
   import EventDetails from './EventDetails.svelte'

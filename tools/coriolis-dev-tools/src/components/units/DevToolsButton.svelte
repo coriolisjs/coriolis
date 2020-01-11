@@ -1,5 +1,5 @@
 <script>
-  import { isDevtoolsOpen } from '../../aggrs/isDevtoolsOpen'
+  import { isDevtoolsOpen } from '../../projections/isDevtoolsOpen'
   import { devtoolsOpened } from '../../events'
 
   import NavButton from './NavButton.svelte'
@@ -29,7 +29,7 @@
 <NavButton
   class="coriolis-dev-tools-button-open"
   view={true}
-  aggr={isDevtoolsOpen}
+  projection={isDevtoolsOpen}
   buildEvent={devtoolsOpened}
 >
   Coriolis dev tools

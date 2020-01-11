@@ -1,7 +1,7 @@
 <script>
   import { getSource } from 'coriolis-svelte'
 
-  import { eventTypeList } from '../../aggrs/eventTypeList'
+  import { eventTypeList } from '../../projections/eventTypeList'
 
   import EventTypeListItem from './EventTypeListItem.svelte'
 

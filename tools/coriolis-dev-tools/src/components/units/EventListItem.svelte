@@ -1,7 +1,7 @@
 <script>
   import { getSource, createDispatch } from 'coriolis-svelte'
 
-  import { selectedTimingType } from '../../aggrs/selectedTimingType'
+  import { selectedTimingType } from '../../projections/selectedTimingType'
   import { timingTypeSelected, selectedEventListItem } from '../../events'
 
   export let item

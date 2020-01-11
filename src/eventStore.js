@@ -5,7 +5,7 @@ import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { payloadEquals } from './lib/event/payloadEquals'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
-import { createAggrWrapperFactory } from './aggrWrapper'
+import { createProjectionWrapperFactory } from './projectionWrapper'
 
 export const withSimpleStoreSignature = callback => (_options, ...rest) => {
   let options = _options
@@ -51,7 +51,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     shareReplay(1)
   )
 
-  const withAggr = createAggrWrapperFactory(
+  const withProjection = createProjectionWrapperFactory(
     eventCaster.pipe(shareReplay(1)),
     initDone,
     options.aggregatorFactory
@@ -72,7 +72,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         addLogger,
         pastEvent$,
         eventSubject: effectEventSubject,
-        withAggr
+        withProjection
       })
     )
 

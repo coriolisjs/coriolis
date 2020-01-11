@@ -1,7 +1,7 @@
 <script>
   import { getSource, createDispatch } from 'coriolis-svelte'
 
-  import { eventListFilter } from '../../aggrs/eventListFilter'
+  import { eventListFilter } from '../../projections/eventListFilter'
   import { eventListFilterChange } from '../../events'
 
   const filter$ = getSource(eventListFilter)

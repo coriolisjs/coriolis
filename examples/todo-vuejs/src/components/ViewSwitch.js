@@ -1,6 +1,6 @@
 import { connect } from '../libs/vuejs/connect'
 
-import { currentView } from '../aggrs/currentView'
+import { currentView } from '../projections/currentView'
 
 const ViewSwitch = {
   name: 'ViewSwitch',

@@ -1,0 +1,11 @@
+{
+  "name": "coriolis-parametered-projection",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nicolas Deveaud",
+  "license": "ISC"
+}

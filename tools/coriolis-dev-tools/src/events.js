@@ -33,29 +33,29 @@ export const timingTypeSelected = createEventBuilder(
 
 export const aggregatorCreated = createEventBuilder(
   'Coriolis devtools detected an aggregator creation',
-  ({ storeId, aggrId, aggr, aggregator }) => ({
+  ({ storeId, projectionId, projection, aggregator }) => ({
     storeId,
-    aggrId,
-    aggr,
+    projectionId,
+    projection,
     aggregator,
   }),
 )
-export const aggrSetup = createEventBuilder(
-  'Coriolis devtools detected an aggr have been setup',
-  ({ storeId, aggrId, aggrBehavior }) => ({ storeId, aggrId, aggrBehavior }),
+export const projectionSetup = createEventBuilder(
+  'Coriolis devtools detected an projection have been setup',
+  ({ storeId, projectionId, projectionBehavior }) => ({ storeId, projectionId, projectionBehavior }),
 )
-export const aggrCalled = createEventBuilder(
-  'Coriolis devtools detected an aggr have been called',
-  ({ storeId, aggrId, args, newState }) => ({
+export const projectionCalled = createEventBuilder(
+  'Coriolis devtools detected an projection have been called',
+  ({ storeId, projectionId, args, newState }) => ({
     storeId,
-    aggrId,
+    projectionId,
     args,
     newState,
   }),
 )
 export const aggregatorCalled = createEventBuilder(
   'Coriolis devtools detected an aggregator have been called',
-  ({ storeId, aggrId, event }) => ({ storeId, aggrId, event }),
+  ({ storeId, projectionId, event }) => ({ storeId, projectionId, event }),
 )
 
 export const storeAdded = createEventBuilder(

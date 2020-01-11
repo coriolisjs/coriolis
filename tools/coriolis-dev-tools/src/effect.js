@@ -21,13 +21,13 @@ const initDevtoolsEventStore = () => {
   return (storeId, storeName = 'unnamed', aggregatorEvents = EMPTY) => ({
     eventSubject,
     pastEvent$,
-    withAggr,
+    withProjection,
   }) => {
     devtoolsEventSubject.next(
       storeAdded({
         storeId,
         storeName,
-        snapshot$: withAggr(snapshot),
+        snapshot$: withProjection(snapshot),
       }),
     )
 

@@ -1,9 +1,9 @@
 <script>
   import { getSource, createDispatch } from 'coriolis-svelte'
-  import { lastPayloadOfType } from 'coriolis-parametered-aggr'
+  import { lastPayloadOfType } from 'coriolis-parametered-projection'
 
-  import { viewList } from '../../aggrs/viewList'
-  import { isDevtoolsOpen } from '../../aggrs/isDevtoolsOpen'
+  import { viewList } from '../../projections/viewList'
+  import { isDevtoolsOpen } from '../../projections/isDevtoolsOpen'
   import { devtoolsClosed, panelWidthChanged } from '../../events'
 
   import NavButton from './NavButton.svelte'
@@ -181,7 +181,7 @@
       <nav>
         <NavButton
           view={false}
-          aggr={isDevtoolsOpen}
+          projection={isDevtoolsOpen}
           buildEvent={devtoolsClosed}
           class="coriolis-dev-tools-button-close"
         >

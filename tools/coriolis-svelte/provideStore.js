@@ -1,6 +1,6 @@
 import { getContext, setContext } from 'svelte'
 
-const KEY_GET_SOURCE = 'Coriolis store reference withAggr'
+const KEY_GET_SOURCE = 'Coriolis store reference withProjection'
 const KEY_DISPATCH = 'Coriolis store reference dispatch'
 
 export const getSource = (...args) => getContext(KEY_GET_SOURCE)(...args)
@@ -19,9 +19,9 @@ export const createStoreAPIProvider = () => {
       throw new Error('Store API to share has not been set')
     }
 
-    const { eventSubject, withAggr } = receivedStoreAPI
+    const { eventSubject, withProjection } = receivedStoreAPI
 
-    setContext(KEY_GET_SOURCE, withAggr)
+    setContext(KEY_GET_SOURCE, withProjection)
     setContext(KEY_DISPATCH, event => eventSubject.next(event))
   }
 

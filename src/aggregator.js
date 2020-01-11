@@ -6,7 +6,7 @@ import { variableFunction } from './lib/function/variableFunction'
 import { chain } from './lib/function/chain'
 import { tryOrNull } from './lib/function/tryOrNull'
 
-// snapshot is a unique aggr that will return every indexed aggregators' last state
+// snapshot is a unique projection that will return every indexed aggregators' last state
 // this function must stay uniq, so as an example we must not use noop here
 export const snapshot = () => {}
 
@@ -54,7 +54,7 @@ const throwUnexpectedScope = funcName => () => {
   throw new Error(`Unexpected out-of-scope usage of function ${funcName}`)
 }
 
-const createAggrSetupAPI = (getLastState, getAggregator) => {
+const createProjectionSetupAPI = (getLastState, getAggregator) => {
   const using = {
     allEvents: false,
     eventTypes: undefined,
@@ -68,7 +68,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const useState = initialValue => {
     if (using.stateIndex !== undefined) {
       throw new Error(
-        'useState should be used only once in an aggr definition setup'
+        'useState should be used only once in an projection definition setup'
       )
     }
     using.initialState = initialValue
@@ -79,7 +79,7 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const useEvent = (...eventTypes) => {
     if (using.eventTypes !== undefined) {
       throw new Error(
-        'useEvent should not be called more than once in an aggr definition setup'
+        'useEvent should not be called more than once in an projection definition setup'
       )
     }
     // flag true if catching all events (means skip filtering interesting events)
@@ -89,11 +89,11 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
     using.aggregators.push(identity)
   }
 
-  const useAggr = aggr => using.aggregators.push(getAggregator(aggr))
+  const useProjection = projection => using.aggregators.push(getAggregator(projection))
 
-  const lazyAggr = aggr => {
+  const lazyProjection = projection => {
     using.skipIndexes.push(using.aggregators.length)
-    using.aggregators.push(getAggregator(aggr))
+    using.aggregators.push(getAggregator(projection))
   }
 
   const useValue = value => using.aggregators.push(() => value)
@@ -105,8 +105,8 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   const setupParamsRaw = Object.entries({
     useState,
     useEvent,
-    useAggr,
-    lazyAggr,
+    useProjection,
+    lazyProjection,
     useValue,
     setName
   }).map(([key, value]) => [key, variableFunction(value)])
@@ -196,10 +196,10 @@ const createAggrSetupAPI = (getLastState, getAggregator) => {
   }
 }
 
-// builds an aggregator from a complexe aggr definition function
-const createComplexAggregator = (aggr, getAggregator) => {
-  if (typeof aggr !== 'function') {
-    throw new TypeError('Aggr must be a function')
+// builds an aggregator from a complexe projection definition function
+const createComplexAggregator = (projection, getAggregator) => {
+  if (typeof projection !== 'function') {
+    throw new TypeError('Projection must be a function')
   }
 
   let aggregator = noop
@@ -216,34 +216,34 @@ const createComplexAggregator = (aggr, getAggregator) => {
     usesEvents,
     preventOutOfScopeUsage,
     getName
-  } = createAggrSetupAPI(getLastState, getAggregator)
+  } = createProjectionSetupAPI(getLastState, getAggregator)
 
-  // aggr could be a reducer, calling it with setupParams could lead to an exception
-  // If we get an exception, we will handle aggr as a reducer, so we don't need
+  // projection could be a reducer, calling it with setupParams could lead to an exception
+  // If we get an exception, we will handle projection as a reducer, so we don't need
   // resulting Error, we just need to know there was one. Let's try, or get null
-  const aggrBehavior = tryOrNull(() => aggr(setupParams))
+  const projectionBehavior = tryOrNull(() => projection(setupParams))
   preventOutOfScopeUsage()
 
-  if (isNullSetup() || typeof aggrBehavior !== 'function') {
-    if (aggrBehavior === null) {
+  if (isNullSetup() || typeof projectionBehavior !== 'function') {
+    if (projectionBehavior === null) {
       // If it's null, we got an error. To avoid making an error completely disapear it
       // is probably better to display this information in console
       // TODO: ensure this behavior is the good one
       console.info(
-        "Aggr setup failure, let's use it as a reducer",
-        aggr.name,
-        aggr,
-        aggrBehavior
+        "Projection setup failure, let's use it as a reducer",
+        projection.name,
+        projection,
+        projectionBehavior
       )
     }
-    // reducer aggr with optional parameters could lead here.
-    // let's assume aggr is in fact a reducer
-    return createReducerAggregator(aggr)
+    // reducer projection with optional parameters could lead here.
+    // let's assume projection is in fact a reducer
+    return createReducerAggregator(projection)
   }
 
   const name = getName()
   if (name) {
-    Object.defineProperty(aggr, 'name', {
+    Object.defineProperty(projection, 'name', {
       value: name,
       writable: false
     })
@@ -258,7 +258,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
 
     // Replace with getAggregator in case signature matches reducer signature (state, event)
     if (isReducerSetup()) {
-      return getAggregator(aggrBehavior)
+      return getAggregator(projectionBehavior)
     }
   }
 
@@ -270,7 +270,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
     initialState !== undefined
       ? initialState
       : !usesEvents()
-        ? aggrBehavior(...getLastValues())
+        ? projectionBehavior(...getLastValues())
         : undefined
 
   aggregator = createReducerAggregator((lastState, event) => {
@@ -280,7 +280,7 @@ const createComplexAggregator = (aggr, getAggregator) => {
       return lastState
     }
 
-    return aggrBehavior(...values)
+    return projectionBehavior(...values)
   }, finalInitialState)
 
   return aggregator
@@ -292,16 +292,16 @@ const createComplexAggregator = (aggr, getAggregator) => {
 // - complex aggregator definition is a function with only one parameter
 // If this guess is not accurate, we should handle aggregator definition as complex aggregator because in
 // complex aggregator handling process there's fallbacks to ensure it works even if a reducer is passed
-export const createAggregator = (aggr, getAggregator = createAggregator) =>
-  aggr && aggr.length === 2
-    ? createReducerAggregator(aggr)
-    : createComplexAggregator(aggr, getAggregator)
+export const createAggregator = (projection, getAggregator = createAggregator) =>
+  projection && projection.length === 2
+    ? createReducerAggregator(projection)
+    : createComplexAggregator(projection, getAggregator)
 
 export const createAggregatorFactory = (
   aggregatorBuilder = createAggregator
 ) => {
-  const factory = createIndex(aggr =>
-    aggr === snapshot ? getSnapshot : aggregatorBuilder(aggr, factory.get)
+  const factory = createIndex(projection =>
+    projection === snapshot ? getSnapshot : aggregatorBuilder(projection, factory.get)
   )
 
   // to build a snapshot, we get the current state from each aggregator and put
@@ -312,8 +312,8 @@ export const createAggregatorFactory = (
       factory
         .list()
         // we don't want to list snapshot aggregator's state as it would cause a recursive loop
-        .filter(([aggr]) => aggr !== snapshot)
-        .map(([aggr, aggregator]) => [aggr.name, aggregator.value])
+        .filter(([projection]) => projection !== snapshot)
+        .map(([projection, aggregator]) => [projection.name, aggregator.value])
     )
 
   getSnapshot.getValue = getSnapshot

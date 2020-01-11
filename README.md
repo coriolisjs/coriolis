@@ -11,7 +11,7 @@ Rules about Coriolis
 
 - Events du passé
 
-  - Event du passé, joués à l'initialisation du store et alimentant les aggrégats mais sans alimenter leurs
+  - Event du passé, joués à l'initialisation du store et alimentant les projections mais sans alimenter leurs
     abonnements ni les effets
 
 - EventSubject
@@ -25,15 +25,15 @@ Rules about Coriolis
   - Assure que chaque event dispose d'un timestamp en meta
   - Fait passer tous les évents par un enhancer (si défini)
 
-- On ne défini pas un aggrégat global unique regroupant l'ensemble des aggregats (à la redux).
-  Pour accéder au contenu d'un aggrégat, on utilise une référence à la définition de cet aggrégat.
-  Pour qu'un aggrégat soit alimenté il faut, soit que sa définition est été "connectée", soit
+- On ne défini pas une projection global unique regroupant l'ensemble des projections (à la redux).
+  Pour accéder au contenu d'une projection, on utilise une référence à la définition de cette projection.
+  Pour qu'une projection soit alimenté il faut, soit que sa définition est été "connectée", soit
   qu'il y ait des abonements à cette définition.
 
-- Une définition d'aggrégat peut prendre deux formes
+- Une définition de projection peut prendre deux formes
 
   - simple sous forme d'un reducer
-  - complexe en utilisant l'API aggr
+  - complexe en utilisant l'API projection
 
 - EventStore
   Un eventStore met en relation un eventSubject et des effets
@@ -53,8 +53,8 @@ Rules about Coriolis
       - Émission de complétion -> complétion générale // CHECK IF REALLY EXPECTING THIS...
     - S'abonner à un aggrégateur
     - Connecter un aggrégateur
-    - Accéder au contenu d'un aggrégat
-    - Récupérer des snapshots (contenu de l'ensemble des aggrégats)
+    - Accéder au contenu d'une projection
+    - Récupérer des snapshots (contenu de l'ensemble des projections)
 
   - Un effet doit retourner une fonction de désactivation
 
@@ -91,27 +91,27 @@ Rules about Coriolis
   - payloadBuilder est optionel, on peut uniquement définir un type
   - payloadBuilder par défaut est identity
 
-## Définition d'aggrégat (Aggr)
+## Définition de projection
 
-La définition d'un aggrégat se fait par une règle d'aggregation (aggregation rule, raccourci en aggr)
+La définition d'une projection se fait par une règle de projection
 
 Quel que soit la forme de définition, Coriolis construira à partir de cette définition un
 aggrégateur qui pourra être alimenté par les events de l'eventSubject.
 
-### Définition d'aggrégat sous forme de reducer:
+### Définition de projection sous forme de reducer:
 
-Pour cette forme, on défini la nouvelle valeur de l'aggrégat (nouvel état) à partir de:
+Pour cette forme, on défini la nouvelle valeur de la projection (nouvel état) à partir de:
 
-- state: dernière valeur de cet aggrégat
+- state: dernière valeur de cette projection
 - event: dernier evenement emit
 
-### Définition d'aggrégat sous forme complexe:
+### Définition de projection sous forme complexe:
 
 Pour cette forme, on défini dans un premier temps les sources de données dont a besoin l'aggrégateur:
 
-- useState: dernière valeur de cet aggrégat (on peut spécifier une valeur initial)
+- useState: dernière valeur de cette projection (on peut spécifier une valeur initial)
 - useEvent: dernier evenement emit (on peut spécifier quels événements on souhaite traiter)
-- useAggr/lazyAggr: utiliser la valeur d'un aggrégat, désigné par son aggr (aggregation rule)
+- useProjection/lazyProjection: utiliser la valeur d'une projection
 - useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API)
 - setName: Attribue un nom à l'aggregateur, dans un but de debug
 
@@ -119,24 +119,24 @@ ensuite on défini le résultat en fonction de ces sources de données
 
 #### Pour une meilleur compréhension du fonctionnement
 
-Chaque définition d'aggrégat complexe peut être transformée en une définition d'aggrégat de type reducer
+Chaque définition de projection complexe peut être transformée en une définition de projection de type reducer
 
 Ce reducer operera en deux étapes:
 
 - premièrement il collectera les données d'input attendues en fonction de l'event, ce qui revient à exécuter un
   aggregateur pour chaque input
 - ensuite, si les données d'input ainsi obtenu sont différentes de la précédente itération, il exécutera la fonction
-  d'aggregation avec ces inputs.
+  de projection avec ces inputs.
 
 ## Aggrégateur
 
-Un aggrégateur est une fonction qui reçoit un événement et retourne une valeure d'aggrégat selon cet événement et
+Un aggrégateur est une fonction qui reçoit un événement et retourne une valeure de projection selon cet événement et
 les précédents reçu
 
 Les aggrégateurs ne sont normalement pas manipulés lors de l'usage de Coriolis. Ils sont utilisés en interne par
 la librairie, mais cette définition apporte une meilleure compréhension du fonctionnement global.
 
-Chaque Aggr (aggregation rule, définition d'aggrégat) est converti en interne par Coriolis en aggregateur, auquel sera
+Chaque Projection est converti en interne par Coriolis en aggregateur, auquel sera
 transmi chaque event traité par Coriolis
 
 Chaque aggrégateur expose sont état courant par le biais d'une méthode "getValue" et également d'un getter "value"
@@ -144,8 +144,8 @@ Chaque aggrégateur expose sont état courant par le biais d'une méthode "getVa
 ### memoization
 
 Si l'aggrégateur est appelé plusieurs fois de suite avec strictement le même événement, seul le premier appel
-aura un effet sur la valeur de l'aggrégat. Les appels suivant retourneront directement la valeur de
-l'aggrégat sans la modifier.
+aura un effet sur la valeur de la projection. Les appels suivant retourneront directement la valeur de
+la projection sans la modifier.
 
 Cette spécificité permet d'utiliser les aggregateurs dans de multiples usages, sans pour autant multiplié
-les exécutions de processus d'aggregation
+les exécutions de processus de projection

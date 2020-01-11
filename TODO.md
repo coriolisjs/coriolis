@@ -14,9 +14,9 @@ dev-tools:
 
     - Display event details:
       - JSON view of the event
-      - list of aggregates impacted by this event with stats (nbr various calls)
+      - list of projections impacted by this event with stats (nbr various calls)
       - for each agregate
-        - JSON view of arguments of aggr call
+        - JSON view of arguments of projection call
         - JSON view of previous state
         - JSON view of result state
 

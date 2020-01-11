@@ -1,16 +1,16 @@
 import { Observable } from 'rxjs'
 
-import { defaultViewName } from '../aggrs/defaultViewName'
-import { currentViewName } from '../aggrs/currentViewName'
-import { replacementViewName } from '../aggrs/replacementViewName'
+import { defaultViewName } from '../projections/defaultViewName'
+import { currentViewName } from '../projections/currentViewName'
+import { replacementViewName } from '../projections/replacementViewName'
 
 import { viewChanged } from '../events'
 
 const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
-export const nav = ({ addSource, withAggr, eventSubject }) => {
-  const currentViewName$ = withAggr(currentViewName)
-  const defaultViewName$ = withAggr(defaultViewName)
+export const nav = ({ addSource, withProjection, eventSubject }) => {
+  const currentViewName$ = withProjection(currentViewName)
+  const defaultViewName$ = withProjection(defaultViewName)
 
   const removeSource = addSource(
     Observable.create(observer => {
@@ -23,7 +23,7 @@ export const nav = ({ addSource, withAggr, eventSubject }) => {
     }),
   )
 
-  const replaceViewSubscription = withAggr(replacementViewName).subscribe(
+  const replaceViewSubscription = withProjection(replacementViewName).subscribe(
     viewName => viewName && eventSubject.next(viewChanged(viewName)),
   )
 

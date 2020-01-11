@@ -8,8 +8,8 @@ export const views = [
     longname: 'Snapshot',
   },
   {
-    name: 'AggrList',
-    longname: 'Liste des aggrégats',
+    name: 'ProjectionList',
+    longname: 'Liste des projections',
   },
   {
     name: 'EventTypeList',

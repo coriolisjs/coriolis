@@ -22,7 +22,7 @@
 import { connect } from '../../libs/vuejs/connect'
 
 import { added, filter, filters } from '../../events/todo'
-import { todolistFilterName } from '../../aggrs/todo'
+import { todolistFilterName } from '../../projections/todo'
 
 const TodoControl = {
   name: 'TodoControl',

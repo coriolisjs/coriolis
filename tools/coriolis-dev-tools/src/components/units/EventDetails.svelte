@@ -3,7 +3,7 @@
 
   import { createDispatch } from 'coriolis-svelte'
 
-  import EventAggrCallDetails from './EventAggrCallDetails.svelte'
+  import EventProjectionCallDetails from './EventProjectionCallDetails.svelte'
 
   import { selectedEventListItem } from '../../events'
 
@@ -104,10 +104,10 @@
       </pre>
     </div>
     <div class="effects">
-      Number of aggr affected: {details.aggrCalls.length}
+      Number of projection affected: {details.projectionCalls.length}
       <ul>
-      {#each details.aggrCalls as aggrCall (aggrCall.name)}
-        <EventAggrCallDetails {aggrCall} />
+      {#each details.projectionCalls as projectionCall (projectionCall.name)}
+        <EventProjectionCallDetails {projectionCall} />
       {/each}
       </ul>
     </div>

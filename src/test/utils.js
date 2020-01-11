@@ -19,15 +19,15 @@ export const matchCoriolisEffectAPI = sinon.match({
   addSource: sinon.match.func,
   addLogger: sinon.match.func,
   addEffect: sinon.match.func,
-  withAggr: sinon.match.func,
+  withProjection: sinon.match.func,
   pastEvent$: matchObservable
 })
 
 export const matchCoriolisAggregatorSetupAPI = sinon.match({
-  useAggr: sinon.match.func,
+  useProjection: sinon.match.func,
   useEvent: sinon.match.func,
   useState: sinon.match.func,
-  lazyAggr: sinon.match.func,
+  lazyProjection: sinon.match.func,
   setName: sinon.match.func,
   useValue: sinon.match.func
 })

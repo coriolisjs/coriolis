@@ -2,7 +2,7 @@
   import { getContext, onMount } from 'svelte'
 
   import { added, filter, filters } from '../../events/todo'
-  import { todolistFilterName } from '../../aggrs/todo'
+  import { todolistFilterName } from '../../projections/todo'
 
   const dispatch = getContext('dispatch')
   const getSource = getContext('getSource')

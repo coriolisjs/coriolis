@@ -3,7 +3,7 @@
 
   import { getSource } from 'coriolis-svelte'
 
-  import { currentStoreSnapshot } from '../../aggrs/currentStoreSnapshot'
+  import { currentStoreSnapshot } from '../../projections/currentStoreSnapshot'
 
   import DevToolsContainer from '../units/DevToolsContainer.svelte'
 

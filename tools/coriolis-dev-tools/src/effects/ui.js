@@ -1,18 +1,18 @@
-import { lastPayloadOfType } from 'coriolis-parametered-aggr'
+import { lastPayloadOfType } from 'coriolis-parametered-projection'
 
 import { createCustomElement } from '../lib/browser/customElement'
 import { ensureFeatures } from '../lib/browser/loadScript'
 
 import { views } from '../components/views'
 
-import { isDevtoolsOpen } from '../aggrs/isDevtoolsOpen'
-import { enabledViewName } from '../aggrs/enabledViewName'
-import { viewList } from '../aggrs/viewList'
-import { eventList } from '../aggrs/eventList'
-import { eventTypeList } from '../aggrs/eventTypeList'
-import { eventListFilter } from '../aggrs/eventListFilter'
-import { currentStoreSnapshot } from '../aggrs/currentStoreSnapshot'
-import { aggrsList } from '../aggrs/aggrsList'
+import { isDevtoolsOpen } from '../projections/isDevtoolsOpen'
+import { enabledViewName } from '../projections/enabledViewName'
+import { viewList } from '../projections/viewList'
+import { eventList } from '../projections/eventList'
+import { eventTypeList } from '../projections/eventTypeList'
+import { eventListFilter } from '../projections/eventListFilter'
+import { currentStoreSnapshot } from '../projections/currentStoreSnapshot'
+import { projectionsList } from '../projections/projectionsList'
 
 import { viewAdded, panelWidthChanged } from '../events'
 
@@ -21,22 +21,22 @@ import { nav } from './nav'
 export const createUI = () => ({
   addEffect,
   addSource,
-  withAggr,
+  withProjection,
   eventSubject,
 }) => {
   addSource(views.map(viewAdded))
 
   addEffect(nav)
 
-  withAggr(lastPayloadOfType(panelWidthChanged)).connect()
-  withAggr(isDevtoolsOpen).connect()
-  withAggr(enabledViewName).connect()
-  withAggr(viewList).connect()
-  withAggr(eventList).connect()
-  withAggr(eventTypeList).connect()
-  withAggr(eventListFilter).connect()
-  withAggr(currentStoreSnapshot).connect()
-  withAggr(aggrsList).connect()
+  withProjection(lastPayloadOfType(panelWidthChanged)).connect()
+  withProjection(isDevtoolsOpen).connect()
+  withProjection(enabledViewName).connect()
+  withProjection(viewList).connect()
+  withProjection(eventList).connect()
+  withProjection(eventTypeList).connect()
+  withProjection(eventListFilter).connect()
+  withProjection(currentStoreSnapshot).connect()
+  withProjection(projectionsList).connect()
 
   let elementMounted = false
 
@@ -63,7 +63,7 @@ export const createUI = () => ({
                 return
               }
 
-              setStoreAPI({ eventSubject, withAggr })
+              setStoreAPI({ eventSubject, withProjection })
 
               this.app = new Entry({
                 target: this,
