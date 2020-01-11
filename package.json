@@ -24,18 +24,18 @@
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-chai-expect": "^2.1.0",
-    "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^6.2.2",
-    "rollup": "^1.27.13",
+    "mocha": "^7.0.0",
+    "rollup": "^1.29.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-visualizer": "^3.3.1",
-    "sinon": "^7.5.0",
-    "sinon-chai": "^3.3.0"
+    "sinon": "^8.0.4",
+    "sinon-chai": "^3.4.0"
   },
   "dependencies": {
-    "rxjs": "^6.5.3"
+    "rxjs": "^6.5.4"
   }
 }
