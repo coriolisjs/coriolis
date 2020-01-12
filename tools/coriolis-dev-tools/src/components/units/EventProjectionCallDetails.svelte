@@ -18,11 +18,24 @@
   }
 
   li {
+    position: relative;
     background: rgba(black, .2);
   }
 
   li:nth-child(even) {
     background: rgba(black, .1);
+  }
+
+  li::before {
+    content: '+';
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 3px 0 0 4px;
+  }
+
+  li.isUnfolded::before {
+    content: '-';
   }
 
   .before, .after {
@@ -36,7 +49,7 @@
   }
 </style>
 
-<li>
+<li class:isUnfolded>
   <h3
     on:click={toggleFold}
   >{projectionCall.name}</h3>
