@@ -49,7 +49,7 @@
 
   const createRanger = (min, max) => value => Math.min(Math.max(value, min), max)
 
-  const minWidth = 405
+  const minWidth = 450
   const maxWidthMargin = 30
 
   const handleMousedown = node => {
