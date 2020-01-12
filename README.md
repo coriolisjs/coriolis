@@ -7,7 +7,7 @@ Rules about Coriolis
   - un type
   - optionnel: un payload
   - des meta-données (optionnel mais coriolis va systématiquement en ajouter certaines)
-  - si c'est une erreur, error: true
+  - si c'est une erreur, error: true et payload le detail de l'erreur
 
 - Events du passé
 
@@ -17,9 +17,9 @@ Rules about Coriolis
 - EventSubject
 
   - Entité interne à Coriolis accessible uniquement indirectement via l'API Effect
-  - Subject selon la terminologie RxJS: entité pouvant à la fois recevoir et émettre des événements
-  - Émet un ensemble d'events initiaux, PUIS retransmet les events qu'il reçoit
-  - Transmet tous les events qu'il reçoit aux loggers
+  - C'est un Subject selon la terminologie RxJS: entité pouvant à la fois recevoir et émettre des événements
+  - Émet un ensemble d'events du passé, PUIS retransmet les events qu'il reçoit
+  - Transmet également tous les events qu'il reçoit aux loggers
   - Assure que les events sont valide
   - Assure une protection contre les boucles d'events
   - Assure que chaque event dispose d'un timestamp en meta
@@ -28,7 +28,7 @@ Rules about Coriolis
 - On ne défini pas une projection global unique regroupant l'ensemble des projections (à la redux).
   Pour accéder au contenu d'une projection, on utilise une référence à la définition de cette projection.
   Pour qu'une projection soit alimenté il faut, soit que sa définition est été "connectée", soit
-  qu'il y ait des abonements à cette définition.
+  qu'il y ait des abonements à cette projection.
 
 - Une définition de projection peut prendre deux formes
 
@@ -43,16 +43,16 @@ Rules about Coriolis
   - Un effet peut :
 
     - Ajouter d'autres effets
-    - Ajouter une source d'events initiaux
+    - Ajouter une source d'events du passé
     - Ajouter un logger d'events
-    - S'abonner aux events initiaux
+    - S'abonner aux events du passé
     - S'abonner aux nouveaux events (via eventSubject)
     - Émettre des events (via eventSubject)
       - Émission d'event invalide -> erreur générale
       - Émission d'erreur -> erreur générale
-      - Émission de complétion -> complétion générale // CHECK IF REALLY EXPECTING THIS...
-    - S'abonner à un aggrégateur
-    - Connecter un aggrégateur
+      - Émission d'une complétion de stream rx -> complétion générale, fin du process // WE HAVE TO CHECK IF WE ARE REALLY EXPECTING THIS...
+    - S'abonner à une projection
+    - Connecter une projection
     - Accéder au contenu d'une projection
     - Récupérer des snapshots (contenu de l'ensemble des projections)
 
@@ -60,43 +60,42 @@ Rules about Coriolis
 
 - Définition d'un logger
 
-  - reçoit des event via une méthode next
+  - reçoit des events via une méthode next
   - peut être un observable d'event
   - erreur émise par logger -> erreur de eventSubject -> erreur générale
 
-- Définition d'une source d'event initiaux
+- Définition d'une source d'event du passé
 
   - peut être un array d'events
   - peut être un observable d'events
 
-  - Doit se compléter pour que le store puisse passer à la suite
+  - Doit se compléter pour que le store puisse passer à la suite (le passé est fini)
   - Erreur sur une source -> erreur générale
-  - Il n'est pas possible de définir une source d'events initiaux après que tous les events initiaux aient étés émits
+  - Lorsque toutes les sources d'events du passées sont complétées la relecture du passé est finie
+    - Il n'est pas possible de définir une source d'events du passé après que toutes les sources d'events du passé aient étés complétées
 
 - L'instanciation d'un store suit la procédure suivante:
 
   - mise en cache du premier event non passé
-  - mise en cache des tout event émit dans un premier temps
-  - diffusion aux aggrégateurs et via l'observable pastEvent\$ des "events du passé"
-  - log puis transmission (aux aggregateurs et via eventSubject d'effet) des events buffurisés
-  - log puis transmission (aux aggregateurs et via eventSubject d'effet) des nouveaux events
+  - mise en cache de tout event émit dans un premier temps
+  - diffusion aux projections et aux effets (via l'observable pastEvent$) des "events du passé"
+  - log puis transmission (aux projections et aux effets) des events buffurisés
+  - log puis transmission (aux projections et aux effet) des nouveaux events
 
   - un eventSubject d'effet n'émet donc jamais aucun "event passé"
-  - les aggregateurs voient passer tous les events, même les "passés"
+  - les projections voient passer tous les events, même les "passés"
 
-- La ré-émition directe d'un event émit par eventSubject cause une erreur (prévention de boucle)
+- La ré-émition tel-quel d'un event émit par eventSubject cause une erreur (prévention de boucle)
 
 - EventBuilder
   - metaBuilder est optionel
   - payloadBuilder est optionel, on peut uniquement définir un type
   - payloadBuilder par défaut est identity
 
-## Définition de projection
-
-La définition d'une projection se fait par une règle de projection
+## Définition d'une projection
 
 Quel que soit la forme de définition, Coriolis construira à partir de cette définition un
-aggrégateur qui pourra être alimenté par les events de l'eventSubject.
+"aggrégateur" qui pourra être alimenté par les events de l'eventSubject.
 
 ### Définition de projection sous forme de reducer:
 
@@ -107,15 +106,15 @@ Pour cette forme, on défini la nouvelle valeur de la projection (nouvel état) 
 
 ### Définition de projection sous forme complexe:
 
-Pour cette forme, on défini dans un premier temps les sources de données dont a besoin l'aggrégateur:
+Pour cette forme, on défini dans un premier temps les sources de données nécessaires:
 
-- useState: dernière valeur de cette projection (on peut spécifier une valeur initial)
-- useEvent: dernier evenement emit (on peut spécifier quels événements on souhaite traiter)
-- useProjection/lazyProjection: utiliser la valeur d'une projection
-- useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API)
-- setName: Attribue un nom à l'aggregateur, dans un but de debug
+- useState: utiliser la dernière valeur obtenue par cette projection (on peut spécifier une valeur initiale)
+- useEvent: utiliser le dernier événement émit (on peut filtrer quels types d'événements on souhaite traiter)
+- useProjection/lazyProjection: utiliser la valeur obtenue d'une projection (voir détails plus loin)
+- useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API, voir projections parametrées)
+- setName: Attribue un nom à la projection, dans un but de debug et de lisibilité
 
-ensuite on défini le résultat en fonction de ces sources de données
+Ensuite on défini l'algorythme de calcul du résultat en fonction de ces sources de données
 
 #### Pour une meilleur compréhension du fonctionnement
 
@@ -124,7 +123,7 @@ Chaque définition de projection complexe peut être transformée en une défini
 Ce reducer operera en deux étapes:
 
 - premièrement il collectera les données d'input attendues en fonction de l'event, ce qui revient à exécuter un
-  aggregateur pour chaque input
+  aggregateur de projection pour chaque input
 - ensuite, si les données d'input ainsi obtenu sont différentes de la précédente itération, il exécutera la fonction
   de projection avec ces inputs.
 
@@ -148,4 +147,4 @@ aura un effet sur la valeur de la projection. Les appels suivant retourneront di
 la projection sans la modifier.
 
 Cette spécificité permet d'utiliser les aggregateurs dans de multiples usages, sans pour autant multiplié
-les exécutions de processus de projection
+l'exécution des processus de projection
