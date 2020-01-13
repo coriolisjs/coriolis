@@ -32,6 +32,8 @@
     top: 0;
     left: 0;
     padding: 3px 0 0 4px;
+    pointer-events: none;
+    user-select: none;
   }
 
   li.isUnfolded::before {
