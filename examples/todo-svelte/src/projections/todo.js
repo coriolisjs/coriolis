@@ -63,10 +63,9 @@ export const todolistFilterName = ({ useState, useEvent }) => (
   (filterName, { payload, error }) => (error ? filterName : payload)
 )
 
-export const filteredTodolist = ({ useState, useProjection }) => (
+export const filteredTodolist = ({ useProjection }) => (
   useProjection(todolist),
   useProjection(todolistFilterName),
-  useState([]),
   produce((listDraft, filterName) => {
     switch (filterName) {
       case 'active':
