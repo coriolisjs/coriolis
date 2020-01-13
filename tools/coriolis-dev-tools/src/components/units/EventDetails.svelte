@@ -86,31 +86,43 @@
     {details.type}
   </h2>
   <div class="body">
-    <div class="content">
-      {#if details.error}
-        <p class="error-warning">This event is an error event</p>
-      {/if}
-      <pre>
-        {@html formatHighlight((details.error && details.payload.message) || details.payload, {
-          keyColor: 'rgb(138, 204, 114)',
-          stringColor: 'rgb(235, 235, 227)'
-        })}
-      </pre>
-      <pre>
-        {@html formatHighlight(details.meta, {
-          keyColor: 'rgb(138, 204, 114)',
-          stringColor: 'rgb(235, 235, 227)'
-        })}
-      </pre>
-    </div>
-    <div class="effects">
-      Number of projection affected: {details.projectionCalls.length}
-      <ul>
-      {#each details.projectionCalls as projectionCall (projectionCall.name)}
-        <EventProjectionCallDetails {projectionCall} />
-      {/each}
-      </ul>
-    </div>
+    {#if !details.type.includes('Init projection')}
+      <div class="content">
+        {#if details.error}
+          <p class="error-warning">This event is an error event</p>
+        {/if}
+        <pre>
+          {@html formatHighlight((details.error && details.payload.message) || details.payload, {
+            keyColor: 'rgb(138, 204, 114)',
+            stringColor: 'rgb(235, 235, 227)'
+          })}
+        </pre>
+        <pre>
+          {@html formatHighlight(details.meta, {
+            keyColor: 'rgb(138, 204, 114)',
+            stringColor: 'rgb(235, 235, 227)'
+          })}
+        </pre>
+      </div>
+      <div class="effects">
+        Number of projections affected: {details.projectionCalls.length}
+        <ul>
+        {#each details.projectionCalls as projectionCall (projectionCall.name)}
+          <EventProjectionCallDetails {projectionCall} />
+        {/each}
+        </ul>
+      </div>
+    {:else}
+      <div class="content">
+        Initial projection value
+        <pre>
+          {@html formatHighlight(details.payload, {
+            keyColor: 'rgb(138, 204, 114)',
+            stringColor: 'rgb(235, 235, 227)'
+          })}
+        </pre>
+      </div>
+    {/if}
   </div>
   <div class="actions">
     <button class="close" on:click={close}>close</button>

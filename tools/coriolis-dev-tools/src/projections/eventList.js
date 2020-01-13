@@ -5,7 +5,7 @@ import { last } from '../lib/array/last'
 import { unshift } from '../lib/array/unshift'
 import { get } from '../lib/object/get'
 
-import { storeEvent, projectionCalled, selectedEventListItem } from '../events'
+import { storeEvent, projectionCalled, selectedEventListItem, aggregatorCreated } from '../events'
 
 import { currentStoreId } from './currentStoreId'
 import { fullProjectionsIndex } from './projectionsList'
@@ -37,9 +37,11 @@ const createEventListItem = (
 
 export const eventListSelectedEvent = lastPayloadOfType(selectedEventListItem)
 
+const ifUndefined = (value, defaultValue) => (value === undefined || value === null) ? defaultValue : value;
+
 const fullEventList = ({ useState, useEvent, useProjection }) => (
   useState({}),
-  useEvent(projectionCalled, storeEvent),
+  useEvent(projectionCalled, storeEvent, aggregatorCreated),
   useProjection(fullProjectionsIndex),
   (lists, event, projectionIndexes) => {
     const {
@@ -60,6 +62,25 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
           first(eventList),
           last(eventList),
         ),
+      )
+    } else if (event.type === aggregatorCreated.toString()) {
+      newEventlist = unshift(
+        eventList,
+        {
+          type: `Init projection ${event.payload.projection.name}`,
+          error: false,
+          payload: event.payload.aggregator.value,
+          isPastEvent: ifUndefined(get(first(eventList), 'isPastEvent'), true),
+          projectionCalls: [],
+
+          date: new Date(event.meta.timestamp).toLocaleString(),
+          timestamp: event.meta.timestamp,
+          deltaN: getTimestampDelta(
+            event.meta.timestamp,
+            get(first(eventList), 'timestamp'),
+          ),
+          delta0: getTimestampDelta(event.meta.timestamp, get(last(eventList), 'timestamp')),
+        },
       )
     } else {
       const {

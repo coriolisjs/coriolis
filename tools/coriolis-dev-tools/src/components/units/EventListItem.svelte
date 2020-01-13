@@ -34,6 +34,15 @@
       color: #f66578;
     }
 
+    &.isConnection {
+      background: #3f4271;
+      padding: .1em .5em 0;
+
+      &.isSelected {
+        background-color: rgba(24, 37, 196, 0.6);
+      }
+    }
+
     &.isSelected {
       opacity: 1;
       background-color: #99845e;
@@ -73,6 +82,7 @@
   class="eventListItem"
   class:isPastEvent={item.isPastEvent}
   class:isError={item.error}
+  class:isConnection={item.type.includes('Init projection')}
   class:isSelected={selected}
   on:click={selectEventListItem}
 >
