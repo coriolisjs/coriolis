@@ -21,6 +21,15 @@
     margin: 0;
     padding: .5em;
     cursor: default;
+    background: rgba(black, .1);
+
+    &:hover {
+      background: rgba(white, .1);
+    }
+
+    &.isEven {
+      background: rgba(black, .2);
+    }
 
     &.isPastEvent {
       opacity: .4;
@@ -80,6 +89,7 @@
 
 <div
   class="eventListItem"
+  class:isEven={!(item.rank % 2)}
   class:isPastEvent={item.isPastEvent}
   class:isError={item.error}
   class:isConnection={item.type.includes('Init projection')}

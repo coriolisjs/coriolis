@@ -33,6 +33,7 @@ const createEventListItem = (
     get(previousEvent, 'timestamp'),
   ),
   delta0: getTimestampDelta(event.meta.timestamp, get(firstEvent, 'timestamp')),
+  rank: (get(previousEvent, 'rank') || 0) + 1,
 })
 
 export const eventListSelectedEvent = lastPayloadOfType(selectedEventListItem)
@@ -80,6 +81,7 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
             get(first(eventList), 'timestamp'),
           ),
           delta0: getTimestampDelta(event.meta.timestamp, get(last(eventList), 'timestamp')),
+          rank: (get(first(eventList), 'rank') || 0) + 1,
         },
       )
     } else {

@@ -19,18 +19,6 @@
     height: 100%;
     overflow: hidden;
 
-    :global(svelte-virtual-list-row) {
-      background: rgba(black, .1);
-
-      &:nth-child(even) {
-        background: rgba(black, .2);
-      }
-    }
-
-    :global(svelte-virtual-list-row):hover {
-      background: rgba(white, .1);
-    }
-
     .empty {
       position: absolute;
       width: 100%;
