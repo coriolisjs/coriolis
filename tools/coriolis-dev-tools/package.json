@@ -1,5 +1,5 @@
 {
-  "name": "coriolis-dev-tools",
+  "name": "@coriolis/dev-tools",
   "version": "1.0.0",
   "devDependencies": {
     "eslint": "^6.8.0",
@@ -24,9 +24,9 @@
   "dependencies": {
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@webcomponents/custom-elements": "^1.3.2",
-    "coriolis": "file:../../",
-    "coriolis-parametered-projection": "file:../coriolis-parametered-projection/",
-    "coriolis-svelte": "file:../coriolis-svelte/",
+    "@coriolis/coriolis": "file:../../",
+    "@coriolis/parametered-projection": "file:../coriolis-parametered-projection/",
+    "@coriolis/coriolis-svelte": "file:../coriolis-svelte/",
     "immer": "^5.2.1",
     "json-format-highlight": "^1.0.3",
     "sirv-cli": "^0.4.5"

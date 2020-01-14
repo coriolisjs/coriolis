@@ -1,5 +1,5 @@
 <script context="module">
-  import { getSource, createStoreAPIProvider } from 'coriolis-svelte'
+  import { getSource, createStoreAPIProvider } from '@coriolis/coriolis-svelte'
 
   const {
     setStoreAPI,

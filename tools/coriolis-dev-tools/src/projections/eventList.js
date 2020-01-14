@@ -1,4 +1,4 @@
-import { lastPayloadOfType } from 'coriolis-parametered-projection'
+import { lastPayloadOfType } from '@coriolis/parametered-projection'
 
 import { first } from '../lib/array/first'
 import { last } from '../lib/array/last'

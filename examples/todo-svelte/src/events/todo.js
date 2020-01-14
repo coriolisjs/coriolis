@@ -1,4 +1,4 @@
-import { createEventBuilder } from 'coriolis'
+import { createEventBuilder } from '@coriolis/coriolis'
 
 import { required } from '../libs/required'
 

@@ -1,5 +1,5 @@
 {
-  "name": "coriolis-parametered-projection",
+  "name": "@coriolis/parametered-projection",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

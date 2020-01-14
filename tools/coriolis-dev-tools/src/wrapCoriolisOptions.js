@@ -4,7 +4,7 @@ import {
   createAggregator,
   createAggregatorFactory,
   withSimpleStoreSignature,
-} from 'coriolis'
+} from '@coriolis/coriolis'
 
 import { createCoriolisDevToolsEffect } from './effect'
 

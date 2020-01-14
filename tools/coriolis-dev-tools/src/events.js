@@ -1,4 +1,4 @@
-import { createEventBuilder } from 'coriolis'
+import { createEventBuilder } from '@coriolis/coriolis'
 
 export const viewAdded = createEventBuilder(
   'Coriolis devtools new view added',

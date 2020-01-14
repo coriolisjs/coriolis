@@ -1,5 +1,5 @@
 <script>
-  import { getSource } from 'coriolis-svelte'
+  import { getSource } from '@coriolis/coriolis-svelte'
 
   import { projectionsList } from '../../projections/projectionsList.js'
 

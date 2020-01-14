@@ -1,6 +1,6 @@
 import { EMPTY } from 'rxjs'
 
-import { createStore, snapshot } from 'coriolis'
+import { createStore, snapshot } from '@coriolis/coriolis'
 
 import { storage } from './effects/storage'
 import { createUI } from './effects/ui'

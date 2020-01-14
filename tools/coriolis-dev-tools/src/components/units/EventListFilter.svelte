@@ -1,5 +1,5 @@
 <script>
-  import { getSource, createDispatch } from 'coriolis-svelte'
+  import { getSource, createDispatch } from '@coriolis/coriolis-svelte'
 
   import { eventListFilter } from '../../projections/eventListFilter'
   import { eventListFilterChange } from '../../events'

@@ -1,5 +1,5 @@
 <script>
-  import { getSource, createDispatch } from 'coriolis-svelte'
+  import { getSource, createDispatch } from '@coriolis/coriolis-svelte'
 
   import { currentViewName } from '../../projections/currentViewName'
   import { viewChanged } from '../../events'

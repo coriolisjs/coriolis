@@ -1,6 +1,6 @@
 <script>
-  import { getSource, createDispatch } from 'coriolis-svelte'
-  import { lastPayloadOfType } from 'coriolis-parametered-projection'
+  import { getSource, createDispatch } from '@coriolis/coriolis-svelte'
+  import { lastPayloadOfType } from '@coriolis/parametered-projection'
 
   import { viewList } from '../../projections/viewList'
   import { isDevtoolsOpen } from '../../projections/isDevtoolsOpen'

@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@sveltejs/svelte-virtual-list": "^3.0.1",
-    "coriolis": "file:../../",
-    "coriolis-dev-tools": "file:../../tools/coriolis-dev-tools/",
-    "coriolis-parametered-projection": "file:../../tools/coriolis-parametered-projection/",
+    "@coriolis/coriolis": "file:../../",
+    "@coriolis/dev-tools": "file:../../tools/coriolis-dev-tools/",
+    "@coriolis/parametered-projection": "file:../../tools/coriolis-parametered-projection/",
     "immer": "^5.0.1",
     "sirv-cli": "^0.4.4"
   },

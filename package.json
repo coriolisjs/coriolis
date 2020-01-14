@@ -1,5 +1,5 @@
 {
-  "name": "coriolis",
+  "name": "@coriolis/coriolis",
   "version": "1.0.0",
   "description": "Event sourced effect management",
   "license": "GPL-3.0",

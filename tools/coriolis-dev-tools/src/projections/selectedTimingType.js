@@ -1,4 +1,4 @@
-import { lastPayloadOfType } from 'coriolis-parametered-projection'
+import { lastPayloadOfType } from '@coriolis/parametered-projection'
 
 import { timingTypeSelected } from '../events'
 

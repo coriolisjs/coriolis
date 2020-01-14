@@ -1,5 +1,5 @@
 <script>
-  import { getSource } from 'coriolis-svelte'
+  import { getSource } from '@coriolis/coriolis-svelte'
 
   import { eventTypeList } from '../../projections/eventTypeList'
 

@@ -1,7 +1,7 @@
 <script>
   import formatHighlight from 'json-format-highlight'
 
-  import { getSource } from 'coriolis-svelte'
+  import { getSource } from '@coriolis/coriolis-svelte'
 
   import { currentStoreSnapshot } from '../../projections/currentStoreSnapshot'
 

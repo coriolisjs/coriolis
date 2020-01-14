@@ -1,4 +1,4 @@
-import { lastPayloadOfType } from 'coriolis-parametered-projection'
+import { lastPayloadOfType } from '@coriolis/parametered-projection'
 
 import { createCustomElement } from '../lib/browser/customElement'
 import { ensureFeatures } from '../lib/browser/loadScript'

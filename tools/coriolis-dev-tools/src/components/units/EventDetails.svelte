@@ -1,7 +1,7 @@
 <script>
   import formatHighlight from 'json-format-highlight'
 
-  import { createDispatch } from 'coriolis-svelte'
+  import { createDispatch } from '@coriolis/coriolis-svelte'
 
   import EventProjectionCallDetails from './EventProjectionCallDetails.svelte'
 
