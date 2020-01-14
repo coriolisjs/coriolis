@@ -1,4 +1,4 @@
-import { createIndex } from '../../src/lib/map/objectIndex'
+import { createIndex } from './lib/map/objectIndex'
 
 // projection wrapper that allow an projection to be parametered and still have shared cached results
 export const parameteredProjection = projection =>
