@@ -2,18 +2,22 @@
   "name": "coriolis",
   "version": "1.0.0",
   "description": "Event sourced effect management",
+  "license": "GPL-3.0",
+  "author": "Nicolas Deveaud",
   "module": "dist/esm/index.js",
   "main": "dist/cjs/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clear": "rm -rf node_modules dist",
     "lint": "eslint .",
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
     "test:watch": "npm run -s test -- --watch",
     "build": "rollup -c",
-    "autobuild": "rollup -c -w"
+    "autobuild": "rollup -c -w",
+    "publish:local": "npm publish --registry http://localhost:4873"
   },
-  "author": "Nicolas Deveaud",
-  "license": "GPL-3.0",
   "devDependencies": {
     "@babel/core": "^7.8.0",
     "@babel/preset-env": "^7.8.0",
