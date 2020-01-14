@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "todos-svelte-example",
   "version": "1.0.0",
   "devDependencies": {
     "node-sass": "^4.12.0",
@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@sveltejs/svelte-virtual-list": "^3.0.1",
-    "@coriolis/coriolis": "file:../../",
-    "@coriolis/dev-tools": "file:../../tools/coriolis-dev-tools/",
-    "@coriolis/parametered-projection": "file:../../tools/coriolis-parametered-projection/",
+    "@coriolis/coriolis": "^1.0.0",
+    "@coriolis/dev-tools": "^1.0.0",
+    "@coriolis/parametered-projection": "^1.0.0",
     "immer": "^5.0.1",
     "sirv-cli": "^0.4.4"
   },

@@ -1,11 +1,12 @@
 {
   "name": "@coriolis/parametered-projection",
   "version": "1.0.0",
-  "description": "",
+  "description": "Parametered projections for coriolis",
+  "license": "GPL-3.0",
+  "author": "Nicolas Deveaud",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Nicolas Deveaud",
-  "license": "ISC"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "publish:local": "npm publish --registry http://localhost:4873"
+  }
 }

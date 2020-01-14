@@ -1,5 +1,5 @@
 {
-  "name": "todos",
+  "name": "todos-vueJS-example",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.3",
-    "@coriolis/coriolis": "file:../../",
-    "@coriolis/dev-tools": "file:../../tools/coriolis-dev-tools/",
+    "@coriolis/coriolis": "^1.0.0",
+    "@coriolis/dev-tools": "^1.0.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
