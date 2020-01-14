@@ -22,6 +22,7 @@
     padding: .5em;
     cursor: default;
     background: rgba(black, .1);
+    line-height: 1.5em;
 
     &:hover {
       background: rgba(white, .1);
@@ -92,7 +93,7 @@
   class:isEven={!(item.rank % 2)}
   class:isPastEvent={item.isPastEvent}
   class:isError={item.error}
-  class:isConnection={item.type.includes('Init projection')}
+  class:isConnection={item.type && item.type.includes('Init projection')}
   class:isSelected={selected}
   on:click={selectEventListItem}
 >
