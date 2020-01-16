@@ -9,6 +9,9 @@
 
   export let details
 
+  let isProjectionInit
+
+  $: isProjectionInit = details.type.includes('Init projection')
   $: console.log(details)
   const close = createDispatch(() => selectedEventListItem(undefined))
 </script>
@@ -44,6 +47,13 @@
 
         .error-warning {
           color: #f66578;
+        }
+
+        h3 {
+          margin: 0;
+          padding: 0 .5em;
+          background: rgba(black, .2);
+          font-size: 1em;
         }
       }
 
@@ -82,21 +92,23 @@
 
 <div class="event-details" class:isPastEvent={details.isPastEvent}>
   <h2 class="type">
-    {details.isPastEvent ? '(Past event) ' : ''}
+    {(!isProjectionInit && details.isPastEvent) ? '(Past event) ' : ''}
     {details.type}
   </h2>
   <div class="body">
-    {#if !details.type.includes('Init projection')}
+    {#if !isProjectionInit}
       <div class="content">
         {#if details.error}
           <p class="error-warning">This event is an error event</p>
         {/if}
+        <h3>payload</h3>
         <pre>
           {@html formatHighlight((details.error && details.payload.message) || details.payload, {
             keyColor: 'rgb(138, 204, 114)',
             stringColor: 'rgb(235, 235, 227)'
           })}
         </pre>
+        <h3>meta</h3>
         <pre>
           {@html formatHighlight(details.meta, {
             keyColor: 'rgb(138, 204, 114)',
