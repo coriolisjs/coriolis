@@ -2,6 +2,7 @@ import { identity, noop } from 'rxjs'
 
 import { createIndex } from './lib/map/objectIndex'
 import { objectFrom } from './lib/object/objectFrom'
+import { withValueGetter } from './lib/object/valueGetter'
 import { variableFunction } from './lib/function/variableFunction'
 import { chain } from './lib/function/chain'
 import { tryOrNull } from './lib/function/tryOrNull'
@@ -35,19 +36,7 @@ const createReducerAggregator = (reducer, initialState) => {
     return lastState
   }
 
-  // We define both getValue and value getter because, depending on context, one
-  // can be more readable than the other.
-  // getValue is suited when we need to pass a reference to the function, and
-  // value getter is best when accessing directly the value
-  aggregator.getValue = () => lastState
-
-  Object.defineProperty(aggregator, 'value', {
-    configurable: false,
-    enumerable: true,
-    get: aggregator.getValue
-  })
-
-  return aggregator
+  return withValueGetter(aggregator, () => lastState)
 }
 
 const throwUnexpectedScope = funcName => () => {
@@ -96,7 +85,7 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     using.aggregators.push(getAggregator(projection))
   }
 
-  const useValue = value => using.aggregators.push(() => value)
+  const useValue = value => using.aggregators.push(withValueGetter(() => value))
 
   const setName = name => {
     using.name = name
@@ -307,7 +296,7 @@ export const createAggregatorFactory = (
   // to build a snapshot, we get the current state from each aggregator and put
   // all this in an object, using aggregator definition's name as keys. If any conflicts
   // on names, numbers are concatenated on conflicting keys (aKey, aKey-2, aKey-3...)
-  const getSnapshot = () =>
+  const getSnapshot = withValueGetter(() =>
     objectFrom(
       factory
         .list()
@@ -315,12 +304,7 @@ export const createAggregatorFactory = (
         .filter(([projection]) => projection !== snapshot)
         .map(([projection, aggregator]) => [projection.name, aggregator.value])
     )
-
-  getSnapshot.getValue = getSnapshot
-
-  Object.defineProperty(getSnapshot, 'value', {
-    get: getSnapshot
-  })
+  )
 
   return factory.get
 }

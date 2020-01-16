@@ -15,6 +15,7 @@ import {
   aggregatorCalled,
 } from './events'
 import { lossless } from './lib/rx/operator/lossless'
+import { withValueGetter } from './lib/object/valueGetter'
 
 let lastStoreId = 0
 const getStoreId = () => ++lastStoreId
@@ -134,15 +135,7 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
     return aggregator(event)
   }
 
-  wrappedAggregator.getValue = aggregator.getValue
-
-  Object.defineProperty(wrappedAggregator, 'value', {
-    configurable: false,
-    enumerable: true,
-    get: aggregator.getValue,
-  })
-
-  return wrappedAggregator
+  return withValueGetter(wrappedAggregator, aggregator.getValue)
 }
 
 export const wrapCoriolisOptions = withSimpleStoreSignature(

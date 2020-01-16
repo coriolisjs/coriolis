@@ -2,6 +2,7 @@ import { of } from 'rxjs'
 import { distinctUntilChanged, map, skipUntil } from 'rxjs/operators'
 
 import { createIndex } from './lib/map/objectIndex'
+import { setValueGetter } from './lib/object/valueGetter'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { ensureInitial } from './lib/rx/operator/ensureInitial'
 
@@ -34,13 +35,5 @@ export const createProjectionWrapperFactory = (
     // For user, the request is to connect an aggregator, it should return a function to disconnect it
     projection$.connect = () => simpleUnsub(event$.subscribe(aggregator))
 
-    projection$.getValue = aggregator.getValue
-
-    Object.defineProperty(projection$, 'value', {
-      configurable: false,
-      enumerable: true,
-      get: aggregator.getValue
-    })
-
-    return projection$
+    return setValueGetter(projection$, aggregator.getValue)
   }).get
