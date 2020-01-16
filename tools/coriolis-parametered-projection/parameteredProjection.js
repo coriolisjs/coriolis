@@ -6,14 +6,21 @@ export const parameteredProjection = projection =>
     let count = 0
 
     const useParam = (idx = count++) => projectionAPI.useValue(args[idx])
+
     const useParameteredEvent = (from = 0, to) =>
       projectionAPI.useEvent(...args.slice(from, to))
+
     const useParameteredProjection = (parameteredProjection, from = 0, to) =>
       projectionAPI.useProjection(parameteredProjection(...args.slice(from, to)))
+
+    const setParameteredName = (nameBuilder, from = 0, to) =>
+      projectionAPI.setName(nameBuilder(...args.slice(from, to)))
+
     return projection({
       useParam,
       useParameteredEvent,
       useParameteredProjection,
+      setParameteredName,
       ...projectionAPI
     })
   }).get
