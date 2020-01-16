@@ -1,3 +1,12 @@
+core
+  reducer projection detection can cause some errors to be invisible
+    all errors in a projection-setup function would be invisible, which is a major readability/debug problem
+    possible solutions:
+      - disallow reducer projections
+        - can be done with providing a "fromReducer" helper converting reducer to projection
+      - make dev-tools display projection-setup errors (this would display falsy errors for some reducer-conversion process)
+
+
 dev-tools:
   event list:
     - timestamps should be visible in more human unit:
@@ -13,14 +22,10 @@ dev-tools:
         + 234d 14h
 
     - Display event details:
-      - JSON view of the event
-      - list of projections impacted by this event with stats (nbr various calls)
-      - for each agregate
+      - for each projection call
         - JSON view of arguments of projection call
-        - JSON view of previous state
-        - JSON view of result state
 
-    - dev-tools current view stored in local/session-storage
+
 
 examples:
   extract todo logic in a separated folder to share this between UI implementations
