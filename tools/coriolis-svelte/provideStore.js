@@ -7,7 +7,13 @@ export const getSource = (...args) => getContext(KEY_GET_SOURCE)(...args)
 
 export const createDispatch = builder => {
   const dispatch = getContext(KEY_DISPATCH)
-  return (...args) => dispatch(builder(...args))
+  return (...args) => {
+    const event = builder(...args)
+    if (!event) {
+      return
+    }
+    dispatch(event)
+  }
 }
 
 export const createStoreAPIProvider = () => {
