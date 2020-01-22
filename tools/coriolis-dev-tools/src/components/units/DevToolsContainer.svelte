@@ -108,9 +108,15 @@
       cursor: col-resize;
     }
 
+    :global(> *) {
+      flex: 1;
+      overflow: auto;
+    }
+
     header {
       flex: 0 0 auto;
       z-index: 1;
+      overflow: hidden;
 
       .headerTop {
         margin: -3px 0 0 -6px;
@@ -125,11 +131,6 @@
         // text-align: center;
         font-size: 1.2em;
       }
-    }
-
-    :global(> *) {
-      flex: 1;
-      overflow: hidden;
     }
 
     nav {

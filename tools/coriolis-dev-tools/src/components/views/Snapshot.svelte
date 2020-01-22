@@ -15,7 +15,6 @@
 <style>
   .content {
     height: 100%;
-    overflow: auto;
     background: rgba(0, 0, 0, .4);
     padding: 15px;
   }
