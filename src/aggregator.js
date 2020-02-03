@@ -115,7 +115,8 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
   const isReducerSetup = () =>
     (!using.aggregators[0] || using.stateIndex === 0) &&
     (!using.aggregators[1] || using.aggregators[1] === identity) &&
-    using.aggregators.length <= 2
+    using.aggregators.length <= 2 &&
+    using.initialState === undefined
 
   // reducer-like, means it's not in the right order
   const isReducerLikeSetup = () =>
