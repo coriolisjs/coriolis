@@ -1,5 +1,90 @@
 # Coriolis
 
+## Qu'est-ce que c'est ?
+
+C'est une librairie Javascript permettant de mettre en place un store d'events alimentant des effets s'appuyant sur des projections (état déduit de différents events)
+
+Cette librairie vous aidera à structurer vos applications selon les concepts d'Event Sourcing et de Domain Driven Design.
+
+Cette approche de structuration aide à obtenir une application au comportement prédictible, modulaire, évolutif et debuggable.
+Elle entre autre à distinguer différentes typologies de logiques:
+- comportement
+- organisation des données
+- interface utilisateur
+...
+
+## Motivations
+
+Une motivation majeur derière Coriolis est d'aider à construire un code d'application lisible, en cherchant à se focaliser sur l'expression des logiques du domaine métier. Cela se manifeste à plusieurs niveaux:
+
+- La définition d'une projection est réduie à sa plus simple expression: de quoi elle a besoin et la logique de rangement des données.
+
+- La définition d'un effet peut appliquer d'autres effets, favorisant ainsi une construction modulaire.
+
+- La définition d'un effet a accès directement a toute projection et tout event (passé ou nouveau), et peut invoquer des events passés, déclarer de nouveaux events, appliquer des stratégies de stockage d'events et ajouter d'autres effets
+
+
+## Influences
+
+La conception de Coriolis a été inspirée par Redux, en cherchant à donnée le rôle de single source of truth non pas au state mais au flux d'events, et ainsi rejoindre le concept d'Event Sourcing
+
+
+## Installation
+
+Pour installer Coriolis:
+
+```javascript
+npm install --save coriolis
+```
+
+Le module est fourni sous deux formes: CommonJS ou ES modules, suivant la manière dont vous le chargez
+
+```javascript
+import coriolisModule from '@coriolis/coriolis'
+
+const { createStore } = coriolisModule
+
+const currentCount = ({ useState, useEvent }) => (
+  useState(0),
+  useEvent(),
+  (state, event) => {
+    switch (event.type) {
+      case 'incremented':
+        return state + 1
+
+      case 'decremented':
+        return state - 1
+
+      default:
+        return state
+    }
+  }
+)
+
+createStore(({ withProjection, eventSubject }) => {
+  withProjection(currentCount).subscribe(count => console.log(count))
+  // 0
+
+  eventSubject.next({ type: 'incremented' })
+  // 1
+
+  eventSubject.next({ type: 'incremented' })
+  // 2
+
+  eventSubject.next({ type: 'decremented' })
+  // 1
+})
+
+```
+
+## Utilisation
+
+
+## API documentation
+
+
+## Plus en détails
+
 Rules about Coriolis
 
 - Un event doit avoir un format standard:
