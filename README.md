@@ -4,10 +4,10 @@
 
 C'est une librairie Javascript permettant de mettre en place un store d'events alimentant des effets s'appuyant sur des projections (état déduit de différents events)
 
-Cette librairie vous aidera à structurer vos applications selon les concepts d'Event Sourcing et de Domain Driven Design.
+Cette librairie vous aidera à créer vos applications selon les concepts d'Event Sourcing et de Domain Driven Design.
 
-Cette approche de structuration aide à obtenir une application au comportement prédictible, modulaire, évolutif et debuggable.
-Elle entre autre à distinguer différentes typologies de logiques:
+Cette approche aide à obtenir une application au comportement prédictible, modulaire, évolutif et debuggable.
+Elle permet entre autre à distinguer différentes typologies de logiques:
 - comportement
 - organisation des données
 - interface utilisateur
@@ -15,9 +15,9 @@ Elle entre autre à distinguer différentes typologies de logiques:
 
 ## Motivations
 
-Une motivation majeur derière Coriolis est d'aider à construire un code d'application lisible, en cherchant à se focaliser sur l'expression des logiques du domaine métier. Cela se manifeste à plusieurs niveaux:
+Une motivation majeur avec Coriolis est d'aider à construire un code d'application lisible, en cherchant à se focaliser sur l'expression des logiques du domaine métier. Cela se manifeste à plusieurs niveaux:
 
-- La définition d'une projection est réduie à sa plus simple expression: de quoi elle a besoin et la logique de rangement des données.
+- La définition d'une projection est réduite à sa plus simple expression: de quoi elle a besoin et la logique de rangement des données.
 
 - La définition d'un effet peut appliquer d'autres effets, favorisant ainsi une construction modulaire.
 
