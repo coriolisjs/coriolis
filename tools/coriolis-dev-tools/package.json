@@ -17,7 +17,7 @@
     "start": "sirv public --single",
     "start:dev": "sirv public --single --dev",
     "lint": "eslint .",
-    "pretty": "prettier './**/{*.{js?(on),ts,y?(a)ml,graphql,md,?(s)css,html},.*.{js?(on),ts,y?(a)ml,graphql,md,?(s)css,html}}' --write && eslint . --fix",
+    "pretty": "prettier './**/{*.{js?(on),md,?(s)css,html},.*.{js?(on),md,?(s)css,html}}' --write && eslint . --fix",
     "publish:local": "npm publish --registry http://localhost:4873"
   },
   "devDependencies": {
