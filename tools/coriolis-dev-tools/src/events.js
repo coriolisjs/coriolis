@@ -42,7 +42,11 @@ export const aggregatorCreated = createEventBuilder(
 )
 export const projectionSetup = createEventBuilder(
   'Coriolis devtools detected an projection have been setup',
-  ({ storeId, projectionId, projectionBehavior }) => ({ storeId, projectionId, projectionBehavior }),
+  ({ storeId, projectionId, projectionBehavior }) => ({
+    storeId,
+    projectionId,
+    projectionBehavior,
+  }),
 )
 export const projectionCalled = createEventBuilder(
   'Coriolis devtools detected an projection have been called',

@@ -11,7 +11,16 @@ import { currentStoreId } from './currentStoreId'
 
 const reduceProjectionState = (
   state = {},
-  { type, payload: { projectionId, projection, projectionBehavior, event, aggregator } },
+  {
+    type,
+    payload: {
+      projectionId,
+      projection,
+      projectionBehavior,
+      event,
+      aggregator,
+    },
+  },
 ) => {
   switch (type) {
     case aggregatorCreated.toString():
@@ -25,7 +34,8 @@ const reduceProjectionState = (
     case projectionSetup.toString():
       return {
         ...state,
-        projectionBehavior: get(projectionBehavior, 'message') || projectionBehavior,
+        projectionBehavior:
+          get(projectionBehavior, 'message') || projectionBehavior,
         setupCalls: (state.setupCalls || 0) + 1,
         isReducer: typeof projectionBehavior !== 'function',
       }
@@ -50,7 +60,12 @@ const reduceProjectionState = (
 
 export const fullProjectionsIndex = ({ useState, useEvent }) => (
   useState({}),
-  useEvent(aggregatorCreated, projectionSetup, projectionCalled, aggregatorCalled),
+  useEvent(
+    aggregatorCreated,
+    projectionSetup,
+    projectionCalled,
+    aggregatorCalled,
+  ),
   (list, { type, payload }) => ({
     ...list,
     [payload.storeId]: {

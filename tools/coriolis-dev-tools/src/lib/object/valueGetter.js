@@ -8,7 +8,7 @@ export const setValueGetter = (obj, getter) => {
   Object.defineProperty(obj, 'value', {
     configurable: false,
     enumerable: true,
-    get: getter
+    get: getter,
   })
 
   return obj

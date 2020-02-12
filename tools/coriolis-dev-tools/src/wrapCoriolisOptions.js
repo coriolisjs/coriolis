@@ -65,7 +65,9 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
       // this initial call is not triggered by an event, so we don't track it as an projectionCalled event
       //
       // TODO: maybe we could track this with an event like "projectionInitialStateCall"
-      trackingSubject.next(projectionCalled({ storeId, projectionId, args, newState }))
+      trackingSubject.next(
+        projectionCalled({ storeId, projectionId, args, newState }),
+      )
     }
 
     return newState
@@ -90,7 +92,9 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
         projectionBehavior = error
       }
 
-      trackingSubject.next(projectionSetup({ storeId, projectionId, projectionBehavior }))
+      trackingSubject.next(
+        projectionSetup({ storeId, projectionId, projectionBehavior }),
+      )
 
       // result is not expected type.... maybe this was not a complex projection but a reducer... return what we got
       if (typeof projectionBehavior !== 'function') {
@@ -110,7 +114,9 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
       // this initial call is not triggered by an event, so we don't track it as an projectionCalled event
       //
       // TODO: maybe we could track this with an event like "projectionInitialStateCall"
-      trackingSubject.next(projectionCalled({ storeId, projectionId, args, newState }))
+      trackingSubject.next(
+        projectionCalled({ storeId, projectionId, args, newState }),
+      )
     }
 
     return newState
@@ -128,7 +134,9 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
 
   aggregator = createAggregator(wrappedProjection, getAggregator)
 
-  trackingSubject.next(aggregatorCreated({ storeId, projectionId, projection, aggregator }))
+  trackingSubject.next(
+    aggregatorCreated({ storeId, projectionId, projection, aggregator }),
+  )
 
   const wrappedAggregator = event => {
     trackingSubject.next(aggregatorCalled({ storeId, projectionId, event }))
