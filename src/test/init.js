@@ -18,13 +18,19 @@ let lastParams
 global.withParams = (parts, ...params) => {
   lastParams = params
 
-  return parts[0] + parts.slice(1).map((part, idx) => JSON.stringify(params[idx], null, 2) + part).join('')
+  return (
+    parts[0] +
+    parts
+      .slice(1)
+      .map((part, idx) => JSON.stringify(params[idx], null, 2) + part)
+      .join('')
+  )
 }
 
 global.useParams = callback => {
   const params = lastParams.slice()
 
-  return function (...args) {
+  return function(...args) {
     callback.call(this, ...params, ...args)
   }
 }

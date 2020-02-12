@@ -9,7 +9,7 @@ describe('hasOnlyKeys', () => {
       key1: 'key1',
       key2: 'key2',
       key3: 'key3',
-      key4: 'key4'
+      key4: 'key4',
     }
 
     const result = hasOnlyKeys(subject, ['key1', 'key2', 'key3', 'key4'])
@@ -25,7 +25,7 @@ describe('hasOnlyKeys', () => {
       key1: 'key1',
       key2: 'key2',
       key3: 'key3',
-      key4: 'key4'
+      key4: 'key4',
     }
 
     const result = hasOnlyKeys(subject, ['key1', 'key2', 'key3'])
@@ -39,7 +39,7 @@ describe('hasOnlyKeys', () => {
   `, () => {
     const subject = {
       key1: 'key1',
-      key2: 'key2'
+      key2: 'key2',
     }
 
     const result = hasOnlyKeys(subject, ['key1', 'key2', 'key3'])

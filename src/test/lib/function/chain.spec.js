@@ -12,7 +12,7 @@ describe('chain', () => {
       sinon.spy(),
       sinon.spy(),
       sinon.spy(),
-      sinon.spy()
+      sinon.spy(),
     ]
 
     const func = chain(...spies)

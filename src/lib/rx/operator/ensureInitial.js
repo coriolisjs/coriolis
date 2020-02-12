@@ -12,7 +12,7 @@ export const ensureInitial = getInitialValue => source => {
     const subscription = source.subscribe(
       event => next(event),
       error => observer.error(error),
-      () => observer.complete()
+      () => observer.complete(),
     )
 
     if (next === initialNext) {

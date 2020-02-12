@@ -2,13 +2,17 @@
 
 describe('projectionWrapperFactory', () => {
   describe('get', () => {
-    it('Creates an projectionWrapper (an Observable-like instance) from an projection')
+    it(
+      'Creates an projectionWrapper (an Observable-like instance) from an projection',
+    )
 
     it('Returns always the same projectionWrapper from the same projection')
   })
 
   describe('projectionWrapper', () => {
-    it('Is an observable of applying projection\'s matching aggregator with each event')
+    it(
+      "Is an observable of applying projection's matching aggregator with each event",
+    )
 
     it('Apply aggregator with events even before skipUntil$ has emitted')
 
@@ -23,7 +27,7 @@ describe('projectionWrapperFactory', () => {
     })
 
     describe('getValue / get value', () => {
-      it('Gets the aggregator\'s current value')
+      it("Gets the aggregator's current value")
     })
   })
 })

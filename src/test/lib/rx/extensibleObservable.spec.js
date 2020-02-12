@@ -9,15 +9,9 @@ xdescribe('extensibleObservable', () => {
     const errorSpy = sinon.spy()
     const completeSpy = sinon.spy()
 
-    const {
-      observable
-    } = createExtensibleObservable()
+    const { observable } = createExtensibleObservable()
 
-    observable.subscribe(
-      eventSpy,
-      errorSpy,
-      completeSpy
-    )
+    observable.subscribe(eventSpy, errorSpy, completeSpy)
 
     expect(eventSpy).not.to.have.been.called()
     expect(errorSpy).not.to.have.been.called()
@@ -29,18 +23,11 @@ xdescribe('extensibleObservable', () => {
     const errorSpy = sinon.spy()
     const completeSpy = sinon.spy()
 
-    const {
-      observable,
-      add
-    } = createExtensibleObservable()
+    const { observable, add } = createExtensibleObservable()
 
     add(from([{}]))
 
-    observable.subscribe(
-      eventSpy,
-      errorSpy,
-      completeSpy
-    )
+    observable.subscribe(eventSpy, errorSpy, completeSpy)
 
     expect(eventSpy).to.have.been.calledWith(sinon.match({}))
     expect(errorSpy).not.to.have.been.called()
@@ -48,27 +35,36 @@ xdescribe('extensibleObservable', () => {
   })
 
   it('should behave as expected', () => {
-    const eventBeforeAddSpy = sinon.spy(() => console.log('spy eventBeforeAddSpy'))
-    const errorBeforeAddSpy = sinon.spy(() => console.log('spy errorBeforeAddSpy'))
-    const completeBeforeAddSpy = sinon.spy(() => console.log('spy completeBeforeAddSpy'))
+    const eventBeforeAddSpy = sinon.spy(() =>
+      console.log('spy eventBeforeAddSpy'),
+    )
+    const errorBeforeAddSpy = sinon.spy(() =>
+      console.log('spy errorBeforeAddSpy'),
+    )
+    const completeBeforeAddSpy = sinon.spy(() =>
+      console.log('spy completeBeforeAddSpy'),
+    )
 
-    const eventAfterAddSpy = sinon.spy(() => console.log('spy eventAfterAddSpy'))
-    const errorAfterAddSpy = sinon.spy(() => console.log('spy errorAfterAddSpy'))
-    const completeAfterAddSpy = sinon.spy(() => console.log('spy completeAfterAddSpy'))
+    const eventAfterAddSpy = sinon.spy(() =>
+      console.log('spy eventAfterAddSpy'),
+    )
+    const errorAfterAddSpy = sinon.spy(() =>
+      console.log('spy errorAfterAddSpy'),
+    )
+    const completeAfterAddSpy = sinon.spy(() =>
+      console.log('spy completeAfterAddSpy'),
+    )
 
     const eventLastSpy = sinon.spy(() => console.log('spy eventLastSpy'))
     const errorLastSpy = sinon.spy(() => console.log('spy errorLastSpy'))
     const completeLastSpy = sinon.spy(() => console.log('spy completeLastSpy'))
 
-    const {
-      observable,
-      add
-    } = createExtensibleObservable()
+    const { observable, add } = createExtensibleObservable()
 
     observable.subscribe(
       eventBeforeAddSpy,
       errorBeforeAddSpy,
-      completeBeforeAddSpy
+      completeBeforeAddSpy,
     )
 
     add(interval(10).pipe(take(3)))
@@ -76,7 +72,7 @@ xdescribe('extensibleObservable', () => {
     observable.subscribe(
       eventAfterAddSpy,
       errorAfterAddSpy,
-      completeAfterAddSpy
+      completeAfterAddSpy,
     )
 
     setTimeout(() => {
@@ -89,11 +85,7 @@ xdescribe('extensibleObservable', () => {
         add(from(['a', 'b', 'c']))
 
         setTimeout(() => {
-          observable.subscribe(
-            eventLastSpy,
-            errorLastSpy,
-            completeLastSpy
-          )
+          observable.subscribe(eventLastSpy, errorLastSpy, completeLastSpy)
         }, 20)
       }, 20)
     }, 20)

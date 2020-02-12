@@ -1,7 +1,4 @@
-import {
-  Observable,
-  Subject
-} from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 
 export const createBroadcastSubject = () => {
   const eventsEntry = new Subject()
@@ -16,7 +13,7 @@ export const createBroadcastSubject = () => {
       // target's feedback completion should not complete feedback entry
       const targetFeedback = target.subscribe(
         payload => feedbacksEntry.next(payload),
-        error => feedbacksEntry.error(error)
+        error => feedbacksEntry.error(error),
       )
 
       return () => {
@@ -30,6 +27,6 @@ export const createBroadcastSubject = () => {
 
   return {
     broadcastSubject,
-    addTarget
+    addTarget,
   }
 }

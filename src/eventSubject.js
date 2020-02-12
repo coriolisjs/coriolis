@@ -21,8 +21,8 @@ const preventLoops = (secretKey = uniqSymbol()) => event => {
       configurable: false,
       enumerable: true,
       writable: false,
-      value: true
-    })
+      value: true,
+    }),
   }
 }
 
@@ -33,8 +33,8 @@ const stampEvent = event => ({
   ...event,
   meta: {
     timestamp: getTimestamp(),
-    ...event.meta
-  }
+    ...event.meta,
+  },
 })
 
 /*
@@ -50,7 +50,7 @@ eventSubject behaviour:
 export const createEventSubject = (
   pastSource = EMPTY,
   logObserver = noop,
-  eventEnhancer = identity
+  eventEnhancer = identity,
 ) => {
   let newevent$
   const neweventSubject = (newevent$ = new Subject())
@@ -73,7 +73,7 @@ export const createEventSubject = (
     eventEnhancer,
 
     // events are logged after every enhancement
-    tap(logObserver)
+    tap(logObserver),
   )
 
   const event$ = pastSource.pipe(
@@ -81,7 +81,7 @@ export const createEventSubject = (
     // a timestamp here to be sure every event have one
     map(stampEvent),
     eventEnhancer,
-    concat(startoverNewevent$)
+    concat(startoverNewevent$),
   )
 
   return Subject.create(neweventSubject, event$)

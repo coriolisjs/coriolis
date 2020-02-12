@@ -15,7 +15,7 @@ export const lossless = source => {
       },
       () => {
         completed = true
-      }
+      },
     )
   }
 

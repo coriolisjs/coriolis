@@ -16,10 +16,7 @@ describe('ObjectIndex', () => {
 
       const creator = sinon.stub()
 
-      const {
-        get,
-        list
-      } = createIndex(creator)
+      const { get, list } = createIndex(creator)
 
       creator.returns(resultObj1)
       const result = get(obj1)
@@ -46,7 +43,7 @@ describe('ObjectIndex', () => {
 
       expect(list()).to.deep.equal([
         [obj1, resultObj1],
-        [obj2, resultObj2]
+        [obj2, resultObj2],
       ])
     })
   })
@@ -71,10 +68,7 @@ describe('ObjectIndex', () => {
 
       const creator = sinon.stub()
 
-      const {
-        get,
-        list
-      } = createIndex(creator)
+      const { get, list } = createIndex(creator)
 
       creator.returns(resultObj1)
       const result = get(obj1, obj2)
@@ -120,22 +114,10 @@ describe('ObjectIndex', () => {
       expect(creator).to.have.been.calledWith(obj1, obj2, obj5)
 
       expect(list()).to.deep.equal([
-        [
-          [obj1, obj2],
-          resultObj1
-        ],
-        [
-          [obj1, obj2, obj5],
-          resultObj4
-        ],
-        [
-          [obj1, obj3, obj5],
-          resultObj3
-        ],
-        [
-          [obj3, obj4, obj5],
-          resultObj2
-        ]
+        [[obj1, obj2], resultObj1],
+        [[obj1, obj2, obj5], resultObj4],
+        [[obj1, obj3, obj5], resultObj3],
+        [[obj3, obj4, obj5], resultObj2],
       ])
     })
   })

@@ -5,7 +5,7 @@ import { createStore } from '../../..'
 import {
   matchFirstEvent,
   createTrackedObservable,
-  randomEventsObservable
+  randomEventsObservable,
 } from '../../utils'
 
 describe('Effect eventSubject', () => {
@@ -17,7 +17,7 @@ describe('Effect eventSubject', () => {
     const {
       spyObservable: infinitSource,
       subscribeSpy,
-      unsubscribeSpy
+      unsubscribeSpy,
     } = createTrackedObservable(randomEventsObservable)
 
     const spyeffect = sinon.spy(({ eventSubject }) => {
@@ -74,7 +74,7 @@ describe('Effect eventSubject', () => {
     const {
       spyObservable: oneEvent,
       subscribeSpy,
-      unsubscribeSpy
+      unsubscribeSpy,
     } = createTrackedObservable(of({ type: 'event' }))
 
     const effectEventSpy = sinon.spy()
@@ -91,6 +91,8 @@ describe('Effect eventSubject', () => {
     expect(subscribeSpy).to.have.been.calledOnce()
     expect(unsubscribeSpy).to.have.been.calledOnce()
     expect(effectEventSpy).to.have.been.calledTwice()
-    expect(effectEventSpy).to.have.been.calledWith(sinon.match({ type: 'event' }))
+    expect(effectEventSpy).to.have.been.calledWith(
+      sinon.match({ type: 'event' }),
+    )
   })
 })

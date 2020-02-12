@@ -18,7 +18,7 @@ describe('eventSubject', () => {
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(
-      sinon.match({ type: 'event type' })
+      sinon.match({ type: 'event type' }),
     )
   })
 
@@ -37,7 +37,7 @@ describe('eventSubject', () => {
     const subscription = eventSubject.subscribe(
       eventsSpy,
       errorSpy,
-      completeSpy
+      completeSpy,
     )
 
     eventSubject.next({ no: 'event type' })
@@ -64,7 +64,7 @@ describe('eventSubject', () => {
     const subscription = eventSubject.subscribe(
       eventsSpy,
       errorSpy,
-      completeSpy
+      completeSpy,
     )
 
     eventSubject.next({ type: 'event type' })
@@ -72,7 +72,7 @@ describe('eventSubject', () => {
 
     expect(eventsSpy).to.have.been.calledOnce()
     expect(eventsSpy).to.have.been.calledWith(
-      sinon.match({ type: 'event type' })
+      sinon.match({ type: 'event type' }),
     )
     expect(errorSpy).to.have.been.calledOnce()
 
@@ -94,7 +94,7 @@ describe('eventSubject', () => {
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(
-      sinon.match({ type: 'event type' })
+      sinon.match({ type: 'event type' }),
     )
   })
 
@@ -120,8 +120,8 @@ describe('eventSubject', () => {
     expect(eventsSpy).to.have.been.calledWith(
       sinon.match({
         type: 'event type',
-        meta: { timestamp: sinon.match(Number) }
-      })
+        meta: { timestamp: sinon.match(Number) },
+      }),
     )
   })
 
@@ -149,13 +149,13 @@ describe('eventSubject', () => {
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(
-      sinon.match({ type: 'event type', payload: 'enhanced payload' })
+      sinon.match({ type: 'event type', payload: 'enhanced payload' }),
     )
     expect(enhancerMapStub).to.have.been.calledWith(
       sinon.match({
         type: 'event type',
-        meta: { timestamp: sinon.match(Number) }
-      })
+        meta: { timestamp: sinon.match(Number) },
+      }),
     )
   })
 
@@ -180,14 +180,14 @@ describe('eventSubject', () => {
     subscription.unsubscribe()
 
     expect(eventsSpy).to.have.been.calledWith(
-      sinon.match({ type: 'event type' })
+      sinon.match({ type: 'event type' }),
     )
     expect(logSpy).to.have.been.calledWith(
       sinon.match({
         type: 'event type',
         payload: 'enhanced payload',
-        meta: { timestamp: sinon.match(Number) }
-      })
+        meta: { timestamp: sinon.match(Number) },
+      }),
     )
   })
 

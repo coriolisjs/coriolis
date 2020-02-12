@@ -1,4 +1,3 @@
-
 export const createIndex = getNotYetIndexed => {
   let index = new Map()
 
@@ -13,7 +12,7 @@ export const createIndex = getNotYetIndexed => {
 
         index.set(key, {
           ...indexed,
-          subset
+          subset,
         })
       }
 
@@ -35,20 +34,25 @@ export const createIndex = getNotYetIndexed => {
     index.set(key, {
       ...indexed,
       value,
-      loading: false
+      loading: false,
     })
 
     return value
   }
 
   const list = () =>
-    [...index]
-      .reduce((list, [key, { subset, value }]) =>
-        [
-          ...list,
-          ...(value ? [[key, value]] : []),
-          ...(subset ? subset.list().map(([subkey, value]) => [[].concat(key, subkey), value]) : [])
-        ], [])
+    [...index].reduce(
+      (list, [key, { subset, value }]) => [
+        ...list,
+        ...(value ? [[key, value]] : []),
+        ...(subset
+          ? subset
+              .list()
+              .map(([subkey, value]) => [[].concat(key, subkey), value])
+          : []),
+      ],
+      [],
+    )
 
   const flush = (key, ...rest) => {
     if (rest.length) {
@@ -59,15 +63,12 @@ export const createIndex = getNotYetIndexed => {
       return
     }
 
-    index = new Map(
-      [...index]
-        .filter(([itemKey]) => itemKey !== key)
-    )
+    index = new Map([...index].filter(([itemKey]) => itemKey !== key))
   }
 
   return {
     get,
     list,
-    flush
+    flush,
   }
 }

@@ -8,10 +8,11 @@ Cette librairie vous aidera à créer vos applications selon les concepts d'Even
 
 Cette approche aide à obtenir une application au comportement prédictible, modulaire, évolutif et debuggable.
 Elle permet entre autre à distinguer différentes typologies de logiques:
+
 - comportement
 - organisation des données
 - interface utilisateur
-...
+  ...
 
 ## Motivations
 
@@ -23,11 +24,9 @@ Une motivation majeur avec Coriolis est d'aider à construire un code d'applicat
 
 - La définition d'un effet a accès directement a toute projection et tout event (passé ou nouveau), et peut invoquer des events passés, déclarer de nouveaux events, appliquer des stratégies de stockage d'events et ajouter d'autres effets
 
-
 ## Influences
 
 La conception de Coriolis a été inspirée par Redux, en cherchant à donnée le rôle de single source of truth non pas au state mais au flux d'events, et ainsi rejoindre le concept d'Event Sourcing
-
 
 ## Installation
 
@@ -74,14 +73,11 @@ createStore(({ withProjection, eventSubject }) => {
   eventSubject.next({ type: 'decremented' })
   // 1
 })
-
 ```
 
 ## Utilisation
 
-
 ## API documentation
-
 
 ## Plus en détails
 
@@ -163,7 +159,7 @@ Rules about Coriolis
 
   - mise en cache du premier event non passé
   - mise en cache de tout event émit dans un premier temps
-  - diffusion aux projections et aux effets (via l'observable pastEvent$) des "events du passé"
+  - diffusion aux projections et aux effets (via l'observable pastEvent\$) des "events du passé"
   - log puis transmission (aux projections et aux effets) des events buffurisés
   - log puis transmission (aux projections et aux effet) des nouveaux events
 

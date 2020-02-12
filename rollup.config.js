@@ -9,28 +9,28 @@ export default {
       sourcemap: true,
       format: 'esm',
       name: 'coriolis-esm',
-      dir: 'dist/esm'
+      dir: 'dist/esm',
     },
     {
       sourcemap: true,
       format: 'cjs',
       name: 'coriolis-cjs',
-      dir: 'dist/cjs'
-    }
+      dir: 'dist/cjs',
+    },
   ],
   plugins: [
     babel({
-      exclude: 'node_modules/**'
+      exclude: 'node_modules/**',
     }),
     resolve({
-      only: ['tslib', 'rxjs', 'rxjs/operators']
+      only: ['tslib', 'rxjs', 'rxjs/operators'],
     }),
     visualizer({
       filename: 'dist/stats.html',
-      bundlesRelative: true
-    })
+      bundlesRelative: true,
+    }),
   ],
   watch: {
-    clearScreen: false
-  }
+    clearScreen: false,
+  },
 }

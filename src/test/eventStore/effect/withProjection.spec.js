@@ -18,11 +18,11 @@ describe('Effect withProjection', () => {
 
     expect(reducer, 'reducer').to.have.callCount(2)
     expect(reducer.firstCall, 'reducer').to.have.been.calledWith(
-      matchCoriolisAggregatorSetupAPI
+      matchCoriolisAggregatorSetupAPI,
     )
     expect(reducer.secondCall, 'reducer').to.have.been.calledWith(
       undefined,
-      matchFirstEvent
+      matchFirstEvent,
     )
     expect(dataSpy, 'dataSpy').to.have.been.calledWith('state')
 
@@ -40,7 +40,7 @@ describe('Effect withProjection', () => {
 
     Object.defineProperty(reducer, 'length', {
       value: 1,
-      writable: false
+      writable: false,
     })
 
     const store = createStore(({ withProjection }) => {
@@ -49,11 +49,11 @@ describe('Effect withProjection', () => {
 
     expect(reducer, 'reducer').to.have.callCount(2)
     expect(reducer.firstCall, 'reducer').to.have.been.calledWith(
-      matchCoriolisAggregatorSetupAPI
+      matchCoriolisAggregatorSetupAPI,
     )
     expect(reducer.secondCall, 'reducer').to.have.been.calledWith(
       undefined,
-      matchFirstEvent
+      matchFirstEvent,
     )
     expect(dataSpy, 'dataSpy').to.have.been.calledWith('state')
 
@@ -71,7 +71,7 @@ describe('Effect withProjection', () => {
 
     Object.defineProperty(reducer, 'length', {
       value: 2,
-      writable: false
+      writable: false,
     })
 
     const store = createStore(({ withProjection }) => {
@@ -81,7 +81,7 @@ describe('Effect withProjection', () => {
     expect(reducer, 'reducer').to.have.callCount(1)
     expect(reducer, 'reducer').to.have.been.calledWith(
       undefined,
-      matchFirstEvent
+      matchFirstEvent,
     )
     expect(dataSpy, 'dataSpy').to.have.been.calledWith('state')
 

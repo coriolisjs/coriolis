@@ -8,13 +8,13 @@ describe('objectFrom', () => {
     const tulpes = [
       ['a', 'vala'],
       ['b', 'valb'],
-      ['c', 'valc']
+      ['c', 'valc'],
     ]
 
     expect(objectFrom(tulpes)).to.deep.equal({
       a: 'vala',
       b: 'valb',
-      c: 'valc'
+      c: 'valc',
     })
   })
 
@@ -25,13 +25,13 @@ describe('objectFrom', () => {
     const tulpes = [
       ['a', 'vala'],
       ['b', 'valb'],
-      ['c', [['d', 'vald']]]
+      ['c', [['d', 'vald']]],
     ]
 
     expect(objectFrom(tulpes)).to.deep.equal({
       a: 'vala',
       b: 'valb',
-      c: [['d', 'vald']]
+      c: [['d', 'vald']],
     })
   })
 

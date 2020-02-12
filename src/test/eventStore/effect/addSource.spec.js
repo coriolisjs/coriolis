@@ -19,7 +19,7 @@ describe('Effect addSource', () => {
     expect(spyEffect).to.have.been.calledOnce()
     expect(spyEffect).to.have.been.calledWith(matchCoriolisEffectAPI)
     expect(spyPastEvents).to.have.been.calledWith(
-      sinon.match({ type: 'event' })
+      sinon.match({ type: 'event' }),
     )
 
     stopStore()

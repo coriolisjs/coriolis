@@ -1,4 +1,4 @@
 export const simpleUnsub = subscription => () =>
-  (subscription && subscription.unsubscribe)
+  subscription && subscription.unsubscribe
     ? subscription.unsubscribe()
-    : (subscription && subscription())
+    : subscription && subscription()

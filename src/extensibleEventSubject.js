@@ -11,7 +11,7 @@ export const FIRST_EVENT_TYPE = 'All past events have been read'
 
 const buildFirstEvent = () => ({
   type: FIRST_EVENT_TYPE,
-  payload: {}
+  payload: {},
 })
 
 export const createExtensibleEventSubject = eventEnhancer => {
@@ -19,16 +19,16 @@ export const createExtensibleEventSubject = eventEnhancer => {
 
   const {
     broadcastSubject: logger,
-    addTarget: addLogger
+    addTarget: addLogger,
   } = createBroadcastSubject()
 
   const {
     observable: mainSource,
-    add: addSourceToMainSource
+    add: addSourceToMainSource,
   } = createExtensibleObservable()
 
   const { func: addSource, setup: setupAddSource } = variableFunction(source =>
-    addSourceToMainSource(from(source))
+    addSourceToMainSource(from(source)),
   )
 
   const disableAddSource = () =>
@@ -41,7 +41,7 @@ export const createExtensibleEventSubject = eventEnhancer => {
   const eventSubject = createEventSubject(
     mainSource.pipe(endWith(firstEvent)),
     logger,
-    eventEnhancer
+    eventEnhancer,
   )
 
   return {
@@ -49,6 +49,6 @@ export const createExtensibleEventSubject = eventEnhancer => {
     addLogger,
     addSource,
     disableAddSource,
-    firstEvent
+    firstEvent,
   }
 }

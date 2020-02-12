@@ -3,7 +3,7 @@ const identity = arg => arg
 export const createEventBuilder = (
   type,
   payloadBuilder = identity,
-  metaBuilder
+  metaBuilder,
 ) => {
   const empty = {}
 

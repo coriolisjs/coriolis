@@ -7,8 +7,8 @@ export const variableFunction = (initialBehaviour = noop) => {
     behaviour = func
   }
 
-  return ({
+  return {
     func: (...args) => behaviour(...args),
-    setup
-  })
+    setup,
+  }
 }

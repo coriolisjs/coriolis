@@ -3,15 +3,15 @@ import { FIRST_EVENT_TYPE } from '..'
 
 export const matchSubject = sinon.match({
   subscribe: sinon.match.func,
-  next: sinon.match.func
+  next: sinon.match.func,
 })
 
 export const matchObservable = sinon.match({
-  subscribe: sinon.match.func
+  subscribe: sinon.match.func,
 })
 
 export const matchFirstEvent = sinon.match({
-  type: FIRST_EVENT_TYPE
+  type: FIRST_EVENT_TYPE,
 })
 
 export const matchCoriolisEffectAPI = sinon.match({
@@ -20,7 +20,7 @@ export const matchCoriolisEffectAPI = sinon.match({
   addLogger: sinon.match.func,
   addEffect: sinon.match.func,
   withProjection: sinon.match.func,
-  pastEvent$: matchObservable
+  pastEvent$: matchObservable,
 })
 
 export const matchCoriolisAggregatorSetupAPI = sinon.match({
@@ -29,7 +29,7 @@ export const matchCoriolisAggregatorSetupAPI = sinon.match({
   useState: sinon.match.func,
   lazyProjection: sinon.match.func,
   setName: sinon.match.func,
-  useValue: sinon.match.func
+  useValue: sinon.match.func,
 })
 
 export const createTrackedObservable = observable => {
@@ -41,7 +41,7 @@ export const createTrackedObservable = observable => {
   return {
     spyObservable,
     subscribeSpy,
-    unsubscribeSpy
+    unsubscribeSpy,
   }
 }
 
@@ -51,7 +51,7 @@ export const randomEventsObservable = Observable.create(observer => {
     observer.next({
       type: Math.random()
         .toString(36)
-        .substring(2, 15)
+        .substring(2, 15),
     })
     timeout = setTimeout(next, Math.random() * 10)
   }

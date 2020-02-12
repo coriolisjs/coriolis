@@ -4,5 +4,5 @@ export { createEventBuilder } from './eventBuilder'
 export {
   createAggregator,
   createAggregatorFactory,
-  snapshot
+  snapshot,
 } from './aggregator'

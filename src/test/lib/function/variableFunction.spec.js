@@ -27,10 +27,7 @@ describe('variableFunction', () => {
     const stub = sinon.stub().returns('result')
     const otherStub = sinon.stub().returns('other result')
 
-    const {
-      func,
-      setup
-    } = variableFunction(stub)
+    const { func, setup } = variableFunction(stub)
 
     setup(otherStub)
     const result = func('arg')
@@ -51,10 +48,7 @@ describe('variableFunction', () => {
     const stub = sinon.stub().returns('result')
     const otherStub = sinon.stub().returns('other result')
 
-    const {
-      func,
-      setup
-    } = variableFunction(stub)
+    const { func, setup } = variableFunction(stub)
 
     const result1 = func('arg1')
     setup(otherStub)

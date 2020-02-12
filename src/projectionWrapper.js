@@ -11,7 +11,7 @@ import { createAggregatorFactory } from './aggregator'
 export const createProjectionWrapperFactory = (
   event$,
   skipUntil$ = of(true),
-  getAggregator = createAggregatorFactory()
+  getAggregator = createAggregatorFactory(),
 ) =>
   createIndex(projection => {
     const aggregator = getAggregator(projection)
@@ -28,7 +28,7 @@ export const createProjectionWrapperFactory = (
       ensureInitial(() => aggregator.value),
 
       // if event does not lead to a new state, we don't want to emit
-      distinctUntilChanged()
+      distinctUntilChanged(),
     )
 
     // We don't return directly subscription because user is not aware it's an observable under the hood

@@ -4,8 +4,7 @@ const hasPerformance = typeof performance !== 'undefined'
 const hasHr = typeof process !== 'undefined' && !!process.hrtime
 
 const dateRef =
-  (hasPerformance && performance.timing.navigationStart) ||
-  +new Date()
+  (hasPerformance && performance.timing.navigationStart) || +new Date()
 
 const timeDeltaRef = hasHr && process.hrtime()
 

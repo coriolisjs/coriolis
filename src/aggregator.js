@@ -51,13 +51,13 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     stateIndex: undefined,
     initialState: undefined,
     skipIndexes: [],
-    name: undefined
+    name: undefined,
   }
 
   const useState = initialValue => {
     if (using.stateIndex !== undefined) {
       throw new Error(
-        'useState should be used only once in an projection definition setup'
+        'useState should be used only once in an projection definition setup',
       )
     }
     using.initialState = initialValue
@@ -68,7 +68,7 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
   const useEvent = (...eventTypes) => {
     if (using.eventTypes !== undefined) {
       throw new Error(
-        'useEvent should not be called more than once in an projection definition setup'
+        'useEvent should not be called more than once in an projection definition setup',
       )
     }
     // flag true if catching all events (means skip filtering interesting events)
@@ -78,7 +78,8 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     using.aggregators.push(identity)
   }
 
-  const useProjection = projection => using.aggregators.push(getAggregator(projection))
+  const useProjection = projection =>
+    using.aggregators.push(getAggregator(projection))
 
   const lazyProjection = projection => {
     using.skipIndexes.push(using.aggregators.length)
@@ -97,17 +98,17 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     useProjection,
     lazyProjection,
     useValue,
-    setName
+    setName,
   }).map(([key, value]) => [key, variableFunction(value)])
 
   const setupParams = objectFrom(
-    setupParamsRaw.map(([key, { func }]) => [key, func])
+    setupParamsRaw.map(([key, { func }]) => [key, func]),
   )
 
   const preventOutOfScopeUsage = chain(
     ...setupParamsRaw.map(([key, { setup }]) => () =>
-      setup(throwUnexpectedScope(key))
-    )
+      setup(throwUnexpectedScope(key)),
+    ),
   )
 
   const isNullSetup = () => using.aggregators.length === 0
@@ -164,7 +165,7 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
           // last state change is not a value change due to current event, it must not count as a change
           idx !== using.stateIndex &&
           !using.skipIndexes.includes(idx) &&
-          value !== lastValues[idx]
+          value !== lastValues[idx],
       )
       lastValues = values
 
@@ -182,7 +183,7 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     getLastValues,
     usesEvents,
     preventOutOfScopeUsage,
-    getName
+    getName,
   }
 }
 
@@ -205,7 +206,7 @@ const createComplexAggregator = (projection, getAggregator) => {
     getLastValues,
     usesEvents,
     preventOutOfScopeUsage,
-    getName
+    getName,
   } = createProjectionSetupAPI(getLastState, getAggregator)
 
   // projection could be a reducer, calling it with setupParams could lead to an exception
@@ -223,7 +224,7 @@ const createComplexAggregator = (projection, getAggregator) => {
         "Projection setup failure, let's use it as a reducer",
         projection.name,
         projection,
-        projectionBehavior
+        projectionBehavior,
       )
     }
     // reducer projection with optional parameters could lead here.
@@ -235,7 +236,7 @@ const createComplexAggregator = (projection, getAggregator) => {
   if (name) {
     Object.defineProperty(projection, 'name', {
       value: name,
-      writable: false
+      writable: false,
     })
   }
 
@@ -243,7 +244,7 @@ const createComplexAggregator = (projection, getAggregator) => {
   if (isReducerLikeSetup()) {
     console.info(
       'Prefer using simple reducer signature " (state, event) => newstate " ' +
-        'when you only need state and/or event'
+        'when you only need state and/or event',
     )
 
     // Replace with getAggregator in case signature matches reducer signature (state, event)
@@ -260,8 +261,8 @@ const createComplexAggregator = (projection, getAggregator) => {
     initialState !== undefined
       ? initialState
       : !usesEvents()
-        ? projectionBehavior(...getLastValues())
-        : undefined
+      ? projectionBehavior(...getLastValues())
+      : undefined
 
   aggregator = createReducerAggregator((lastState, event) => {
     const values = getValues(event)
@@ -282,16 +283,21 @@ const createComplexAggregator = (projection, getAggregator) => {
 // - complex aggregator definition is a function with only one parameter
 // If this guess is not accurate, we should handle aggregator definition as complex aggregator because in
 // complex aggregator handling process there's fallbacks to ensure it works even if a reducer is passed
-export const createAggregator = (projection, getAggregator = createAggregator) =>
+export const createAggregator = (
+  projection,
+  getAggregator = createAggregator,
+) =>
   projection && projection.length === 2
     ? createReducerAggregator(projection)
     : createComplexAggregator(projection, getAggregator)
 
 export const createAggregatorFactory = (
-  aggregatorBuilder = createAggregator
+  aggregatorBuilder = createAggregator,
 ) => {
   const factory = createIndex(projection =>
-    projection === snapshot ? getSnapshot : aggregatorBuilder(projection, factory.get)
+    projection === snapshot
+      ? getSnapshot
+      : aggregatorBuilder(projection, factory.get),
   )
 
   // to build a snapshot, we get the current state from each aggregator and put
@@ -303,8 +309,8 @@ export const createAggregatorFactory = (
         .list()
         // we don't want to list snapshot aggregator's state as it would cause a recursive loop
         .filter(([projection]) => projection !== snapshot)
-        .map(([projection, aggregator]) => [projection.name, aggregator.value])
-    )
+        .map(([projection, aggregator]) => [projection.name, aggregator.value]),
+    ),
   )
 
   return factory.get
