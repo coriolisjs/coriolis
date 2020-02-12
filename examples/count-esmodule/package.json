@@ -1,5 +1,5 @@
 {
-  "name": "count-example",
+  "name": "coriolis-count-esmodule-example",
   "version": "1.0.0",
   "dependencies": {
     "@coriolis/coriolis": "^1.0.0"

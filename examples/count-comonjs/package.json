@@ -1,0 +1,10 @@
+{
+  "name": "coriolis-count-commonjs-example",
+  "version": "1.0.0",
+  "dependencies": {
+    "@coriolis/coriolis": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node entry.js"
+  }
+}
