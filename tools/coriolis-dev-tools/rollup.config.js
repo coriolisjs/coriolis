@@ -1,3 +1,4 @@
+import babel from 'rollup-plugin-babel'
 import svelte from 'rollup-plugin-svelte'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
@@ -22,6 +23,9 @@ export default {
     },
   ],
   plugins: [
+    babel({
+      exclude: 'node_modules/**',
+    }),
     svelte({
       // enable run-time checks when not in production
       dev: !production,
