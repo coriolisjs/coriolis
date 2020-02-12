@@ -13,7 +13,9 @@ export const parameteredProjection = projection =>
       projectionAPI.useEvent(...args.slice(from, to))
 
     const useParameteredProjection = (from = 0, projectionGetter = identity) =>
-      [].concat(projectionGetter(...args.slice(from))).forEach(projectionAPI.useProjection)
+      []
+        .concat(projectionGetter(...args.slice(from)))
+        .forEach(projectionAPI.useProjection)
 
     const setParameteredName = (nameBuilder, from = 0, to) =>
       projectionAPI.setName(nameBuilder(...args.slice(from, to)))
@@ -23,6 +25,6 @@ export const parameteredProjection = projection =>
       useParameteredEvent,
       useParameteredProjection,
       setParameteredName,
-      ...projectionAPI
+      ...projectionAPI,
     })
   }).get
