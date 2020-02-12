@@ -10,7 +10,8 @@
     "dist"
   ],
   "scripts": {
-    "clear": "rm -rf node_modules dist",
+    "clear:all": "rm -rf node_modules dist",
+    "clear": "rm -rf dist",
     "build": "rollup -c",
     "autobuild": "rollup -c -w",
     "dev": "run-p start:dev autobuild",
@@ -18,7 +19,7 @@
     "start:dev": "sirv public --single --dev",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md,?(s)css,html},.*.{js?(on),md,?(s)css,html}}' --write && eslint . --fix",
-    "publish:local": "npm publish --registry http://localhost:4873"
+    "publish:local": "npm run lint && npm run clear && npm run build && npm publish --registry http://localhost:4873"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
