@@ -1,5 +1,7 @@
 # Coriolis
 
+English documentation coming soon
+
 ## Qu'est-ce que c'est ?
 
 C'est une librairie Javascript permettant de mettre en place un store d'events alimentant des effets s'appuyant sur des projections (état déduit de différents events)
@@ -38,10 +40,45 @@ npm install --save coriolis
 
 Le module est fourni sous deux formes: CommonJS ou ES modules, suivant la manière dont vous le chargez
 
+ESModule:
 ```javascript
-import coriolisModule from '@coriolis/coriolis'
+import { createStore } from '@coriolis/coriolis'
 
-const { createStore } = coriolisModule
+const currentCount = ({ useState, useEvent }) => (
+  useState(0),
+  useEvent(),
+  (state, event) => {
+    switch (event.type) {
+      case 'incremented':
+        return state + 1
+
+      case 'decremented':
+        return state - 1
+
+      default:
+        return state
+    }
+  }
+)
+
+createStore(({ withProjection, eventSubject }) => {
+  withProjection(currentCount).subscribe(count => console.log(count))
+  // 0
+
+  eventSubject.next({ type: 'incremented' })
+  // 1
+
+  eventSubject.next({ type: 'incremented' })
+  // 2
+
+  eventSubject.next({ type: 'decremented' })
+  // 1
+})
+```
+
+CommonJS:
+```javascript
+const { createStore } = require('@coriolis/coriolis')
 
 const currentCount = ({ useState, useEvent }) => (
   useState(0),
