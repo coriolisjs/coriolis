@@ -3,7 +3,7 @@ module.exports = {
   parser: 'babel-eslint',
   env: {
     browser: true,
-    es6: true,
+    es2020: true,
   },
   extends: [
     'standard',
