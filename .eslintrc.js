@@ -7,11 +7,8 @@ module.exports = {
     es6: true,
     node: true
   },
-  extends: [
-    'standard'
-  ],
-  globals: {
-  },
+  extends: ['standard', 'plugin:prettier/recommended'],
+  globals: {},
   parserOptions: {
     ecmaVersion: 2018
   },
