@@ -1,4 +1,14 @@
 core
+  make package publishable:
+    can be installed as dep for a backend project
+    can be installed as dep for a front-end project
+    can be used in an esmodule with webpack project
+    can be used in an esmodule with rollup project
+    can be used in a nodeJS native esmodule project
+    can be used in a umd project
+    can be used in a commonJS project
+    can be loaded directly in a browser as a standalone script
+
   reducer projection detection can cause some errors to be invisible
     all errors in a projection-setup function would be invisible, which is a major readability/debug problem
     possible solutions:
