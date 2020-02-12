@@ -52,12 +52,14 @@ export const createUI = () => ({
           }
           elementMounted = true
 
+          // eslint-disable-next-line promise/catch-or-return
           ensureFeatures({
             check: ({ default: Entry, setStoreAPI } = {}) =>
               Entry && setStoreAPI && { Entry, setStoreAPI },
             load: () => import('../components/Entry.svelte'),
           }).then(
             ([{ Entry, setStoreAPI }]) => {
+              // eslint-disable-next-line promise/always-return
               if (!elementMounted) {
                 // element was unmounted while loading dependencies, don't go further
                 return
