@@ -7,7 +7,13 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['standard', 'plugin:prettier/recommended'],
+  extends: [
+    'standard',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:promise/recommended',
+    'plugin:prettier/recommended',
+  ],
   globals: {},
   rules: {
     'no-sequences': 'off',
