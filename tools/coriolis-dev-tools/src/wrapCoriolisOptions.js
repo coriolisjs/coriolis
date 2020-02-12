@@ -49,7 +49,6 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
 ) => {
   const projectionId = getprojectionId()
   const projectionName = getProjectionName(projection)
-  let aggregator
 
   if (projectionName !== projection.name) {
     Object.defineProperty(projection, 'name', {
@@ -132,7 +131,7 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
     writable: false,
   })
 
-  aggregator = createAggregator(wrappedProjection, getAggregator)
+  const aggregator = createAggregator(wrappedProjection, getAggregator)
 
   trackingSubject.next(
     aggregatorCreated({ storeId, projectionId, projection, aggregator }),

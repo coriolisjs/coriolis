@@ -1,4 +1,4 @@
-const anyThrottle = (callback, requestor) => {
+const anyThrottle = (behaviour, requestor) => {
   let nextArgs
   let requesting
 
@@ -7,7 +7,7 @@ const anyThrottle = (callback, requestor) => {
   }
 
   const behave = () => {
-    callback(...nextArgs)
+    behaviour(...nextArgs)
   }
 
   return (...args) => {
