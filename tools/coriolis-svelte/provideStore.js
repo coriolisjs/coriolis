@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { getContext, setContext } from 'svelte'
 
 const KEY_GET_SOURCE = 'Coriolis store reference withProjection'
@@ -18,7 +19,9 @@ export const createDispatch = builder => {
 
 export const createStoreAPIProvider = () => {
   let receivedStoreAPI
-  const setStoreAPI = storeAPI => { receivedStoreAPI = storeAPI }
+  const setStoreAPI = storeAPI => {
+    receivedStoreAPI = storeAPI
+  }
 
   const shareStoreAPI = () => {
     if (!receivedStoreAPI) {
@@ -33,6 +36,6 @@ export const createStoreAPIProvider = () => {
 
   return {
     setStoreAPI,
-    shareStoreAPI
+    shareStoreAPI,
   }
 }
