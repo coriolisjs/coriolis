@@ -1,9 +1,6 @@
+import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import visualizer from 'rollup-plugin-visualizer'
-// import livereload from 'rollup-plugin-livereload'
-// import { terser } from 'rollup-plugin-terser'
-
-// const production = !process.env.ROLLUP_WATCH
 
 export default {
   input: 'src/index.js',
@@ -22,6 +19,9 @@ export default {
     }
   ],
   plugins: [
+    babel({
+      exclude: 'node_modules/**'
+    }),
     resolve({
       only: ['tslib', 'rxjs', 'rxjs/operators']
     }),
