@@ -232,14 +232,6 @@ const createComplexAggregator = (projection, getAggregator) => {
     return createReducerAggregator(projection)
   }
 
-  const name = getName()
-  if (name) {
-    Object.defineProperty(projection, 'name', {
-      value: name,
-      writable: false,
-    })
-  }
-
   // if given aggregator definition expects only state and event (or less), it should be a reducer
   if (isReducerLikeSetup()) {
     console.info(
@@ -249,6 +241,7 @@ const createComplexAggregator = (projection, getAggregator) => {
 
     // Replace with getAggregator in case signature matches reducer signature (state, event)
     if (isReducerSetup()) {
+      // TODO: there should be something done here to preserve name if possible
       return getAggregator(projectionBehavior)
     }
   }
@@ -273,6 +266,14 @@ const createComplexAggregator = (projection, getAggregator) => {
 
     return projectionBehavior(...values)
   }, finalInitialState)
+
+  const name = getName()
+  if (name) {
+    Object.defineProperty(projection, 'name', {
+      value: name,
+      writable: false,
+    })
+  }
 
   return aggregator
 }
