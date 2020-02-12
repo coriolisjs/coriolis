@@ -1,0 +1,15 @@
+{
+  "name": "count-example",
+  "version": "1.0.0",
+  "dependencies": {
+    "@coriolis/coriolis": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node -r @babel/register entry.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.0",
+    "@babel/preset-env": "^7.8.0",
+    "@babel/register": "^7.8.0"
+  }
+}
