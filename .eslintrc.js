@@ -9,9 +9,6 @@ module.exports = {
   },
   extends: ['standard', 'plugin:prettier/recommended'],
   globals: {},
-  parserOptions: {
-    ecmaVersion: 2018,
-  },
   rules: {
     'no-sequences': 'off',
   },
