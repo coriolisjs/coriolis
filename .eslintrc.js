@@ -1,12 +1,6 @@
 module.exports = {
   root: true,
   parser: 'babel-eslint',
-  env: {
-    browser: true,
-    commonjs: true,
-    es6: true,
-    node: true,
-  },
   extends: [
     'standard',
     'plugin:import/errors',
@@ -14,8 +8,12 @@ module.exports = {
     'plugin:promise/recommended',
     'plugin:prettier/recommended',
   ],
-  globals: {},
+  globals: {
+    performance: 'readonly',
+    process: 'readonly',
+  },
   rules: {
+    // Coriolis uses sequences pattern for projections definition
     'no-sequences': 'off',
   },
   overrides: [
