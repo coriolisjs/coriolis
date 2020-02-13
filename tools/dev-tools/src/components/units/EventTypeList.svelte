@@ -1,11 +1,11 @@
 <script>
-  import { getSource } from '@coriolis/coriolis-svelte'
+  import { withProjection } from '@coriolis/coriolis-svelte'
 
   import { eventTypeList } from '../../projections/eventTypeList'
 
   import EventTypeListItem from './EventTypeListItem.svelte'
 
-  const eventTypeList$ = getSource(eventTypeList)
+  const eventTypeList$ = withProjection(eventTypeList)
 </script>
 
 <style lang="scss">

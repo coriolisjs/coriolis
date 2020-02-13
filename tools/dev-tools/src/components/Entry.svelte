@@ -1,5 +1,5 @@
 <script context="module">
-  import { getSource, createStoreAPIProvider } from '@coriolis/coriolis-svelte'
+  import { withProjection, createStoreAPIProvider } from '@coriolis/coriolis-svelte'
 
   const {
     setStoreAPI,
@@ -16,7 +16,7 @@
 
   shareStoreAPI()
 
-  const CurrentView$ = getSource(enabledViewName)
+  const CurrentView$ = withProjection(enabledViewName)
 </script>
 
 {#if $CurrentView$}

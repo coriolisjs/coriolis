@@ -28,7 +28,7 @@ const TodoList = {
 }
 
 export default connect({
-  mapProtectedSource: {
+  mapProtectedProjection: {
     todolist: filteredTodolist
   }
 })(TodoList)

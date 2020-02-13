@@ -22,7 +22,7 @@ const ViewSwitch = {
 }
 
 export default connect({
-  mapSource: {
+  mapProjection: {
     viewName: currentView
   }
 })(ViewSwitch)

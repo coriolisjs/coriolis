@@ -1,9 +1,12 @@
 <script>
-  import { getContext } from 'svelte'
+  import { createDispatch } from '@coriolis/coriolis-svelte'
 
   import { edited, removed, done, reset } from '../../events/todo'
 
-  const dispatch = getContext('dispatch')
+  const dispatchRemoved = createDispatch(removed)
+  const dispatchEdited = createDispatch(edited)
+  const dispatchDone = createDispatch(done)
+  const dispatchReset = createDispatch(reset)
 
   export let id
   export let text
@@ -11,13 +14,13 @@
 
   let doneCheckbox
 
-  const removeItem = () => dispatch(removed({ id }))
+  const removeItem = () => dispatchRemoved({ id })
 
-  const editItem = () => dispatch(edited({ id, text }))
+  const editItem = () => dispatchEdited({ id, text })
 
   const checkItem = () => {
-    const eventBuilder = doneCheckbox.checked ? done : reset
-    dispatch(eventBuilder({ id }))
+    const dispatcher = doneCheckbox.checked ? dispatchDone : dispatchReset
+    dispatcher({ id })
   }
 </script>
 

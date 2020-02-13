@@ -1,16 +1,23 @@
+<script context="module">
+  import { withProjection, createStoreAPIProvider } from '@coriolis/coriolis-svelte'
+
+  const {
+    setStoreAPI,
+    shareStoreAPI
+  } = createStoreAPIProvider()
+
+  export { setStoreAPI }
+</script>
 <script>
   import { setContext } from 'svelte'
 
   import { currentView } from '../projections/currentView'
 
-  export let dispatch
-  export let getSource
+  shareStoreAPI()
+
   export let views
 
-  setContext('dispatch', dispatch)
-  setContext('getSource', getSource)
-
-  const viewName$ = getSource(currentView)
+  const viewName$ = withProjection(currentView)
 
   let CurrentView
   $: CurrentView = views[$viewName$]

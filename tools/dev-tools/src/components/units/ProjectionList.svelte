@@ -1,11 +1,11 @@
 <script>
-  import { getSource } from '@coriolis/coriolis-svelte'
+  import { withProjection } from '@coriolis/coriolis-svelte'
 
   import { projectionsList } from '../../projections/projectionsList.js'
 
   import ProjectionListItem from './ProjectionListItem.svelte'
 
-  const projectionsList$ = getSource(projectionsList)
+  const projectionsList$ = withProjection(projectionsList)
 </script>
 
 <style lang="scss">

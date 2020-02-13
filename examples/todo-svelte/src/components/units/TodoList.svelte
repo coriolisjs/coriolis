@@ -1,13 +1,11 @@
 <script>
-  import { getContext } from 'svelte'
+  import { withProjection } from '@coriolis/coriolis-svelte'
 
   import TodoItem from './TodoItem.svelte'
 
   import { filteredTodolist } from '../../projections/todo'
 
-  const getSource = getContext('getSource')
-
-  let todolist$ = getSource(filteredTodolist)
+  let todolist$ = withProjection(filteredTodolist)
 </script>
 
 <ol class={$$props.class}>

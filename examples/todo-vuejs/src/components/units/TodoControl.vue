@@ -50,7 +50,7 @@ const TodoControl = {
 }
 
 export default connect({
-  mapSource: {
+  mapProjection: {
     filterName: todolistFilterName
   },
   eventDispatch: {

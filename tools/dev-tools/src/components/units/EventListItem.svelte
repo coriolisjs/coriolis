@@ -1,5 +1,5 @@
 <script>
-  import { getSource, createDispatch } from '@coriolis/coriolis-svelte'
+  import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
   import { selectedTimingType } from '../../projections/selectedTimingType'
   import { timingTypeSelected, selectedEventListItem } from '../../events'
@@ -7,7 +7,7 @@
   export let item
   export let selected
 
-  const selectedTimingType$ = getSource(selectedTimingType)
+  const selectedTimingType$ = withProjection(selectedTimingType)
 
   const selectTimingType = createDispatch(event => timingTypeSelected(event.target.value))
 

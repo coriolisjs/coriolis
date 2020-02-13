@@ -1,5 +1,5 @@
 <script>
-  import { getSource, createDispatch } from '@coriolis/coriolis-svelte'
+  import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
   import { lastPayloadOfType } from '@coriolis/parametered-projection'
 
   import { viewList } from '../../projections/viewList'
@@ -11,8 +11,8 @@
   import { subscribeEvent } from '../../lib/dom/subscribeEvent'
   import { rafThrottle } from '../../lib/browser/rafThrottle'
 
-  const views$ = getSource(viewList)
-  const panelWidth$ = getSource(lastPayloadOfType(panelWidthChanged))
+  const views$ = withProjection(viewList)
+  const panelWidth$ = withProjection(lastPayloadOfType(panelWidthChanged))
 
   const setPanelWidth = createDispatch(panelWidthChanged)
 

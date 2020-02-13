@@ -1,5 +1,5 @@
 <script>
-  import { getSource, createDispatch } from '@coriolis/coriolis-svelte'
+  import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
   import { currentViewName } from '../../projections/currentViewName'
   import { viewChanged } from '../../events'
@@ -8,7 +8,7 @@
   export let projection = currentViewName
   export let buildEvent = viewChanged
 
-  const viewName$ = getSource(projection)
+  const viewName$ = withProjection(projection)
 
   const navAction = createDispatch(() => buildEvent(view))
 </script>

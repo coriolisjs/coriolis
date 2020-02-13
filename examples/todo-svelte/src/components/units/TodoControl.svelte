@@ -1,13 +1,13 @@
 <script>
-  import { getContext, onMount } from 'svelte'
+  import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
   import { added, filter, filters } from '../../events/todo'
   import { todolistFilterName } from '../../projections/todo'
 
-  const dispatch = getContext('dispatch')
-  const getSource = getContext('getSource')
+  const dispatchAdded = createDispatch(added)
+  const dispatchFilter = createDispatch(filter)
 
-  let filterName$ = getSource(todolistFilterName)
+  let filterName$ = withProjection(todolistFilterName)
   let textInput
   let textInputValue
 
@@ -16,16 +16,16 @@
       return
     }
 
-    dispatch(added({ text: textInputValue }))
+    dispatchAdded({ text: textInputValue })
     textInputValue = ''
     textInput.focus()
   }
 
   const setFilter = filterName => {
-    dispatch(filter({ filterName }))
+    dispatchFilter({ filterName })
   }
 
-  onMount(() => textInput.focus())
+  const focus = el => el.focus()
 </script>
 
 <style lang="scss">
@@ -50,6 +50,7 @@
     <input
       type="text"
       placeholder="What should I do ?"
+      use:focus
       bind:this={textInput}
       bind:value={textInputValue}
     />

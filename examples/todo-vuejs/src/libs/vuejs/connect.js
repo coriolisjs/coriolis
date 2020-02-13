@@ -27,11 +27,11 @@ const protect = data => {
   return data
 }
 
-export const connect = ({ mapSource = {}, mapProtectedSource = {}, eventDispatch = {} }) => {
+export const connect = ({ mapProjection = {}, mapProtectedProjection = {}, eventDispatch = {} }) => {
   const initialData = {
     ...Object.keys({
-      ...mapSource,
-      ...mapProtectedSource
+      ...mapProjection,
+      ...mapProtectedProjection
     }).reduce((acc, key) => ({ ...acc, [key]: undefined }), {})
   }
 
@@ -39,8 +39,8 @@ export const connect = ({ mapSource = {}, mapProtectedSource = {}, eventDispatch
     name: `connected-${component.name}`,
     mixins: [component],
     inject: [
-      'dispatch',
-      'getSource'
+      'dispatchEvent',
+      'withProjection'
     ],
     data: () => initialData,
     created () {
@@ -48,19 +48,19 @@ export const connect = ({ mapSource = {}, mapProtectedSource = {}, eventDispatch
       const subscribeEvent = createEventSubscriber(this)
       this.subscriptions = []
 
-      if (mapSource) {
+      if (mapProjection) {
         this.subscriptions.push(
-          ...Object.entries(mapSource)
-            .map(([key, source]) => bindStream(key, this.getSource(source)))
+          ...Object.entries(mapProjection)
+            .map(([key, source]) => bindStream(key, this.withProjection(source)))
         )
       }
 
-      if (mapProtectedSource) {
+      if (mapProtectedProjection) {
         this.subscriptions.push(
-          ...Object.entries(mapProtectedSource)
+          ...Object.entries(mapProtectedProjection)
             .map(([key, source]) => bindStream(
               key,
-              this.getSource(source).pipe(map(protect))
+              this.withProjection(source).pipe(map(protect))
             ))
         )
       }
@@ -69,7 +69,7 @@ export const connect = ({ mapSource = {}, mapProtectedSource = {}, eventDispatch
         this.subscriptions.push(
           ...Object.entries(eventDispatch)
             .map(([eventName, eventBuilder]) =>
-              subscribeEvent(eventName, (...args) => this.dispatch(eventBuilder(...args))))
+              subscribeEvent(eventName, (...args) => this.dispatchEvent(eventBuilder(...args))))
         )
       }
     },

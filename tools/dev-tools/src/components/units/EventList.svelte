@@ -1,7 +1,7 @@
 <script>
   import VirtualList from '@sveltejs/svelte-virtual-list';
 
-  import { getSource } from '@coriolis/coriolis-svelte'
+  import { withProjection } from '@coriolis/coriolis-svelte'
 
   import { filteredEventList } from '../../projections/filteredEventList'
   import { eventListSelectedEvent } from '../../projections/eventList'
@@ -9,8 +9,8 @@
   import EventListItem from './EventListItem.svelte'
   import EventDetails from './EventDetails.svelte'
 
-  const eventList$ = getSource(filteredEventList)
-  const eventListSelectedEvent$ = getSource(eventListSelectedEvent)
+  const eventList$ = withProjection(filteredEventList)
+  const eventListSelectedEvent$ = withProjection(eventListSelectedEvent)
 </script>
 
 <style lang="scss">

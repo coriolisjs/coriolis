@@ -1,13 +1,13 @@
 <script>
   import formatHighlight from 'json-format-highlight'
 
-  import { getSource } from '@coriolis/coriolis-svelte'
+  import { withProjection } from '@coriolis/coriolis-svelte'
 
   import { currentStoreSnapshot } from '../../projections/currentStoreSnapshot'
 
   import DevToolsContainer from '../units/DevToolsContainer.svelte'
 
-  const snapshot$$ = getSource(currentStoreSnapshot)
+  const snapshot$$ = withProjection(currentStoreSnapshot)
   let snapshot$ = snapshot$$.value
   $: snapshot$ = $snapshot$$
 </script>

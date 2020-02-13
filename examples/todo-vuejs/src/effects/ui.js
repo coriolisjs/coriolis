@@ -25,8 +25,8 @@ export const createUi = () => {
 
     const vue = new Vue({
       provide: {
-        dispatch: dispatchEvent,
-        getSource: withProjection
+        dispatchEvent,
+        withProjection
       },
       render: createElement => createElement(ViewSwitch, { props: { views } })
     })
