@@ -7,7 +7,7 @@ const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
 const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 
-export const urlbar = viewNames => ({ addSource, eventSubject, withProjection }) => {
+export const urlbar = viewNames => ({ addSource, dispatchEvent, withProjection }) => {
   const removeSource = addSource([changed({ view: getCurrentUrlView() || viewNames[0] || UNDEFINED_VIEW_NAME })])
 
   const projectionSubscription = withProjection(currentView)
@@ -23,7 +23,7 @@ export const urlbar = viewNames => ({ addSource, eventSubject, withProjection })
     })
 
   const popstateUnsubscribe = subscribeEvent(window, 'popstate', () =>
-    eventSubject.next(changed({ view: getCurrentUrlView() })))
+    dispatchEvent(changed({ view: getCurrentUrlView() })))
 
   return () => {
     projectionSubscription.unsubscribe()

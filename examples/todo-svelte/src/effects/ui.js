@@ -12,7 +12,7 @@ const views = {
 
 const viewNames = Object.keys(views)
 
-export const createUi = () => ({ eventSubject, withProjection, addEffect }) => {
+export const createUi = () => ({ dispatchEvent, withProjection, addEffect }) => {
   addEffect(urlbar(viewNames))
   withProjection(todolist).connect()
   withProjection(todolistFilterName).connect()
@@ -20,7 +20,7 @@ export const createUi = () => ({ eventSubject, withProjection, addEffect }) => {
   const app = new Entry({
     target: document.body,
     props: {
-      dispatch: event => eventSubject.next(event),
+      dispatch: dispatchEvent,
       getSource: withProjection,
       views
     }

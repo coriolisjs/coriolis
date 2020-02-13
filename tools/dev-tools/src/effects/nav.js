@@ -8,7 +8,7 @@ import { viewChanged } from '../events'
 
 const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
-export const nav = ({ addSource, withProjection, eventSubject }) => {
+export const nav = ({ addSource, withProjection, dispatchEvent }) => {
   const currentViewName$ = withProjection(currentViewName)
   const defaultViewName$ = withProjection(defaultViewName)
 
@@ -24,7 +24,7 @@ export const nav = ({ addSource, withProjection, eventSubject }) => {
   )
 
   const replaceViewSubscription = withProjection(replacementViewName).subscribe(
-    viewName => viewName && eventSubject.next(viewChanged(viewName)),
+    viewName => viewName && dispatchEvent(viewChanged(viewName)),
   )
 
   return () => {

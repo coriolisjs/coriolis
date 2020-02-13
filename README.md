@@ -41,6 +41,7 @@ npm install --save coriolis
 Le module est fourni sous deux formes: CommonJS ou ES modules, suivant la manière dont vous le chargez
 
 ESModule:
+
 ```javascript
 import { createStore } from '@coriolis/coriolis'
 
@@ -61,22 +62,23 @@ const currentCount = ({ useState, useEvent }) => (
   }
 )
 
-createStore(({ withProjection, eventSubject }) => {
+createStore(({ withProjection, dispatchEvent }) => {
   withProjection(currentCount).subscribe(count => console.log(count))
   // 0
 
-  eventSubject.next({ type: 'incremented' })
+  dispatchEvent({ type: 'incremented' })
   // 1
 
-  eventSubject.next({ type: 'incremented' })
+  dispatchEvent({ type: 'incremented' })
   // 2
 
-  eventSubject.next({ type: 'decremented' })
+  dispatchEvent({ type: 'decremented' })
   // 1
 })
 ```
 
 CommonJS:
+
 ```javascript
 const { createStore } = require('@coriolis/coriolis')
 
@@ -97,22 +99,34 @@ const currentCount = ({ useState, useEvent }) => (
   }
 )
 
-createStore(({ withProjection, eventSubject }) => {
+createStore(({ withProjection, dispatchEvent }) => {
   withProjection(currentCount).subscribe(count => console.log(count))
   // 0
 
-  eventSubject.next({ type: 'incremented' })
+  dispatchEvent({ type: 'incremented' })
   // 1
 
-  eventSubject.next({ type: 'incremented' })
+  dispatchEvent({ type: 'incremented' })
   // 2
 
-  eventSubject.next({ type: 'decremented' })
+  dispatchEvent({ type: 'decremented' })
   // 1
 })
 ```
 
 ## Utilisation
+
+### Définition d'un effet
+
+Un effet est défini par une fonction recevant en paramètre les outils suivant:
+
+- addSource
+- addLogger
+- pastEvent\$
+- event\$
+- dispatchEvent
+- withProjection
+- addEffect
 
 ## API documentation
 
@@ -164,8 +178,8 @@ Rules about Coriolis
     - Ajouter une source d'events du passé
     - Ajouter un logger d'events
     - S'abonner aux events du passé
-    - S'abonner aux nouveaux events (via eventSubject)
-    - Émettre des events (via eventSubject)
+    - S'abonner aux nouveaux events
+    - Émettre des events
       - Émission d'event invalide -> erreur générale
       - Émission d'erreur -> erreur générale
       - Émission d'une complétion de stream rx -> complétion générale, fin du process // WE HAVE TO CHECK IF WE ARE REALLY EXPECTING THIS...
@@ -200,10 +214,9 @@ Rules about Coriolis
   - log puis transmission (aux projections et aux effets) des events buffurisés
   - log puis transmission (aux projections et aux effet) des nouveaux events
 
-  - un eventSubject d'effet n'émet donc jamais aucun "event passé"
   - les projections voient passer tous les events, même les "passés"
 
-- La ré-émition tel-quel d'un event émit par eventSubject cause une erreur (prévention de boucle)
+- La ré-émition tel-quel d'un event cause une erreur (prévention de boucle)
 
 - EventBuilder
   - metaBuilder est optionel
