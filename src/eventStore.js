@@ -59,10 +59,11 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const pastEvent$ = eventCaster.pipe(takeUntil(initDone))
 
-  const effectEventSubject = Subject.create(
-    eventCatcher,
-    eventCaster.pipe(skipUntil(initDone)),
-  )
+  const event$ = eventCaster.pipe(skipUntil(initDone))
+
+  const dispatchEvent = event => eventCatcher.next(event)
+
+  const effectEventSubject = Subject.create(eventCatcher, event$)
 
   const addEffect = effect =>
     simpleUnsub(
@@ -71,6 +72,8 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         addSource,
         addLogger,
         pastEvent$,
+        event$,
+        dispatchEvent,
         eventSubject: effectEventSubject,
         withProjection,
       }),
