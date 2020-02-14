@@ -63,8 +63,6 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const dispatchEvent = event => eventCatcher.next(event)
 
-  const effectEventSubject = Subject.create(eventCatcher, event$)
-
   const addEffect = effect =>
     simpleUnsub(
       effect({
@@ -74,7 +72,6 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         pastEvent$,
         event$,
         dispatchEvent,
-        eventSubject: effectEventSubject,
         withProjection,
       }),
     )
