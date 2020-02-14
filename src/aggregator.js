@@ -5,10 +5,9 @@ import { objectFrom } from './lib/object/objectFrom'
 import { withValueGetter } from './lib/object/valueGetter'
 import { variableFunction } from './lib/function/variableFunction'
 import { chain } from './lib/function/chain'
-import { tryOrNull } from './lib/function/tryOrNull'
 
-// snapshot is a unique projection that will return every indexed aggregators' last state
-// this function must stay uniq, so as an example we must not use noop here
+// snapshot is a unique projection that will return every indexed projections' last state
+// this function must be an unique reference, so as an example we must not use rxjs' noop here
 export const snapshot = () => {}
 
 // Builds an aggregator function (receives an event, returns a state) from a reducer function
@@ -113,17 +112,6 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
 
   const isNullSetup = () => using.aggregators.length === 0
 
-  const isReducerSetup = () =>
-    (!using.aggregators[0] || using.stateIndex === 0) &&
-    (!using.aggregators[1] || using.aggregators[1] === identity) &&
-    using.aggregators.length <= 2 &&
-    using.initialState === undefined
-
-  // reducer-like, means it's not in the right order
-  const isReducerLikeSetup = () =>
-    using.aggregators.length ===
-    (using.stateIndex !== undefined) + using.allEvents
-
   const getLastValues = () =>
     using.aggregators.map(aggregator => aggregator.value)
 
@@ -178,8 +166,6 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     getInitialState,
     createValuesGetter,
     isNullSetup,
-    isReducerSetup,
-    isReducerLikeSetup,
     getLastValues,
     usesEvents,
     preventOutOfScopeUsage,
@@ -187,8 +173,19 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
   }
 }
 
-// builds an aggregator from a complexe projection definition function
-const createComplexAggregator = (projection, getAggregator) => {
+const tryProjection = (projection, params) => {
+  try {
+    return projection(params)
+  } catch (error) {
+    error.message = `Projection execution error: ${error.message}`
+    throw error
+  }
+}
+
+export const createAggregator = (
+  projection,
+  getAggregator = createAggregator,
+) => {
   if (typeof projection !== 'function') {
     throw new TypeError('Projection must be a function')
   }
@@ -201,49 +198,17 @@ const createComplexAggregator = (projection, getAggregator) => {
     getInitialState,
     createValuesGetter,
     isNullSetup,
-    isReducerSetup,
-    isReducerLikeSetup,
     getLastValues,
     usesEvents,
     preventOutOfScopeUsage,
     getName,
   } = createProjectionSetupAPI(getLastState, getAggregator)
 
-  // projection could be a reducer, calling it with setupParams could lead to an exception
-  // If we get an exception, we will handle projection as a reducer, so we don't need
-  // resulting Error, we just need to know there was one. Let's try, or get null
-  const projectionBehavior = tryOrNull(() => projection(setupParams))
+  const projectionBehavior = tryProjection(projection, setupParams)
   preventOutOfScopeUsage()
 
   if (isNullSetup() || typeof projectionBehavior !== 'function') {
-    if (projectionBehavior === null) {
-      // If it's null, we got an error. To avoid making an error completely disapear it
-      // is probably better to display this information in console
-      // TODO: ensure this behavior is the good one
-      console.info(
-        "Projection setup failure, let's use it as a reducer",
-        projection.name,
-        projection,
-        projectionBehavior,
-      )
-    }
-    // reducer projection with optional parameters could lead here.
-    // let's assume projection is in fact a reducer
-    return createReducerAggregator(projection)
-  }
-
-  // if given aggregator definition expects only state and event (or less), it should be a reducer
-  if (isReducerLikeSetup()) {
-    console.info(
-      'Prefer using simple reducer signature " (state, event) => newstate " ' +
-        'when you only need state and/or event',
-    )
-
-    // Replace with getAggregator in case signature matches reducer signature (state, event)
-    if (isReducerSetup()) {
-      // TODO: there should be something done here to preserve name if possible
-      return getAggregator(projectionBehavior)
-    }
+    throw new TypeError('Given projection is not working')
   }
 
   const getValues = createValuesGetter()
@@ -277,20 +242,6 @@ const createComplexAggregator = (projection, getAggregator) => {
 
   return aggregator
 }
-
-// There's two cases (reducer or complex aggregator) but we want a single access point so we have to
-// guess whether it's a reducer or a complex aggregator definition
-// - reducer definition is a function with two parameters
-// - complex aggregator definition is a function with only one parameter
-// If this guess is not accurate, we should handle aggregator definition as complex aggregator because in
-// complex aggregator handling process there's fallbacks to ensure it works even if a reducer is passed
-export const createAggregator = (
-  projection,
-  getAggregator = createAggregator,
-) =>
-  projection && projection.length === 2
-    ? createReducerAggregator(projection)
-    : createComplexAggregator(projection, getAggregator)
 
 export const createAggregatorFactory = (
   aggregatorBuilder = createAggregator,
