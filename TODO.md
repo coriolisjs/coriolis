@@ -9,14 +9,6 @@ core
     can be used in a commonJS project
     can be loaded directly in a browser as a standalone script
 
-  reducer projection detection can cause some errors to be invisible
-    all errors in a projection-setup function would be invisible, which is a major readability/debug problem
-    possible solutions:
-      - disallow reducer projections
-        - can be done with providing a "fromReducer" helper converting reducer to projection
-      - make dev-tools display projection-setup errors (this would display falsy errors for some reducer-conversion process)
-
-
 dev-tools:
   event list:
     - timestamps should be visible in more human unit:
@@ -40,3 +32,5 @@ dev-tools:
 examples:
   extract todo logic in a separated folder to share this between UI implementations
     This demonstrate the fact that with coriolis UI is just an effect
+
+  backend exemples

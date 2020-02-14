@@ -162,10 +162,7 @@ Rules about Coriolis
   Pour qu'une projection soit alimenté il faut, soit que sa définition est été "connectée", soit
   qu'il y ait des abonements à cette projection.
 
-- Une définition de projection peut prendre deux formes
-
-  - simple sous forme d'un reducer
-  - complexe en utilisant l'API projection
+- Une définition de projection se fait par l'intermediaire d'une API dédiée
 
 - EventStore
   Un eventStore met en relation un eventSubject et des effets
@@ -228,14 +225,7 @@ Rules about Coriolis
 Quel que soit la forme de définition, Coriolis construira à partir de cette définition un
 "aggrégateur" qui pourra être alimenté par les events de l'eventSubject.
 
-### Définition de projection sous forme de reducer:
-
-Pour cette forme, on défini la nouvelle valeur de la projection (nouvel état) à partir de:
-
-- state: dernière valeur de cette projection
-- event: dernier evenement emit
-
-### Définition de projection sous forme complexe:
+### Définition de projection:
 
 Pour cette forme, on défini dans un premier temps les sources de données nécessaires:
 
@@ -247,9 +237,18 @@ Pour cette forme, on défini dans un premier temps les sources de données néce
 
 Ensuite on défini l'algorythme de calcul du résultat en fonction de ces sources de données
 
+### Définition de projection sous forme de reducer:
+
+Pour cette forme, on défini la nouvelle valeur de la projection (nouvel état) à partir de:
+
+- state: dernière valeur de cette projection
+- event: dernier evenement emit
+
+Pour ce faire, il faut utiliser un helper "fromReducer" permettant de
+
 #### Pour une meilleur compréhension du fonctionnement
 
-Chaque définition de projection complexe peut être transformée en une définition de projection de type reducer
+Chaque définition de projection peut être transformée en une définition de projection de type reducer
 
 Ce reducer operera en deux étapes:
 
