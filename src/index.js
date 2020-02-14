@@ -5,4 +5,5 @@ export {
   createAggregator,
   createAggregatorFactory,
   snapshot,
+  fromReducer,
 } from './aggregator'

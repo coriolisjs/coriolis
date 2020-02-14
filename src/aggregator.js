@@ -267,3 +267,7 @@ export const createAggregatorFactory = (
 
   return factory.get
 }
+
+export const fromReducer = createIndex(reducer => ({ useState, useEvent }) => (
+  useState(), useEvent(), reducer
+)).get
