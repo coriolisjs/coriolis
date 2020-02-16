@@ -4,12 +4,17 @@
   "description": "coriolis wrapper for Svelte",
   "license": "GPL-3.0",
   "author": "Nicolas Deveaud",
-  "main": "provideStore.js",
+  "main": "cjs/provideStore.js",
+  "module": "provideStore.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "clear:all": "rm -rf node_modules dist",
+    "clear": "rm -rf cjs",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md,?(s)css,html},.*.{js?(on),md,?(s)css,html}}' --write && eslint . --fix",
-    "publish:local": "npm run lint && npm publish --registry http://localhost:4873"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "autobuild": "rollup -c -w",
+    "publish:local": "npm run lint && npm run clear && npm run build && npm publish --registry http://localhost:4873"
   },
   "peerDependencies": {
     "svelte": "3.x"
@@ -26,6 +31,8 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "rollup": "^1.31.0",
+    "rollup-plugin-babel": "^4.3.3"
   }
 }
