@@ -1,12 +1,12 @@
 core
   make package publishable:
-    can be installed as dep for a backend project
-    can be installed as dep for a front-end project
-    can be used in an esmodule with webpack project
-    can be used in an esmodule with rollup project
+    👍 can be installed as dep for a backend project
+    👍 can be installed as dep for a front-end project
+    👍 can be used in an esmodule with webpack project
+    👍 can be used in an esmodule with rollup project
     can be used in a nodeJS native esmodule project
     can be used in a umd project
-    can be used in a commonJS project
+    👍 can be used in a commonJS project
     can be loaded directly in a browser as a standalone script
 
 dev-tools:
@@ -32,5 +32,7 @@ dev-tools:
 examples:
   extract todo logic in a separated folder to share this between UI implementations
     This demonstrate the fact that with coriolis UI is just an effect
+
+  make todo examples match todomvc standards
 
   backend exemples

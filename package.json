@@ -26,7 +26,8 @@
   "type": "module",
   "module": "dist/esm/index.js",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "clear:all": "rm -rf node_modules dist",

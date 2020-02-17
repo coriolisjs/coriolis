@@ -4,38 +4,28 @@ English documentation coming soon
 
 ## Qu'est-ce que c'est ?
 
-C'est une librairie Javascript permettant de mettre en place un store d'events alimentant des effets s'appuyant sur des projections (état déduit de différents events)
+Coriolis est une librairie Javascript permettant de mettre en place un *store d'events* alimentant des *effets* s'appuyant sur des *projections* (une projection est un état déduit de différents *events*)
 
 Cette librairie vous aidera à créer vos applications selon les concepts d'Event Sourcing et de Domain Driven Design.
 
 Cette approche aide à obtenir une application au comportement prédictible, modulaire, évolutif et debuggable.
-Elle permet entre autre à distinguer différentes typologies de logiques:
+Elle permet entre autre de distinguer proprement différentes typologies de logiques:
 
-- comportement
 - organisation des données
+- comportement
 - interface utilisateur
   ...
 
-## Motivations
-
-Une motivation majeur avec Coriolis est d'aider à construire un code d'application lisible, en cherchant à se focaliser sur l'expression des logiques du domaine métier. Cela se manifeste à plusieurs niveaux:
-
-- La définition d'une projection est réduite à sa plus simple expression: de quoi elle a besoin et la logique de rangement des données.
-
-- La définition d'un effet peut appliquer d'autres effets, favorisant ainsi une construction modulaire.
-
-- La définition d'un effet a accès directement a toute projection et tout event (passé ou nouveau), et peut invoquer des events passés, déclarer de nouveaux events, appliquer des stratégies de stockage d'events et ajouter d'autres effets
-
 ## Influences
 
-La conception de Coriolis a été inspirée par Redux, en cherchant à donnée le rôle de single source of truth non pas au state mais au flux d'events, et ainsi rejoindre le concept d'Event Sourcing
+La conception de Coriolis a été inspirée par Redux, en cherchant à donner le rôle de *single source of truth* non pas au state mais au flux d'events, et ainsi rejoindre le concept d'Event Sourcing.
 
 ## Installation
 
 Pour installer Coriolis:
 
 ```javascript
-npm install --save coriolis
+npm install --save @coriolis/coriolis
 ```
 
 Le module est fourni sous deux formes: CommonJS ou ES modules, suivant la manière dont vous le chargez
@@ -116,6 +106,168 @@ createStore(({ withProjection, dispatchEvent }) => {
 
 ## Utilisation
 
+### Définition d'un event
+
+Un event est un simple objet respectant les critères suivant:
+
+- un type
+- une valeur utile, ou "payload" (optionel)
+- des méta-données (optionel)
+- un indicatif d'erreur booléen (si true, le payload devrait être l'erreur correspondant)
+
+Voici donc des events valide:
+
+```javascript
+const minimum = { type: 'sent a minimal event' }
+
+const simple = {
+  type: 'sent a simple event',
+  payload: 'simple'
+}
+
+const simpleError = {
+  type: 'sent a simple event',
+  payload: new Error('Could not be that simple'),
+  error: true
+}
+
+const withMeta = {
+  type: 'sent a simple event',
+  payload: 'answer me if you got it'
+  meta: {
+    // note that using meta for this data could be a wrong idea, let's keep this place only for meta-data
+    sender: 'Nico'
+  }
+}
+
+```
+
+Très simple. Mais il vous sera rapidement necessaire de créer des fonctions de création d'event, de pouvoir référencer les
+types de ces events, de parametrer la définition du payload ou des meta de ces events.
+
+Vous aurez donc besoin de `createEventBuilder`:
+
+```javascript
+import { createEventBuilder } from '@coriolis/coriolis'
+
+const createMinimumEvent = createEventBuilder('sent a minimal event')
+
+const createSimpleEvent = createEventBuilder(
+  'sent a simple event',
+  ({ message }) => message,
+  ({ sender }) => { sender }
+)
+
+const minimum = createMinimumEvent()
+
+const simple = createSimpleEvent({ message: 'simple' })
+
+const simpleError = createSimpleEvent({ message: new Error('Could not be that simple') })
+
+const withMeta = createSimpleEvent({
+  message: 'answer me if you got it'
+  sender: 'Nico'
+})
+
+console.log(createMinimumEvent.toString())
+// 'sent a minimal event'
+
+console.log(createSimpleEvent.toString())
+// 'sent a simple event'
+
+```
+
+Les builder d'event créés par `createEventBuilder` exposent le type d'event associé via la méthode `toString()`. Il est donc facile d'utiliser ces types d'events dans une projection par exemple.
+
+`createEventBuilder` est très fortement inspiré de [redux-actions](https://github.com/redux-utilities/redux-actions)
+
+
+## Définition d'une projection
+
+Une projection permet de recueillir des données provenant des events afin de disposer de toutes les données nécessaire pour ensuite définir les comportements de votre application dans les effets.
+
+On défini dans un premier temps les sources de données nécessaires à la projection:
+
+- useState: utiliser la dernière valeur obtenue par cette projection (on peut spécifier une valeur initiale)
+- useEvent: utiliser le dernier événement émit (on peut filtrer quels types d'événements on souhaite traiter)
+- useProjection/lazyProjection: utiliser la valeur obtenue d'une projection (voir détails plus loin)
+- useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API, voir projections parametrées)
+- setName: Attribue un nom à la projection, dans un but de debug et de lisibilité
+
+Ensuite on défini l'algorythme de rangement des données en utilisant ces sources de données.
+
+Ce code est incorrecte mais présente le format de définition d'une projection:
+
+```javascript
+const projection = ({ setName, useState, useEvent, useProjection }) => (
+  setName('A custom name for this projection'), // Naming a projection is optional, usefull sometimes for debug
+  useState({}), // Using a state is not mandatory, but it is usually necessary
+  useEvent(), // You'll need to get events in at least one projection
+  useProjection(anyProjection), // other projections are aggregating great states, let's use those
+
+  // Here comes the function that defines the projection
+  // This function will receive all we defined above
+  (state, event, anyProjectionCurrentValue) => {
+    // Build a great data structure with data I got
+    // and return it as the current value of that projection
+  }
+)
+```
+
+Petits exemples de projections de différents types:
+
+```javascript
+
+const simpleReducerLikeProjection = ({ useState, useEvent }) => (
+  // Initial value for state should be defined here
+  useState(0),
+  // Here we filter events we will get
+  useEvent('incremented', 'decremented'),
+  (state, event) => {
+    switch (event.type) {
+      case 'incremented':
+        return state + 1
+
+      case 'decremented':
+        return state - 1
+
+      default:
+        // As we used a filtered "useEvent", this default case can be skiped
+        break
+    }
+  }
+)
+
+const simpleEventsNumberProjection = ({ useState, useEvent }) => (
+  // Let's start counting from 0
+  useState(0),
+  // needs each event just to trigger the projection
+  useEvent(),
+  state => state + 1
+)
+
+const simplyGetLastEventType = ({ useEvent }) => (
+  // For this projection, no need for a state, just events
+  useEvent(),
+  event => event.type
+)
+
+const MoreComplexProjection = ({ useProjection }) => (
+  useProjection(simpleReducerLikeProjection),
+  useProjection(simpleEventsNumberProjection),
+  useProjection(simplyGetLastEventType),
+  (counter, eventsNumber, lastType) => ({
+    counter,
+    eventsNumber,
+    lastType
+  })
+)
+
+```
+
+Il faudrait ici expliquer le choix du format de définition des fonctions de projection. Ça viendra bientôt.
+
+
 ### Définition d'un effet
 
 Un effet est défini par une fonction recevant en paramètre les outils suivant:
@@ -128,11 +280,73 @@ Un effet est défini par une fonction recevant en paramètre les outils suivant:
 - withProjection
 - addEffect
 
+Cette fonction sera en charge de définir le comportement de l'application en fonction des events et des projections qu'elle utilisera.
+
+```javascript
+
+const currentCount = ({ useState, useEvent }) => (
+  useState(0),
+  useEvent('incremented', 'decremented'),
+  (count, { type }) => type === 'incremented'
+    ? count + 1
+    : count - 1
+)
+
+const myDoublingEffect = ({ withProjection, dispatchEvent }) => {
+  withProjection(({ useProjection, useEvent }) => (
+    useProjection(currentCount),
+    useEvent('double required'),
+    (currentCountValue) => {
+      for (let i = 0; i < currentCountValue; i++) {
+        dispatchEvent({ type: 'incremented' })
+      }
+    }
+  ))
+}
+
+const myDisplayEffect = ({ withProjection, dispatchEvent }) => {
+  withProjection(currentCount).subscribe(count => console.log(count))
+  // 0
+
+  dispatchEvent({ type: 'incremented' })
+  // 1
+
+  dispatchEvent({ type: 'incremented' })
+  // 2
+
+  dispatchEvent({ type: 'double required' })
+  // 3
+  // 4
+}
+
+```
+
+## Motivations
+
+Une motivation majeur avec Coriolis est d'aider à construire un code d'application lisible, en cherchant à se focaliser sur l'expression des logiques du domaine métier. Cela se manifeste à plusieurs niveaux:
+
+- La définition d'une projection est réduite à sa plus simple expression: de quoi elle a besoin et la logique de rangement des données.
+
+- La définition d'un effet peut faire appel à d'autres effets, favorisant ainsi une construction modulaire.
+
+- La définition d'un effet a accès directement à toute projection et tout event (passé ou nouveau), et peut invoquer des events passés, déclarer de nouveaux events, appliquer des stratégies de stockage d'events et ajouter d'autres effets
+
+
+
+## A la suite, un ensemble de brouillon qu'il reste à clarifier (coming as soon as possible)
+
 ## API documentation
 
 ## Plus en détails
 
-Rules about Coriolis
+### Projection
+
+Pour expliquer le fonctionnement des projection:
+
+Coriolis construira à partir de la définition d'une projection un
+"aggrégateur" qui pourra être alimenté par les events de l'eventSubject.
+
+### Some rules about Coriolis
 
 - Un event doit avoir un format standard:
 
@@ -216,26 +430,10 @@ Rules about Coriolis
 - La ré-émition tel-quel d'un event cause une erreur (prévention de boucle)
 
 - EventBuilder
-  - metaBuilder est optionel
-  - payloadBuilder est optionel, on peut uniquement définir un type
+  - metaBuilder est optionnel
+  - payloadBuilder est optionnel, on peut uniquement définir un type
   - payloadBuilder par défaut est identity
 
-## Définition d'une projection
-
-Quel que soit la forme de définition, Coriolis construira à partir de cette définition un
-"aggrégateur" qui pourra être alimenté par les events de l'eventSubject.
-
-### Définition de projection:
-
-Pour cette forme, on défini dans un premier temps les sources de données nécessaires:
-
-- useState: utiliser la dernière valeur obtenue par cette projection (on peut spécifier une valeur initiale)
-- useEvent: utiliser le dernier événement émit (on peut filtrer quels types d'événements on souhaite traiter)
-- useProjection/lazyProjection: utiliser la valeur obtenue d'une projection (voir détails plus loin)
-- useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API, voir projections parametrées)
-- setName: Attribue un nom à la projection, dans un but de debug et de lisibilité
-
-Ensuite on défini l'algorythme de calcul du résultat en fonction de ces sources de données
 
 ### Définition de projection sous forme de reducer:
 
