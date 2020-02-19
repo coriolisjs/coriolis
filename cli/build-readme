@@ -10,7 +10,7 @@ const headSection = /^\w+\n\s*\/\/ *\{!(?<file>[^}]+)\}\n/
 const txtEncoding = 'utf-8'
 const sourcePath = 'README.md'
 
-const buildCodeSection = (head, body) => `\`\`\`${head}\n${body}\n\`\`\``
+const buildCodeSection = (head, body) => `\`\`\`${head}\n${body}\n\n\`\`\``
 
 const main = async ({ sourcePath, onInsert, onNoChange }) => {
   const sourceContent = await readFile(sourcePath, txtEncoding)

@@ -34,6 +34,7 @@ ESModule:
 
 ```javascript
 // {!examples/count-esmodule/entry.js}
+
 import { createStore } from '@coriolis/coriolis'
 
 const currentCount = ({ useState, useEvent }) => (
@@ -73,6 +74,7 @@ CommonJS:
 
 ```javascript
 // {!examples/count-comonjs/entry.js}
+
 const { createStore } = require('@coriolis/coriolis')
 
 const currentCount = ({ useState, useEvent }) => (
@@ -153,6 +155,7 @@ Vous aurez donc besoin de `createEventBuilder`:
 
 ```javascript
 // {!examples/readme-samples/events.js}
+
 import { createEventBuilder } from '@coriolis/coriolis'
 
 export const createMinimumEvent = createEventBuilder('sent a minimal event')
@@ -166,7 +169,9 @@ export const createSimpleEvent = createEventBuilder(
 export const requiredDouble = createEventBuilder('user required to double count')
 
 export const incremented = createEventBuilder('user incremented count')
-export const decremented = createEventBuilder('user decremented count')```
+export const decremented = createEventBuilder('user decremented count')
+
+```
 
 ```javascript
 createMinimumEvent()
@@ -248,6 +253,7 @@ Petits exemples de projections de différents types:
 
 ```javascript
 // {!examples/readme-samples/projections.js}
+
 import { incremented, decremented, requiredDouble } from './events'
 
 export const currentCount = ({ useState, useEvent }) => (
@@ -285,7 +291,9 @@ export const moreComplexProjection = ({ useProjection }) => (
   })
 )
 
-export const lastRequiredDouble = ({ useEvent }) => (useEvent(requiredDouble), event => event)```
+export const lastRequiredDouble = ({ useEvent }) => (useEvent(requiredDouble), event => event)
+
+```
 
 Il faudrait ici expliquer le choix du format de définition des fonctions de projection. Ça viendra bientôt.
 
@@ -340,6 +348,7 @@ export const myUserEffect = ({ dispatchEvent }) => {
   dispatchEvent(decremented())
   // Current count 3
 }
+
 ```
 
 ## Motivations
