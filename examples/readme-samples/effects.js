@@ -5,7 +5,8 @@ export const myDoublingEffect = ({ withProjection, dispatchEvent }) => {
   const currentCount$ = withProjection(currentCount)
 
   withProjection(lastRequiredDouble).subscribe(() => {
-    for (let i = 0; i < currentCount$.value; i++) {
+    const count = currentCount$.value
+    for (let i = 0; i < count; i++) {
       dispatchEvent(incremented())
     }
   })
