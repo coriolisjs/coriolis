@@ -37,9 +37,11 @@
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
     "test:watch": "npm run -s test -- --watch",
     "build": "rollup -c",
+    "build:readme": "cli/build-readme",
     "autobuild": "rollup -c -w",
-    "publish:local": "npm run lint && npm run test && npm run clear && npm run build && npm publish --registry http://localhost:4873",
-    "publish:npm": "npm run lint && npm run test && npm run clear && npm run build && npm publish --registry https://registry.npmjs.org --access public"
+    "prepublishOnly": "npm run lint && npm run test && npm run clear && npm run build && npm run build:readme",
+    "publish:local": "npm publish --registry http://localhost:4873",
+    "publish:npm": "npm publish --registry https://registry.npmjs.org --access public"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",

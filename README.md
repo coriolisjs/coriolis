@@ -33,6 +33,7 @@ Le module est fourni sous deux formes: CommonJS ou ES modules, suivant la maniè
 ESModule:
 
 ```javascript
+// {!examples/count-esmodule/entry.js}
 import { createStore } from '@coriolis/coriolis'
 
 const currentCount = ({ useState, useEvent }) => (
@@ -70,6 +71,7 @@ createStore(({ withProjection, dispatchEvent }) => {
 CommonJS:
 
 ```javascript
+// {!examples/count-comonjs/entry.js}
 const { createStore } = require('@coriolis/coriolis')
 
 const currentCount = ({ useState, useEvent }) => (
@@ -148,6 +150,7 @@ types de ces events, de parametrer la définition du payload ou des meta de ces 
 Vous aurez donc besoin de `createEventBuilder`:
 
 ```javascript
+// {!examples/readme-samples/events.js}
 import { createEventBuilder } from '@coriolis/coriolis'
 
 const createMinimumEvent = createEventBuilder('sent a minimal event')
@@ -173,6 +176,45 @@ console.log(createMinimumEvent.toString())
 // 'sent a minimal event'
 
 console.log(createSimpleEvent.toString())
+// 'sent a simple event'
+
+```
+
+```javascript
+createMinimumEvent()
+// {
+//   type: 'sent a minimal event'
+// }
+
+createSimpleEvent({ message: 'simple' })
+// {
+//   type: 'sent a simple event',
+//   payload: 'simple'
+// }
+
+createSimpleEvent({ message: new Error('Could not be that simple') })
+// {
+//   type: 'sent a simple event',
+//   payload: <Error: 'Could not be that simple'>,
+//   error: true
+// }
+
+createSimpleEvent({
+  message: 'answer me if you got it',
+  sender: 'Nico'
+})
+// {
+//   type: 'sent a simple event',
+//   payload: 'answer me if you got it',
+//   meta: {
+//     sender: 'Nico'
+//   }
+// }
+
+createMinimumEvent.toString()
+// 'sent a minimal event'
+
+createSimpleEvent.toString()
 // 'sent a simple event'
 
 ```
@@ -217,6 +259,7 @@ const projection = ({ setName, useState, useEvent, useProjection }) => (
 Petits exemples de projections de différents types:
 
 ```javascript
+// {!examples/readme-samples/projections.js}
 
 const simpleReducerLikeProjection = ({ useState, useEvent }) => (
   // Initial value for state should be defined here
@@ -283,6 +326,7 @@ Un effet est défini par une fonction recevant en paramètre les outils suivant:
 Cette fonction sera en charge de définir le comportement de l'application en fonction des events et des projections qu'elle utilisera.
 
 ```javascript
+// {!examples/readme-samples/effects.js}
 
 const currentCount = ({ useState, useEvent }) => (
   useState(0),
