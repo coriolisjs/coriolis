@@ -66,6 +66,7 @@ createStore(({ withProjection, dispatchEvent }) => {
   dispatchEvent({ type: 'decremented' })
   // 1
 })
+
 ```
 
 CommonJS:
@@ -104,6 +105,7 @@ createStore(({ withProjection, dispatchEvent }) => {
   dispatchEvent({ type: 'decremented' })
   // 1
 })
+
 ```
 
 ## Utilisation
@@ -153,32 +155,18 @@ Vous aurez donc besoin de `createEventBuilder`:
 // {!examples/readme-samples/events.js}
 import { createEventBuilder } from '@coriolis/coriolis'
 
-const createMinimumEvent = createEventBuilder('sent a minimal event')
+export const createMinimumEvent = createEventBuilder('sent a minimal event')
 
-const createSimpleEvent = createEventBuilder(
+export const createSimpleEvent = createEventBuilder(
   'sent a simple event',
   ({ message }) => message,
-  ({ sender }) => { sender }
+  ({ sender }) => sender && { sender }
 )
 
-const minimum = createMinimumEvent()
+export const requiredDouble = createEventBuilder('user required to double count')
 
-const simple = createSimpleEvent({ message: 'simple' })
-
-const simpleError = createSimpleEvent({ message: new Error('Could not be that simple') })
-
-const withMeta = createSimpleEvent({
-  message: 'answer me if you got it'
-  sender: 'Nico'
-})
-
-console.log(createMinimumEvent.toString())
-// 'sent a minimal event'
-
-console.log(createSimpleEvent.toString())
-// 'sent a simple event'
-
-```
+export const incremented = createEventBuilder('user incremented count')
+export const decremented = createEventBuilder('user decremented count')```
 
 ```javascript
 createMinimumEvent()
@@ -260,28 +248,19 @@ Petits exemples de projections de différents types:
 
 ```javascript
 // {!examples/readme-samples/projections.js}
+import { incremented, decremented, requiredDouble } from './events'
 
-const simpleReducerLikeProjection = ({ useState, useEvent }) => (
+export const currentCount = ({ useState, useEvent }) => (
   // Initial value for state should be defined here
   useState(0),
   // Here we filter events we will get
-  useEvent('incremented', 'decremented'),
-  (state, event) => {
-    switch (event.type) {
-      case 'incremented':
-        return state + 1
-
-      case 'decremented':
-        return state - 1
-
-      default:
-        // As we used a filtered "useEvent", this default case can be skiped
-        break
-    }
-  }
+  useEvent(incremented, decremented),
+  (count, { type }) => type === incremented.toString()
+    ? count + 1
+    : count - 1
 )
 
-const simpleEventsNumberProjection = ({ useState, useEvent }) => (
+export const eventsNumber = ({ useState, useEvent }) => (
   // Let's start counting from 0
   useState(0),
   // needs each event just to trigger the projection
@@ -289,24 +268,24 @@ const simpleEventsNumberProjection = ({ useState, useEvent }) => (
   state => state + 1
 )
 
-const simplyGetLastEventType = ({ useEvent }) => (
+export const lastEventType = ({ useEvent }) => (
   // For this projection, no need for a state, just events
   useEvent(),
   event => event.type
 )
 
-const MoreComplexProjection = ({ useProjection }) => (
-  useProjection(simpleReducerLikeProjection),
-  useProjection(simpleEventsNumberProjection),
-  useProjection(simplyGetLastEventType),
-  (counter, eventsNumber, lastType) => ({
-    counter,
+export const moreComplexProjection = ({ useProjection }) => (
+  useProjection(currentCount),
+  useProjection(eventsNumber),
+  useProjection(lastEventType),
+  (currentCountValue, eventsNumber, lastType) => ({
+    currentCountValue,
     eventsNumber,
     lastType
   })
 )
 
-```
+export const lastRequiredDouble = ({ useEvent }) => (useEvent(requiredDouble), event => event)```
 
 Il faudrait ici expliquer le choix du format de définition des fonctions de projection. Ça viendra bientôt.
 
@@ -328,41 +307,38 @@ Cette fonction sera en charge de définir le comportement de l'application en fo
 ```javascript
 // {!examples/readme-samples/effects.js}
 
-const currentCount = ({ useState, useEvent }) => (
-  useState(0),
-  useEvent('incremented', 'decremented'),
-  (count, { type }) => type === 'incremented'
-    ? count + 1
-    : count - 1
-)
+import { currentCount, lastRequiredDouble } from './projections'
+import { incremented, decremented, requiredDouble } from './events'
 
-const myDoublingEffect = ({ withProjection, dispatchEvent }) => {
-  withProjection(({ useProjection, useEvent }) => (
-    useProjection(currentCount),
-    useEvent('double required'),
-    (currentCountValue) => {
-      for (let i = 0; i < currentCountValue; i++) {
-        dispatchEvent({ type: 'incremented' })
-      }
+export const myDoublingEffect = ({ withProjection, dispatchEvent }) => {
+  const currentCount$ = withProjection(currentCount)
+
+  withProjection(lastRequiredDouble).subscribe(() => {
+    for (let i = 0; i < currentCount$.value; i++) {
+      dispatchEvent(incremented())
     }
-  ))
+  })
 }
 
-const myDisplayEffect = ({ withProjection, dispatchEvent }) => {
-  withProjection(currentCount).subscribe(count => console.log(count))
-  // 0
-
-  dispatchEvent({ type: 'incremented' })
-  // 1
-
-  dispatchEvent({ type: 'incremented' })
-  // 2
-
-  dispatchEvent({ type: 'double required' })
-  // 3
-  // 4
+export const myDisplayEffect = ({ withProjection }) => {
+  withProjection(currentCount).subscribe(count => console.log('Current count', count))
+  // Immediately logs "Current count 0", than other count values on each change
 }
 
+export const myUserEffect = ({ dispatchEvent }) => {
+  dispatchEvent(incremented())
+  // Current count 1
+
+  dispatchEvent(incremented())
+  // Current count 2
+
+  dispatchEvent(requiredDouble())
+  // Current count 3
+  // Current count 4
+
+  dispatchEvent(decremented())
+  // Current count 3
+}
 ```
 
 ## Motivations

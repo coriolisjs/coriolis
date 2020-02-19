@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+const {
+  readFileSync,
+  promises: { readFile, writeFile },
+} = require('fs')
+
+const codeSection = /```(?<body>(?:`{0,2}[^`]+|\s+)*)```/g
+const headSection = /^\w+\n\s*\/\/ *\{!(?<file>[^}]+)\}\n/
+
+const txtEncoding = 'utf-8'
+const sourcePath = 'README.md'
+
+const buildCodeSection = (head, body) => `\`\`\`${head}\n${body}\n\`\`\``
+
+const main = async ({ sourcePath, onInsert, onNoChange }) => {
+  const sourceContent = await readFile(sourcePath, txtEncoding)
+
+  const newContent = sourceContent.replace(codeSection, (original, ...args) => {
+    const { body: sectionContent } = args.slice(-1)[0]
+
+    const matchInclude = sectionContent.match(headSection)
+
+    if (!matchInclude) {
+      return original
+    }
+
+    const head = matchInclude[0]
+    const body = sectionContent.slice(head.length).trim()
+    const file = matchInclude.groups.file
+
+    const newBody = readFileSync(file, txtEncoding).trim()
+
+    if (body === newBody) {
+      return original
+    }
+
+    onInsert(file)
+    return buildCodeSection(head, newBody)
+  })
+
+  if (newContent === sourceContent) {
+    onNoChange()
+    return
+  }
+
+  await writeFile(sourcePath, newContent, txtEncoding)
+}
+
+console.log(`Re-building ${sourcePath} file\n`)
+main({
+  sourcePath,
+  onInsert: file => console.log(`  + insert content from ./${file}`),
+  onNoChange: () => console.log('  no changes'),
+})
+  .then(() => console.log('\ndone'))
+  .catch(error => console.error(error))

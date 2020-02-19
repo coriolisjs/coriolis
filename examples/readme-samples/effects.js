@@ -13,7 +13,7 @@ export const myDoublingEffect = ({ withProjection, dispatchEvent }) => {
 
 export const myDisplayEffect = ({ withProjection }) => {
   withProjection(currentCount).subscribe(count => console.log('Current count', count))
-  // Immediately logs "Current count 0", than other count values
+  // Immediately logs "Current count 0", than other count values on each change
 }
 
 export const myUserEffect = ({ dispatchEvent }) => {
