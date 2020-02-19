@@ -16,7 +16,10 @@ export const exposeSimpleEvents = () => {
     sender: 'Nico'
   })
 
-  console.log('events created', minimum, simple, simpleError, withMeta)
+  console.log(minimum)
+  console.log(simple)
+  console.log(simpleError)
+  console.log(withMeta)
 
   console.log(createMinimumEvent.toString())
   // 'sent a minimal event'
