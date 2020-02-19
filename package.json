@@ -39,9 +39,9 @@
     "build": "rollup -c",
     "build:readme": "cli/build-readme",
     "autobuild": "rollup -c -w",
-    "prepublishOnly": "npm run lint && npm run test && npm run clear && npm run build && npm run build:readme",
-    "publish:local": "npm publish --registry http://localhost:4873",
-    "publish:npm": "npm publish --registry https://registry.npmjs.org --access public"
+    "prepublishOnly": "npm run lint && npm run test && npm run clear && npm run build && npm run build:readme && git tag ${VERSION} && git push origin ${VERSION}",
+    "publish:local": "VERSION=${npm_package_version}-local npm publish --registry http://localhost:4873",
+    "publish:npm": "VERSION=${npm_package_version} npm publish --registry https://registry.npmjs.org --access public"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
