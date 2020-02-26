@@ -1,4 +1,4 @@
-import { Subject, noop } from 'rxjs'
+import { Subject, isObservable, noop } from 'rxjs'
 import { filter, shareReplay, skipUntil, take, takeUntil } from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
@@ -61,7 +61,23 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
-  const dispatchEvent = event => eventCatcher.next(event)
+  const dispatchEvent = event => {
+    if (typeof event === 'function') {
+      return Promise.resolve()
+        .then(event)
+        .then(dispatchEvent, error => eventCatcher.error(error))
+    }
+    if (isObservable(event)) {
+      return event.subscribe({
+        next: dispatchEvent,
+        error: error => eventCatcher.error(error),
+      })
+    }
+    if (Array.isArray(event)) {
+      return event.map(dispatchEvent)
+    }
+    eventCatcher.next(event)
+  }
 
   const addEffect = effect =>
     simpleUnsub(
