@@ -9,6 +9,8 @@ core
     👍 can be used in a commonJS project
     can be loaded directly in a browser as a standalone script
 
+  Add commands usage in readme
+
 dev-tools:
   event list:
     - timestamps should be visible in more human unit:
@@ -27,6 +29,8 @@ dev-tools:
       - for each projection call
         - JSON view of arguments of projection call
 
+    - Display commands with there type (function or observable)
+    - mark joined events (dispatched as array)
 
 
 examples:
