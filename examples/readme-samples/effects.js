@@ -1,13 +1,13 @@
 import { currentCount, lastRequiredDouble } from './projections'
 import { incremented, decremented, requiredDouble } from './events'
 
-export const myDoublingEffect = ({ withProjection, dispatchEvent }) => {
+export const myDoublingEffect = ({ withProjection, dispatch }) => {
   const currentCount$ = withProjection(currentCount)
 
   withProjection(lastRequiredDouble).subscribe(() => {
     const count = currentCount$.value
     for (let i = 0; i < count; i++) {
-      dispatchEvent(incremented())
+      dispatch(incremented())
     }
   })
 }
@@ -17,17 +17,17 @@ export const myDisplayEffect = ({ withProjection }) => {
   // Immediately logs "Current count 0", than other count values on each change
 }
 
-export const myUserEffect = ({ dispatchEvent }) => {
-  dispatchEvent(incremented())
+export const myUserEffect = ({ dispatch }) => {
+  dispatch(incremented())
   // Current count 1
 
-  dispatchEvent(incremented())
+  dispatch(incremented())
   // Current count 2
 
-  dispatchEvent(requiredDouble())
+  dispatch(requiredDouble())
   // Current count 3
   // Current count 4
 
-  dispatchEvent(decremented())
+  dispatch(decremented())
   // Current count 3
 }

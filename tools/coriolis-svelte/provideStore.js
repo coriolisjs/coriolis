@@ -28,10 +28,10 @@ export const createStoreAPIProvider = () => {
       throw new Error('Store API to share has not been set')
     }
 
-    const { dispatchEvent, withProjection } = receivedStoreAPI
+    const { dispatch, withProjection } = receivedStoreAPI
 
     setContext(KEY_GET_SOURCE, withProjection)
-    setContext(KEY_DISPATCH, dispatchEvent)
+    setContext(KEY_DISPATCH, dispatch)
   }
 
   return {

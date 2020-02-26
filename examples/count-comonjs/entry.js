@@ -17,16 +17,16 @@ const currentCount = ({ useState, useEvent }) => (
   }
 )
 
-createStore(({ withProjection, dispatchEvent }) => {
+createStore(({ withProjection, dispatch }) => {
   withProjection(currentCount).subscribe(count => console.log(count))
   // 0
 
-  dispatchEvent({ type: 'incremented' })
+  dispatch({ type: 'incremented' })
   // 1
 
-  dispatchEvent({ type: 'incremented' })
+  dispatch({ type: 'incremented' })
   // 2
 
-  dispatchEvent({ type: 'decremented' })
+  dispatch({ type: 'decremented' })
   // 1
 })

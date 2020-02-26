@@ -61,20 +61,20 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
-  const dispatchEvent = event => {
+  const dispatch = event => {
     if (typeof event === 'function') {
       return Promise.resolve()
         .then(event)
-        .then(dispatchEvent, error => eventCatcher.error(error))
+        .then(dispatch, error => eventCatcher.error(error))
     }
     if (isObservable(event)) {
       return event.subscribe({
-        next: dispatchEvent,
+        next: dispatch,
         error: error => eventCatcher.error(error),
       })
     }
     if (Array.isArray(event)) {
-      return event.map(dispatchEvent)
+      return event.map(dispatch)
     }
     eventCatcher.next(event)
   }
@@ -87,7 +87,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         addLogger,
         pastEvent$,
         event$,
-        dispatchEvent,
+        dispatch,
         withProjection,
       }),
     )

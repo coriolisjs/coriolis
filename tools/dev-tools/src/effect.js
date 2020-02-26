@@ -8,13 +8,13 @@ import { storeEvent, storeAdded } from './events'
 
 let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
-  let devtoolsDispatchEvent
+  let devtoolsDispatch
 
   destroyDevtoolsStore = createStore(
     createUI(),
     storage,
-    ({ dispatchEvent }) => {
-      devtoolsDispatchEvent = dispatchEvent
+    ({ dispatch }) => {
+      devtoolsDispatch = dispatch
     },
   )
 
@@ -23,7 +23,7 @@ const initDevtoolsEventStore = () => {
     pastEvent$,
     withProjection,
   }) => {
-    devtoolsDispatchEvent(
+    devtoolsDispatch(
       storeAdded({
         storeId,
         storeName,
@@ -32,13 +32,13 @@ const initDevtoolsEventStore = () => {
     )
 
     const aggregatorEventsSubscription = aggregatorEvents.subscribe(event =>
-      devtoolsDispatchEvent(event),
+      devtoolsDispatch(event),
     )
     const pastEventsSubscription = pastEvent$.subscribe(event =>
-      devtoolsDispatchEvent(storeEvent({ storeId, event, isPastEvent: true })),
+      devtoolsDispatch(storeEvent({ storeId, event, isPastEvent: true })),
     )
     const eventsSubscription = event$.subscribe(event =>
-      devtoolsDispatchEvent(storeEvent({ storeId, event })),
+      devtoolsDispatch(storeEvent({ storeId, event })),
     )
 
     return () => {

@@ -4,7 +4,7 @@
   "devDependencies": {
     "node-sass": "^4.12.0",
     "npm-run-all": "^4.1.5",
-    "rollup": "^1.27.10",
+    "rollup": "^1.31.1",
     "rollup-plugin-commonjs": "^10.0.0",
     "rollup-plugin-livereload": "^1.0.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -14,10 +14,10 @@
     "svelte-preprocess": "^3.1.2"
   },
   "dependencies": {
-    "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@coriolis/coriolis": "^1.0.0",
     "@coriolis/dev-tools": "^1.0.0",
     "@coriolis/parametered-projection": "^1.0.0",
+    "@sveltejs/svelte-virtual-list": "^3.0.1",
     "immer": "^5.0.1",
     "sirv-cli": "^0.4.4"
   },

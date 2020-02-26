@@ -22,7 +22,7 @@ export const createUI = () => ({
   addEffect,
   addSource,
   withProjection,
-  dispatchEvent,
+  dispatch,
 }) => {
   addSource(views.map(viewAdded))
 
@@ -65,7 +65,7 @@ export const createUI = () => ({
                 return
               }
 
-              setStoreAPI({ dispatchEvent, withProjection })
+              setStoreAPI({ dispatch, withProjection })
 
               this.app = new Entry({
                 target: this,

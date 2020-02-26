@@ -39,7 +39,7 @@ export const connect = ({ mapProjection = {}, mapProtectedProjection = {}, event
     name: `connected-${component.name}`,
     mixins: [component],
     inject: [
-      'dispatchEvent',
+      'dispatch',
       'withProjection'
     ],
     data: () => initialData,
@@ -69,7 +69,7 @@ export const connect = ({ mapProjection = {}, mapProtectedProjection = {}, event
         this.subscriptions.push(
           ...Object.entries(eventDispatch)
             .map(([eventName, eventBuilder]) =>
-              subscribeEvent(eventName, (...args) => this.dispatchEvent(eventBuilder(...args))))
+              subscribeEvent(eventName, (...args) => this.dispatch(eventBuilder(...args))))
         )
       }
     },

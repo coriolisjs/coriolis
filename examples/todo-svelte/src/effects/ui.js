@@ -12,8 +12,8 @@ const views = {
 
 const viewNames = Object.keys(views)
 
-export const createUi = () => ({ dispatchEvent, withProjection, addEffect }) => {
-  setStoreAPI({ dispatchEvent, withProjection })
+export const createUi = () => ({ dispatch, withProjection, addEffect }) => {
+  setStoreAPI({ dispatch, withProjection })
 
   addEffect(urlbar(viewNames))
   withProjection(todolist).connect()
