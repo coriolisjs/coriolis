@@ -29,9 +29,9 @@ dev-tools:
       - for each projection call
         - JSON view of arguments of projection call
 
-    - Display commands with there type (function or observable)
-    - mark joined events (dispatched as array)
-
+    - Display commands in event list
+    - Display commands completion in event list
+    - mark joined events (dispatched from the same command)
 
 examples:
   extract todo logic in a separated folder to share this between UI implementations

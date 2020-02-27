@@ -1,10 +1,10 @@
-import { Subject, merge, noop, identity, EMPTY } from 'rxjs'
-import { concat, map, tap } from 'rxjs/operators'
+import { Subject, merge, noop, identity, EMPTY, of } from 'rxjs'
+import { concat, map, tap, mergeMap } from 'rxjs/operators'
 
 import { lossless } from './lib/rx/operator/lossless'
 import { throwFalsy } from './lib/function/throwFalsy'
 import { uniqSymbol } from './lib/symbol/uniqSymbol'
-import { isValidEvent } from './lib/event/isValidEvent'
+import { isValidEvent, isCommand } from './lib/event/isValidEvent'
 import { getTimestamp } from './lib/time/timestamp'
 
 /*
@@ -62,10 +62,16 @@ export const createEventSubject = (
   }
 
   const startoverNewevent$ = newevent$.pipe(
+    lossless,
+
+    // commands are functions returning an observable of events
+    // those events will be sent on newevent$ so they gets through the complet event handling process
+    // command execution must be done after lossless bufferisation to keep chronology
+    mergeMap(event => (isCommand(event) ? event() : of(event))),
+
     // Ensuring event's shape helps keeping control
     tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
     map(preventLoops()),
-    lossless,
 
     // stampEvent and eventEnhancer are both included after lossless operator
     // to ensure it executes after all past events are done

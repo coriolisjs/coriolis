@@ -1,8 +1,18 @@
-import { Subject, isObservable, noop } from 'rxjs'
-import { filter, shareReplay, skipUntil, take, takeUntil } from 'rxjs/operators'
+import { Subject, noop, of } from 'rxjs'
+import {
+  filter,
+  shareReplay,
+  skipUntil,
+  take,
+  takeUntil,
+  mergeMap,
+  tap,
+} from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
+import { asObservable } from './lib/rx/asObservable'
 import { payloadEquals } from './lib/event/payloadEquals'
+import { isCommand } from './lib/event/isValidEvent'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
@@ -61,22 +71,44 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
+  const commandExecutor = command => () =>
+    asObservable(
+      command({
+        addEffect,
+        addLogger,
+        event$,
+        dispatch,
+        withProjection,
+      }),
+    ).pipe(
+      mergeMap(event =>
+        isCommand(event) ? commandExecutor(event)() : of(event),
+      ),
+    )
+
+  const monitoredCommandExecutor = command => {
+    const finalExecutor = commandExecutor(command)
+    let executor
+    const executionPromise = new Promise((resolve, reject) => {
+      executor = () =>
+        finalExecutor().pipe(tap({ error: reject, complete: resolve }))
+    })
+
+    return {
+      executor,
+      executionPromise,
+    }
+  }
+
   const dispatch = event => {
-    if (typeof event === 'function') {
-      return Promise.resolve()
-        .then(event)
-        .then(dispatch, error => eventCatcher.error(error))
+    if (isCommand(event)) {
+      const { executor, executionPromise } = monitoredCommandExecutor(event)
+
+      eventCatcher.next(executor)
+      return executionPromise
     }
-    if (isObservable(event)) {
-      return event.subscribe({
-        next: dispatch,
-        error: error => eventCatcher.error(error),
-      })
-    }
-    if (Array.isArray(event)) {
-      return event.map(dispatch)
-    }
-    eventCatcher.next(event)
+
+    return eventCatcher.next(event)
   }
 
   const addEffect = effect =>
