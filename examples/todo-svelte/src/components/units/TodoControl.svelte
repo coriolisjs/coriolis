@@ -1,29 +1,24 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { added, filter, filters } from '../../events/todo'
+  import { addItem } from '../../commands/todo'
+  import { filter, filters } from '../../events/todo'
   import { todolistFilterName } from '../../projections/todo'
 
-  const dispatchAdded = createDispatch(added)
+  const dispatchAddItem = createDispatch(addItem)
   const dispatchFilter = createDispatch(filter)
 
   let filterName$ = withProjection(todolistFilterName)
   let textInput
   let textInputValue
 
-  const addItem = () => {
-    if (!textInputValue) {
-      return
-    }
-
-    dispatchAdded({ text: textInputValue })
+  const submitItem = () => {
+    dispatchAddItem(textInputValue)
     textInputValue = ''
     textInput.focus()
   }
 
-  const setFilter = filterName => {
-    dispatchFilter({ filterName })
-  }
+  const setFilter = filterName => dispatchFilter({ filterName })
 
   const focus = el => el.focus()
 </script>
@@ -46,7 +41,7 @@
 </style>
 
 <div>
-  <form on:submit|preventDefault={addItem}>
+  <form on:submit|preventDefault={submitItem}>
     <input
       type="text"
       placeholder="What should I do ?"
