@@ -8,7 +8,5 @@ export const createSimpleEvent = createEventBuilder(
   ({ sender }) => sender && { sender }
 )
 
-export const requiredDouble = createEventBuilder('user required to double count')
-
 export const incremented = createEventBuilder('user incremented count')
 export const decremented = createEventBuilder('user decremented count')

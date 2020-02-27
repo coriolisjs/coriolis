@@ -1,7 +1,7 @@
 import { createStore } from '@coriolis/coriolis'
 
 import { createMinimumEvent, createSimpleEvent } from './events'
-import { myDoublingEffect, myDisplayEffect, myUserEffect } from './effects'
+import { myDisplayEffect, myUserEffect } from './effects'
 
 
 export const exposeSimpleEvents = () => {
@@ -30,4 +30,4 @@ export const exposeSimpleEvents = () => {
 
 
 export const exposeDoublingEffect = () =>
-  createStore(myDoublingEffect, myDisplayEffect, myUserEffect)
+  createStore(myDisplayEffect, myUserEffect)

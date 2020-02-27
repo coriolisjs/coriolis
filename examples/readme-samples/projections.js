@@ -1,4 +1,4 @@
-import { incremented, decremented, requiredDouble } from './events'
+import { incremented, decremented } from './events'
 
 export const currentCount = ({ useState, useEvent }) => (
   // Initial value for state should be defined here
@@ -34,5 +34,3 @@ export const moreComplexProjection = ({ useProjection }) => (
     lastType
   })
 )
-
-export const lastRequiredDouble = ({ useEvent }) => (useEvent(requiredDouble), event => event)

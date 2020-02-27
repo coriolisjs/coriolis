@@ -166,8 +166,6 @@ export const createSimpleEvent = createEventBuilder(
   ({ sender }) => sender && { sender }
 )
 
-export const requiredDouble = createEventBuilder('user required to double count')
-
 export const incremented = createEventBuilder('user incremented count')
 export const decremented = createEventBuilder('user decremented count')
 
@@ -254,7 +252,7 @@ Petits exemples de projections de différents types:
 ```javascript
 // {!examples/readme-samples/projections.js}
 
-import { incremented, decremented, requiredDouble } from './events'
+import { incremented, decremented } from './events'
 
 export const currentCount = ({ useState, useEvent }) => (
   // Initial value for state should be defined here
@@ -291,8 +289,6 @@ export const moreComplexProjection = ({ useProjection }) => (
   })
 )
 
-export const lastRequiredDouble = ({ useEvent }) => (useEvent(requiredDouble), event => event)
-
 ```
 
 Il faudrait ici expliquer le choix du format de définition des fonctions de projection. Ça viendra bientôt.
@@ -315,19 +311,9 @@ Cette fonction sera en charge de définir le comportement de l'application en fo
 ```javascript
 // {!examples/readme-samples/effects.js}
 
-import { currentCount, lastRequiredDouble } from './projections'
-import { incremented, decremented, requiredDouble } from './events'
-
-export const myDoublingEffect = ({ withProjection, dispatch }) => {
-  const currentCount$ = withProjection(currentCount)
-
-  withProjection(lastRequiredDouble).subscribe(() => {
-    const count = currentCount$.value
-    for (let i = 0; i < count; i++) {
-      dispatch(incremented())
-    }
-  })
-}
+import { currentCount } from './projections'
+import { incremented, decremented } from './events'
+import { double } from './commands'
 
 export const myDisplayEffect = ({ withProjection }) => {
   withProjection(currentCount).subscribe(count => console.log('Current count', count))
@@ -341,7 +327,7 @@ export const myUserEffect = ({ dispatch }) => {
   dispatch(incremented())
   // Current count 2
 
-  dispatch(requiredDouble())
+  dispatch(double)
   // Current count 3
   // Current count 4
 
