@@ -4,7 +4,7 @@ English documentation coming soon
 
 ## Qu'est-ce que c'est ?
 
-Coriolis est une librairie Javascript permettant de mettre en place un *store d'events* alimentant des *effets* s'appuyant sur des *projections* (une projection est un état déduit de différents *events*)
+Coriolis est une librairie Javascript permettant de mettre en place un **store d'events** alimentant des **effets** s'appuyant sur des **projections** (une projection est un état déduit de différents **events**)
 
 Cette librairie vous aidera à créer vos applications selon les concepts d'Event Sourcing et de Domain Driven Design.
 
@@ -18,7 +18,7 @@ Elle permet entre autre de distinguer proprement différentes typologies de logi
 
 ## Influences
 
-La conception de Coriolis a été inspirée par Redux, en cherchant à donner le rôle de *single source of truth* non pas au state mais au flux d'events, et ainsi rejoindre le concept d'Event Sourcing.
+La conception de Coriolis a été inspirée par Redux, en cherchant à donner le rôle de **single source of truth** non pas au state mais au flux d'events, et ainsi rejoindre le concept d'Event Sourcing.
 
 ## Installation
 
@@ -67,7 +67,6 @@ createStore(({ withProjection, dispatch }) => {
   dispatch({ type: 'decremented' })
   // 1
 })
-
 ```
 
 CommonJS:
@@ -107,7 +106,6 @@ createStore(({ withProjection, dispatch }) => {
   dispatch({ type: 'decremented' })
   // 1
 })
-
 ```
 
 ## Utilisation
@@ -163,12 +161,11 @@ export const createMinimumEvent = createEventBuilder('sent a minimal event')
 export const createSimpleEvent = createEventBuilder(
   'sent a simple event',
   ({ message }) => message,
-  ({ sender }) => sender && { sender }
+  ({ sender }) => sender && { sender },
 )
 
 export const incremented = createEventBuilder('user incremented count')
 export const decremented = createEventBuilder('user decremented count')
-
 ```
 
 ```javascript
@@ -192,7 +189,7 @@ createSimpleEvent({ message: new Error('Could not be that simple') })
 
 createSimpleEvent({
   message: 'answer me if you got it',
-  sender: 'Nico'
+  sender: 'Nico',
 })
 // {
 //   type: 'sent a simple event',
@@ -207,13 +204,11 @@ createMinimumEvent.toString()
 
 createSimpleEvent.toString()
 // 'sent a simple event'
-
 ```
 
 Les builder d'event créés par `createEventBuilder` exposent le type d'event associé via la méthode `toString()`. Il est donc facile d'utiliser ces types d'events dans une projection par exemple.
 
 `createEventBuilder` est très fortement inspiré de [redux-actions](https://github.com/redux-utilities/redux-actions)
-
 
 ## Définition d'une projection
 
@@ -237,7 +232,6 @@ const projection = ({ setName, useState, useEvent, useProjection }) => (
   useState({}), // Using a state is not mandatory, but it is usually necessary
   useEvent(), // You'll need to get events in at least one projection
   useProjection(anyProjection), // other projections are aggregating great states, let's use those
-
   // Here comes the function that defines the projection
   // This function will receive all we defined above
   (state, event, anyProjectionCurrentValue) => {
@@ -259,9 +253,7 @@ export const currentCount = ({ useState, useEvent }) => (
   useState(0),
   // Here we filter events we will get
   useEvent(incremented, decremented),
-  (count, { type }) => type === incremented.toString()
-    ? count + 1
-    : count - 1
+  (count, { type }) => (type === incremented.toString() ? count + 1 : count - 1)
 )
 
 export const eventsNumber = ({ useState, useEvent }) => (
@@ -274,8 +266,7 @@ export const eventsNumber = ({ useState, useEvent }) => (
 
 export const lastEventType = ({ useEvent }) => (
   // For this projection, no need for a state, just events
-  useEvent(),
-  event => event.type
+  useEvent(), event => event.type
 )
 
 export const moreComplexProjection = ({ useProjection }) => (
@@ -285,14 +276,12 @@ export const moreComplexProjection = ({ useProjection }) => (
   (currentCountValue, eventsNumber, lastType) => ({
     currentCountValue,
     eventsNumber,
-    lastType
+    lastType,
   })
 )
-
 ```
 
 Il faudrait ici expliquer le choix du format de définition des fonctions de projection. Ça viendra bientôt.
-
 
 ### Définition d'un effet
 
@@ -316,7 +305,9 @@ import { incremented, decremented } from './events'
 import { double } from './commands'
 
 export const myDisplayEffect = ({ withProjection }) => {
-  withProjection(currentCount).subscribe(count => console.log('Current count', count))
+  withProjection(currentCount).subscribe(count =>
+    console.log('Current count', count),
+  )
   // Immediately logs "Current count 0", than other count values on each change
 }
 
@@ -334,7 +325,6 @@ export const myUserEffect = ({ dispatch }) => {
   dispatch(decremented())
   // Current count 3
 }
-
 ```
 
 ## Motivations
@@ -346,8 +336,6 @@ Une motivation majeur avec Coriolis est d'aider à construire un code d'applicat
 - La définition d'un effet peut faire appel à d'autres effets, favorisant ainsi une construction modulaire.
 
 - La définition d'un effet a accès directement à toute projection et tout event (passé ou nouveau), et peut invoquer des events passés, déclarer de nouveaux events, appliquer des stratégies de stockage d'events et ajouter d'autres effets
-
-
 
 ## A la suite, un ensemble de brouillon qu'il reste à clarifier (coming as soon as possible)
 
@@ -449,7 +437,6 @@ Coriolis construira à partir de la définition d'une projection un
   - metaBuilder est optionnel
   - payloadBuilder est optionnel, on peut uniquement définir un type
   - payloadBuilder par défaut est identity
-
 
 ### Définition de projection sous forme de reducer:
 
