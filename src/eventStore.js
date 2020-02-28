@@ -6,11 +6,11 @@ import {
   take,
   takeUntil,
   mergeMap,
-  tap,
 } from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { asObservable } from './lib/rx/asObservable'
+import { promiseObservable } from './lib/rx/promiseObservable'
 import { payloadEquals } from './lib/event/payloadEquals'
 import { isCommand } from './lib/event/isValidEvent'
 
@@ -71,7 +71,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
-  const commandExecutor = command => () =>
+  const commandRunner = command => () =>
     asObservable(
       command({
         addEffect,
@@ -82,29 +82,17 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
       }),
     ).pipe(
       mergeMap(event =>
-        isCommand(event) ? commandExecutor(event)() : of(event),
+        isCommand(event) ? commandRunner(event)() : of(event),
       ),
     )
 
-  const monitoredCommandExecutor = command => {
-    const finalExecutor = commandExecutor(command)
-    let executor
-    const executionPromise = new Promise((resolve, reject) => {
-      executor = () =>
-        finalExecutor().pipe(tap({ error: reject, complete: resolve }))
-    })
-
-    return {
-      executor,
-      executionPromise,
-    }
-  }
-
   const dispatch = event => {
     if (isCommand(event)) {
-      const { executor, executionPromise } = monitoredCommandExecutor(event)
+      const { execute: command, executionPromise } = promiseObservable(
+        commandRunner(event),
+      )
 
-      eventCatcher.next(executor)
+      eventCatcher.next(command)
       return executionPromise
     }
 
