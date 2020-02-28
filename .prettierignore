@@ -1,3 +1,5 @@
 dist
 examples
 tools
+coverage
+.nyc_output
