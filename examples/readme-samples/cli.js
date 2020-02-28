@@ -33,4 +33,4 @@ if (!commandName || !commands[commandName]) {
   process.exit(1)
 }
 
-commands[commandName](process.argv.slice(3));
+commands[commandName](process.argv.slice(3))

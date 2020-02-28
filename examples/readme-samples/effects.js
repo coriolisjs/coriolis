@@ -3,8 +3,10 @@ import { incremented, decremented } from './events'
 import { double } from './commands'
 
 export const myDisplayEffect = ({ withProjection }) => {
-  withProjection(currentCount).subscribe(count => console.log('Current count', count))
-  // Immediately logs "Current count 0", than other count values on each change
+  withProjection(currentCount).subscribe(
+    count => console.log('Current count', count),
+    // Immediately logs "Current count 0", than other count values on each change
+  )
 }
 
 export const myUserEffect = ({ dispatch }) => {

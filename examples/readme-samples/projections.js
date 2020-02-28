@@ -5,9 +5,7 @@ export const currentCount = ({ useState, useEvent }) => (
   useState(0),
   // Here we filter events we will get
   useEvent(incremented, decremented),
-  (count, { type }) => type === incremented.toString()
-    ? count + 1
-    : count - 1
+  (count, { type }) => (type === incremented.toString() ? count + 1 : count - 1)
 )
 
 export const eventsNumber = ({ useState, useEvent }) => (
@@ -20,8 +18,7 @@ export const eventsNumber = ({ useState, useEvent }) => (
 
 export const lastEventType = ({ useEvent }) => (
   // For this projection, no need for a state, just events
-  useEvent(),
-  event => event.type
+  useEvent(), event => event.type
 )
 
 export const moreComplexProjection = ({ useProjection }) => (
@@ -31,6 +28,6 @@ export const moreComplexProjection = ({ useProjection }) => (
   (currentCountValue, eventsNumber, lastType) => ({
     currentCountValue,
     eventsNumber,
-    lastType
+    lastType,
   })
 )

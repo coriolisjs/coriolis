@@ -5,7 +5,7 @@ export const createMinimumEvent = createEventBuilder('sent a minimal event')
 export const createSimpleEvent = createEventBuilder(
   'sent a simple event',
   ({ message }) => message,
-  ({ sender }) => sender && { sender }
+  ({ sender }) => sender && { sender },
 )
 
 export const incremented = createEventBuilder('user incremented count')
