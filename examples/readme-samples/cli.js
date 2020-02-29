@@ -19,15 +19,15 @@ const commands = {
   help: displayUsage,
 }
 
-if (process.argv.some(isHelpParam)) {
+const commandName = process.argv[2]
+
+if (!commandName || process.argv.some(isHelpParam)) {
   displayUsage()
   process.exit(0)
 }
 
-const commandName = process.argv[2]
-
-if (!commandName || !commands[commandName]) {
-  console.error(`unknown command "${commandName}"`)
+if (!commands[commandName]) {
+  console.error(`Unknown command "${commandName}"`)
   displayUsage()
 
   process.exit(1)
