@@ -1,6 +1,6 @@
 {
   "name": "@coriolis/dev-tools",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha1",
   "description": "Dev tools for coriolis",
   "license": "GPL-3.0",
   "author": "Nicolas Deveaud",
@@ -47,9 +47,9 @@
     "svelte-preprocess": "^3.4.0"
   },
   "dependencies": {
-    "@coriolis/coriolis": "^1.0.0",
-    "@coriolis/coriolis-svelte": "^1.0.0",
-    "@coriolis/parametered-projection": "^1.0.0",
+    "@coriolis/coriolis": "^1.0.0-alpha4",
+    "@coriolis/coriolis-svelte": "^1.0.0-alpha1",
+    "@coriolis/parametered-projection": "^1.0.0-alpha1",
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@webcomponents/custom-elements": "^1.3.2",
     "immer": "^5.3.5",

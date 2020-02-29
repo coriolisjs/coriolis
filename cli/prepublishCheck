@@ -1,0 +1,93 @@
+#!/usr/bin/env node
+
+const { join } = require('path')
+const {
+  promises: { readdir, readFile },
+} = require('fs')
+
+const pkg = require('../package.json')
+
+const examplesFolder = './examples'
+const toolsFolder = './tools'
+const packageJsonFileName = 'package.json'
+
+const identity = arg => arg
+
+const getVersion = packageDetails => ({
+  name: packageDetails.pkg.name,
+  version: packageDetails.pkg.version,
+})
+
+const checkPackage = versionsToCheck => packageDetails => {
+  return versionsToCheck.map(({ name, version }) => {
+    const dependencyVersion =
+      (packageDetails.pkg.dependencies &&
+        packageDetails.pkg.dependencies[name]) ||
+      (packageDetails.pkg.devDependencies &&
+        packageDetails.pkg.devDependencies[name])
+
+    if (!dependencyVersion) {
+      return
+    }
+
+    if (dependencyVersion !== `^${version}`) {
+      return `${packageDetails.pkg.name} has outdated ${name} version: "${packageDetails.pkg.dependencies[name]}" should be "^${version}"`
+    }
+  })
+}
+
+const loadJSON = path =>
+  readFile(path, 'utf-8').then(content => JSON.parse(content))
+
+const getPackageInfos = folder =>
+  loadJSON(join(folder, packageJsonFileName)).then(pkg => ({
+    path: folder,
+    pkg,
+  }))
+
+const readPackagesInfos = folder => files =>
+  Promise.all(
+    files
+      .filter(file => file.isDirectory())
+      .map(file =>
+        getPackageInfos(join(folder, file.name)).catch(() => undefined),
+      ),
+  )
+
+const findPackagesInfos = folder =>
+  readdir(folder, { withFileTypes: true }).then(readPackagesInfos(folder))
+
+const reducePromisesConcat = (acc, prom) =>
+  Promise.all([acc, prom]).then(results => [].concat(...results))
+
+const checkSubprojectsPackages = (folders, test) =>
+  folders
+    .map(findPackagesInfos)
+    .reduce(reducePromisesConcat)
+    .then(packages =>
+      packages
+        .filter(identity)
+        .map(test)
+        .reduce((acc, list) => acc.concat(list), [])
+        .filter(identity),
+    )
+
+checkSubprojectsPackages([toolsFolder], getVersion)
+  .then(versions =>
+    checkSubprojectsPackages(
+      [examplesFolder, toolsFolder],
+      checkPackage([getVersion({ pkg }), ...versions]),
+    ),
+  )
+  .then(warningsList => {
+    // eslint-disable-next-line promise/always-return
+    if (!warningsList.length) {
+      return
+    }
+    console.log(warningsList)
+    process.exitCode = 1
+  })
+  .catch(error => {
+    console.error(error)
+    process.exitCode = 2
+  })

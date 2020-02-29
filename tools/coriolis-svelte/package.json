@@ -1,6 +1,6 @@
 {
   "name": "@coriolis/coriolis-svelte",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha1",
   "description": "coriolis wrapper for Svelte",
   "license": "GPL-3.0",
   "author": "Nicolas Deveaud",
