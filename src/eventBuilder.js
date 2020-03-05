@@ -1,13 +1,18 @@
 const identity = arg => arg
 
+const stringifyTo = (type, obj) => {
+  obj.toString = () => type
+
+  return obj
+}
+
 export const createEventBuilder = (
   type,
   payloadBuilder = identity,
   metaBuilder,
-) => {
-  const empty = {}
-
-  const eventBuilder = (args = empty) => {
+  empty = {},
+) =>
+  stringifyTo(type, (args = empty) => {
     const event = { type }
     let payload
     let meta
@@ -41,9 +46,4 @@ export const createEventBuilder = (
     }
 
     return event
-  }
-
-  eventBuilder.toString = () => type
-
-  return eventBuilder
-}
+  })
