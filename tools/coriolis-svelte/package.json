@@ -7,7 +7,7 @@
   "main": "cjs/provideStore.js",
   "module": "provideStore.js",
   "scripts": {
-    "clear:all": "rm -rf node_modules dist",
+    "clear:all": "rm -rf node_modules",
     "clear": "rm -rf cjs",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md,?(s)css,html},.*.{js?(on),md,?(s)css,html}}' --write && eslint . --fix",
