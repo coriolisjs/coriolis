@@ -3,10 +3,8 @@ import { currentCount } from './projections'
 
 const arrayOf = (length, builder) => Array.from({ length }).map(builder)
 
-export const double = ({ withProjection }) => {
-  const count = withProjection(currentCount).value
+export const double = ({ getProjectionValue }) => {
+  const count = getProjectionValue(currentCount)
 
-  const events = arrayOf(count, incremented)
-
-  return events
+  return arrayOf(count, incremented)
 }

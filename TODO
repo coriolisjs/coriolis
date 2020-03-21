@@ -1,15 +1,30 @@
 core
   make package publishable:
-    👍 can be installed as dep for a backend project
-    👍 can be installed as dep for a front-end project
-    👍 can be used in an esmodule with webpack project
-    👍 can be used in an esmodule with rollup project
+      👍   can be installed as dep for a backend project
+      👍   can be installed as dep for a front-end project
+      👍   can be used in an esmodule with webpack project
+      👍   can be used in an esmodule with rollup project
+      👍   can be used in a commonJS project
     can be used in a nodeJS native esmodule project
     can be used in a umd project
-    👍 can be used in a commonJS project
     can be loaded directly in a browser as a standalone script
 
-  Add commands usage in readme
+
+  add typescript definitions
+
+  readme
+    Improves commands usage in readme
+    API doc
+    section "comment aider ?"
+      traduction de doc
+      reviews (https://pkgreview.dev/npm/@coriolis%2Fcoriolis)
+      fork
+      star
+      watch
+
+  Compte mastodon
+
+  CI checks tests & builds
 
 dev-tools:
   event list:
@@ -40,3 +55,9 @@ examples:
   make todo examples match todomvc standards
 
   backend exemples
+
+
+website:
+  contenu de readme
+  lien vers github
+  lien vers npm

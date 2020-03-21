@@ -91,3 +91,5 @@ checkSubprojectsPackages([toolsFolder], getVersion)
     console.error(error)
     process.exitCode = 2
   })
+
+console.log('Check outdated packages in all projects')

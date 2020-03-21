@@ -1,6 +1,13 @@
 # Coriolis
 
-English documentation coming soon
+![latest version](https://img.shields.io/npm/v/@coriolis/coriolis?style=flat-square)
+![license](https://img.shields.io/npm/l/@coriolis/coriolis?style=flat-square)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/coriolisjs/coriolis.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/coriolisjs/coriolis/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/coriolisjs/coriolis.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/coriolisjs/coriolis/context:javascript)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4144c518ea0d4ef8af2d8061c94e6788)](https://www.codacy.com/gh/coriolisjs/coriolis?utm_source=github.com&utm_medium=referral&utm_content=coriolisjs/coriolis&utm_campaign=Badge_Grade)
+[![Known Vulnerabilities](https://snyk.io/test/github/coriolisjs/coriolis/badge.svg?targetFile=package.json)](https://snyk.io/test/github/coriolisjs/coriolis?targetFile=package.json)
+
+English documentation coming soon, any help welcome :wink:
 
 ## Qu'est-ce que c'est ?
 
@@ -22,13 +29,15 @@ La conception de Coriolis a été inspirée par Redux, en cherchant à donner le
 
 ## Installation
 
+:information_source: Le cycle de vie respectera (dés la periode alpha finie) la [logique de version semver](https://semver.org/lang/fr/)
+
 Pour installer Coriolis:
 
 ```javascript
 npm install --save @coriolis/coriolis
 ```
 
-Le module est fourni sous deux formes: CommonJS ou ES modules, suivant la manière dont vous le chargez
+Le module est fourni sous deux formes: CommonJS ou ES modules.
 
 ESModule:
 
@@ -111,6 +120,12 @@ createStore(({ withProjection, dispatch }) => {
 ## Utilisation
 
 ### Définition d'un event
+
+Un event doit représenter de manière factuelle une variation ayant eu lieu dans l'application. Ces informations factuelles sont donc immuables (ce fait a eu lieu, cela ne peut pas changer). L'accumulation de ces faits immuables sera la source de toute vérité dans notre application et garantira une lisibilité et une grande capacité d'évolution.
+
+:joke_icon: Un event pourrait aussi être désigné comme un fait. Event sourcing pourrait être traduit en français par programation par le fait.
+
+Étant donné qu'un event représente une variation ayant eu lieu, il est préférable de toujours nommer les events sous forme d'un verbe au passé.
 
 Un event est un simple objet respectant les critères suivant:
 
@@ -210,7 +225,41 @@ Les builder d'event créés par `createEventBuilder` exposent le type d'event as
 
 `createEventBuilder` est très fortement inspiré de [redux-actions](https://github.com/redux-utilities/redux-actions)
 
-## Définition d'une projection
+### Définition d'une commande
+
+Nous avons vu la création d'objets events. Il faut maintenant s'interesser aux règles métier aboutissant à la création de ces events.
+
+L'exemple classique est lors d'une action utilisateur: Avant d'aboutir à un event, il est surement necessaire de faire quelques validations. Ces validations définissent les contraintes métier que vous souhaitez appliquer via votre application, c'est donc une part essentiel de votre code source.
+
+Il est important d'écrire ces règles de manière clair et isolé. C'est le rôle des commandes.
+
+Une comande est une simple fonction destinée à créer (ou non) des events. Cette fonction peut être asynchrone (peut retourner une promesse ou un Observable) et abouti à un ou plusieurs event (ou commande).
+
+```javascript
+// {!examples/readme-samples/commands.js}
+
+import { incremented } from './events'
+import { currentCount } from './projections'
+
+const arrayOf = (length, builder) => Array.from({ length }).map(builder)
+
+export const double = ({ getProjectionValue }) => {
+  const count = getProjectionValue(currentCount)
+
+  return arrayOf(count, incremented)
+}
+```
+
+Une commande sera exécutée en respectant l'ordre d'émission dans le flux d'events. Donc les events émis en synchrone par une commande se positionneront à la place de cette commande dans le flux d'events.
+
+#### API des commandes
+
+Lors de son exécution, une commande recevra en paramètre les fonctions suivantes:
+
+- getProjectionValue(projection): cette fonction retourne la valeur courante de la projection donnée
+- addEffect(effect): cette fonction permet d'activer un effet par le biais d'une commande (voir definition des effets plus bas)
+
+### Définition d'une projection
 
 Une projection permet de recueillir des données provenant des events afin de disposer de toutes les données nécessaire pour ensuite définir les comportements de votre application dans les effets.
 
@@ -305,10 +354,10 @@ import { incremented, decremented } from './events'
 import { double } from './commands'
 
 export const myDisplayEffect = ({ withProjection }) => {
-  withProjection(currentCount).subscribe(count =>
-    console.log('Current count', count),
+  withProjection(currentCount).subscribe(
+    count => console.log('Current count', count),
+    // Immediately logs "Current count 0", than other count values on each change
   )
-  // Immediately logs "Current count 0", than other count values on each change
 }
 
 export const myUserEffect = ({ dispatch }) => {
