@@ -71,29 +71,34 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
-  const commandRunner = command => () =>
+  const commandRunner = (command, removeSubject) => () =>
     asObservable(
       command({
-        addEffect,
-        addLogger,
-        event$,
-        dispatch,
-        withProjection,
+        // FIXME: How one would remove an effect added this way ?
+        addEffect: effect => {
+          const removeEffect = addEffect(effect)
+
+          removeSubject.next(removeEffect)
+
+          return removeEffect
+        },
+        getProjectionValue: projection => withProjection(projection).getValue(),
       }),
     ).pipe(
       mergeMap(event =>
-        isCommand(event) ? commandRunner(event)() : of(event),
+        isCommand(event) ? commandRunner(event, removeSubject)() : of(event),
       ),
     )
 
   const dispatch = event => {
     if (isCommand(event)) {
+      const removeSubject = new Subject()
       const { execute: command, executionPromise } = promiseObservable(
-        commandRunner(event),
+        commandRunner(event, removeSubject),
       )
 
       eventCatcher.next(command)
-      return executionPromise
+      return executionPromise.then(() => removeSubject)
     }
 
     return eventCatcher.next(event)
