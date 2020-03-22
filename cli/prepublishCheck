@@ -8,7 +8,6 @@ const {
 const pkg = require('../package.json')
 
 const examplesFolder = './examples'
-const toolsFolder = './tools'
 const packageJsonFileName = 'package.json'
 
 const identity = arg => arg
@@ -72,13 +71,7 @@ const checkSubprojectsPackages = (folders, test) =>
         .filter(identity),
     )
 
-checkSubprojectsPackages([toolsFolder], getVersion)
-  .then(versions =>
-    checkSubprojectsPackages(
-      [examplesFolder, toolsFolder],
-      checkPackage([getVersion({ pkg }), ...versions]),
-    ),
-  )
+checkSubprojectsPackages([examplesFolder], checkPackage([getVersion({ pkg })]))
   .then(warningsList => {
     // eslint-disable-next-line promise/always-return
     if (!warningsList.length) {
@@ -92,4 +85,4 @@ checkSubprojectsPackages([toolsFolder], getVersion)
     process.exitCode = 2
   })
 
-console.log('Check outdated packages in all projects')
+console.log('Check outdated packages in example projects')
