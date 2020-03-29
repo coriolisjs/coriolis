@@ -33,7 +33,7 @@ export const matchCoriolisAggregatorSetupAPI = sinon.match({
   useValue: sinon.match.func,
 })
 
-export const createTrackedObservable = observable => {
+export const createTrackedObservable = (observable) => {
   const unsubscribeSpy = sinon.spy()
   const subscribeSpy = sinon.stub().returns(unsubscribeSpy)
 
@@ -46,13 +46,11 @@ export const createTrackedObservable = observable => {
   }
 }
 
-export const randomEventsObservable = Observable.create(observer => {
+export const randomEventsObservable = Observable.create((observer) => {
   let timeout
   const next = () => {
     observer.next({
-      type: Math.random()
-        .toString(36)
-        .substring(2, 15),
+      type: Math.random().toString(36).substring(2, 15),
     })
     timeout = setTimeout(next, Math.random() * 10)
   }

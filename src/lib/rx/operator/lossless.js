@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs'
 
-export const lossless = source => {
+export const lossless = (source) => {
   const buffer = []
   let error
   let completed = false
@@ -9,8 +9,8 @@ export const lossless = source => {
 
   const bufferize = () => {
     bufferSubscription = source.subscribe(
-      event => buffer.push(event),
-      err => {
+      (event) => buffer.push(event),
+      (err) => {
         error = err
       },
       () => {
@@ -21,7 +21,7 @@ export const lossless = source => {
 
   bufferize()
 
-  return Observable.create(observer => {
+  return Observable.create((observer) => {
     let subscription
 
     if (error) {
@@ -45,7 +45,7 @@ export const lossless = source => {
       completed = false
 
       // ⚠ event playback must happen after observer subscription and buffer unsubscription are done
-      eventsToReplay.forEach(event => observer.next(event))
+      eventsToReplay.forEach((event) => observer.next(event))
     }
 
     return () => {

@@ -13,7 +13,7 @@ export const createProjectionWrapperFactory = (
   skipUntil$ = of(true),
   getAggregator = createAggregatorFactory(),
 ) =>
-  createIndex(projection => {
+  createIndex((projection) => {
     const aggregator = getAggregator(projection)
 
     const projection$ = event$.pipe(

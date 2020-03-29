@@ -27,10 +27,10 @@ global.withParams = (parts, ...params) => {
   )
 }
 
-global.useParams = callback => {
+global.useParams = (callback) => {
   const params = lastParams.slice()
 
-  return function(...args) {
+  return function (...args) {
     callback.call(this, ...params, ...args)
   }
 }

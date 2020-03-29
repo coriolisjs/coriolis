@@ -14,7 +14,7 @@ const buildFirstEvent = () => ({
   payload: {},
 })
 
-export const createExtensibleEventSubject = eventEnhancer => {
+export const createExtensibleEventSubject = (eventEnhancer) => {
   const firstEvent = buildFirstEvent()
 
   const {
@@ -27,9 +27,10 @@ export const createExtensibleEventSubject = eventEnhancer => {
     add: addSourceToMainSource,
   } = createExtensibleObservable()
 
-  const { func: addSource, setup: setupAddSource } = variableFunction(source =>
-    addSourceToMainSource(from(source)),
-  )
+  const {
+    func: addSource,
+    setup: setupAddSource,
+  } = variableFunction((source) => addSourceToMainSource(from(source)))
 
   const disableAddSource = () =>
     setupAddSource(() => {

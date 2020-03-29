@@ -17,7 +17,7 @@ import { isCommand } from './lib/event/isValidEvent'
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
 
-export const withSimpleStoreSignature = callback => (_options, ...rest) => {
+export const withSimpleStoreSignature = (callback) => (_options, ...rest) => {
   let options = _options
   let effects
   if (typeof options === 'function') {
@@ -75,22 +75,23 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     asObservable(
       command({
         // FIXME: How one would remove an effect added this way ?
-        addEffect: effect => {
+        addEffect: (effect) => {
           const removeEffect = addEffect(effect)
 
           removeSubject.next(removeEffect)
 
           return removeEffect
         },
-        getProjectionValue: projection => withProjection(projection).getValue(),
+        getProjectionValue: (projection) =>
+          withProjection(projection).getValue(),
       }),
     ).pipe(
-      mergeMap(event =>
+      mergeMap((event) =>
         isCommand(event) ? commandRunner(event, removeSubject)() : of(event),
       ),
     )
 
-  const dispatch = event => {
+  const dispatch = (event) => {
     if (isCommand(event)) {
       const removeSubject = new Subject()
       const { execute: command, executionPromise } = promiseObservable(
@@ -104,7 +105,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     return eventCatcher.next(event)
   }
 
-  const addEffect = effect =>
+  const addEffect = (effect) =>
     simpleUnsub(
       effect({
         addEffect,

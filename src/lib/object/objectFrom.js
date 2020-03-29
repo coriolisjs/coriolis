@@ -1,6 +1,6 @@
 import { getUniqKeyName } from './getUniqKeyName'
 
-export const objectFrom = arr =>
+export const objectFrom = (arr) =>
   arr.reduce(
     (acc, [key, value]) => ({
       ...acc,

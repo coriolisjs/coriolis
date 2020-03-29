@@ -13,12 +13,12 @@ export const eventsNumber = ({ useState, useEvent }) => (
   useState(0),
   // needs each event just to trigger the projection
   useEvent(),
-  state => state + 1
+  (state) => state + 1
 )
 
 export const lastEventType = ({ useEvent }) => (
   // For this projection, no need for a state, just events
-  useEvent(), event => event.type
+  useEvent(), (event) => event.type
 )
 
 export const moreComplexProjection = ({ useProjection }) => (

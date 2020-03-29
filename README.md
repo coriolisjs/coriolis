@@ -64,7 +64,7 @@ const currentCount = ({ useState, useEvent }) => (
 )
 
 createStore(({ withProjection, dispatch }) => {
-  withProjection(currentCount).subscribe(count => console.log(count))
+  withProjection(currentCount).subscribe((count) => console.log(count))
   // 0
 
   dispatch({ type: 'incremented' })
@@ -103,7 +103,7 @@ const currentCount = ({ useState, useEvent }) => (
 )
 
 createStore(({ withProjection, dispatch }) => {
-  withProjection(currentCount).subscribe(count => console.log(count))
+  withProjection(currentCount).subscribe((count) => console.log(count))
   // 0
 
   dispatch({ type: 'incremented' })
@@ -310,12 +310,12 @@ export const eventsNumber = ({ useState, useEvent }) => (
   useState(0),
   // needs each event just to trigger the projection
   useEvent(),
-  state => state + 1
+  (state) => state + 1
 )
 
 export const lastEventType = ({ useEvent }) => (
   // For this projection, no need for a state, just events
-  useEvent(), event => event.type
+  useEvent(), (event) => event.type
 )
 
 export const moreComplexProjection = ({ useProjection }) => (
@@ -355,7 +355,7 @@ import { double } from './commands'
 
 export const myDisplayEffect = ({ withProjection }) => {
   withProjection(currentCount).subscribe(
-    count => console.log('Current count', count),
+    (count) => console.log('Current count', count),
     // Immediately logs "Current count 0", than other count values on each change
   )
 }

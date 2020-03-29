@@ -4,17 +4,17 @@ export const createExtensibleObservable = () => {
   let sources = []
   let sourceManagers = []
 
-  const addSource = source => {
+  const addSource = (source) => {
     sources.push(source)
     sourceManagers.forEach(({ add }) => add(source))
 
     return () => {
-      sources = sources.filter(registered => registered !== source)
+      sources = sources.filter((registered) => registered !== source)
       sourceManagers.forEach(({ remove }) => remove(source))
     }
   }
 
-  const observable = Observable.create(observer => {
+  const observable = Observable.create((observer) => {
     if (!sources.length) {
       observer.complete()
       return noop
@@ -24,7 +24,7 @@ export const createExtensibleObservable = () => {
     let subscriptions = []
     let subscriptionDone = false
 
-    const remove = source => {
+    const remove = (source) => {
       subscriptions = subscriptions.filter(
         ({ source: subscribedSource, subscription: sourceSubscription }) => {
           if (subscribedSource !== source) {
@@ -40,12 +40,12 @@ export const createExtensibleObservable = () => {
       }
     }
 
-    const add = source => {
+    const add = (source) => {
       subscriptions.push({
         source,
         subscription: source.subscribe(
-          event => subject.next(event),
-          error => subject.error(error),
+          (event) => subject.next(event),
+          (error) => subject.error(error),
           () => remove(source),
         ),
       })
@@ -63,7 +63,7 @@ export const createExtensibleObservable = () => {
         sourceSubscription.unsubscribe(),
       )
       sourceManagers = sourceManagers.filter(
-        registered => registered !== sourceManager,
+        (registered) => registered !== sourceManager,
       )
     }
 

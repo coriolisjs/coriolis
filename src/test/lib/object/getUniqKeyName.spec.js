@@ -7,7 +7,7 @@ describe(`getUniqKeyName
       When no key name is given
       Then the result should be ${'unnamed'}
   `,
-    useParams(expected => {
+    useParams((expected) => {
       const result = getUniqKeyName({})
 
       expect(result).to.equal(expected)
@@ -19,7 +19,7 @@ describe(`getUniqKeyName
       When no key name is given
       Then the result should be ${'unnamed-2'}
   `,
-    useParams(expected => {
+    useParams((expected) => {
       const result = getUniqKeyName({ unnamed: true })
 
       expect(result).to.equal(expected)
@@ -31,7 +31,7 @@ describe(`getUniqKeyName
       When no key name is given
       Then the result should be ${'unnamed-3'}
   `,
-    useParams(expected => {
+    useParams((expected) => {
       const result = getUniqKeyName({ unnamed: true, 'unnamed-2': true })
 
       expect(result).to.equal(expected)

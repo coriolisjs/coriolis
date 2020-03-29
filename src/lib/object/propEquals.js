@@ -1,1 +1,2 @@
-export const propEquals = propname => value => obj => obj[propname] === value
+export const propEquals = (propname) => (value) => (obj) =>
+  obj[propname] === value

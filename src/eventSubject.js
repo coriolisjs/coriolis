@@ -10,7 +10,7 @@ import { getTimestamp } from './lib/time/timestamp'
 /*
 Adding a uniq property in every event's metadata, we can ensure each events enters only once
 */
-const preventLoops = (secretKey = uniqSymbol()) => event => {
+const preventLoops = (secretKey = uniqSymbol()) => (event) => {
   if (event.meta && event.meta[secretKey]) {
     throw new Error('Event coming back to source detected')
   }
@@ -29,7 +29,7 @@ const preventLoops = (secretKey = uniqSymbol()) => event => {
 /*
 Adding a time reference for each event helps keeping an accurate view on events flow
 */
-const stampEvent = event => ({
+const stampEvent = (event) => ({
   ...event,
   meta: {
     timestamp: getTimestamp(),
@@ -67,7 +67,7 @@ export const createEventSubject = (
     // commands are functions returning an observable of events
     // those events will be sent on newevent$ so they gets through the complet event handling process
     // command execution must be done after lossless bufferisation to keep chronology
-    mergeMap(event => (isCommand(event) ? event() : of(event))),
+    mergeMap((event) => (isCommand(event) ? event() : of(event))),
 
     // Ensuring event's shape helps keeping control
     tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),

@@ -21,7 +21,7 @@ describe('chain', () => {
 
     expect(result).to.be.undefined()
 
-    spies.forEach(spy => {
+    spies.forEach((spy) => {
       expect(spy).to.have.been.calledWith('arg1', 'arg2', 'arg3')
     })
   })

@@ -3,7 +3,7 @@ const noop = () => {}
 export const variableFunction = (initialBehaviour = noop) => {
   let behaviour = initialBehaviour
 
-  const setup = func => {
+  const setup = (func) => {
     behaviour = func
   }
 

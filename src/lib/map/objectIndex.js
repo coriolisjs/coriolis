@@ -49,7 +49,7 @@ const createValueGetter = (
   return value
 }
 
-export const createIndex = getNotYetIndexed => {
+export const createIndex = (getNotYetIndexed) => {
   let index = new Map()
 
   const get = createValueGetter(index, getNotYetIndexed)

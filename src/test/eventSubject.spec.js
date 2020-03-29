@@ -55,7 +55,9 @@ describe('eventSubject', () => {
       And a subscriber dispatches again this event
       Then an error is raised
   `, () => {
-    const eventsSpy = sinon.stub().callsFake(event => eventSubject.next(event))
+    const eventsSpy = sinon
+      .stub()
+      .callsFake((event) => eventSubject.next(event))
     const errorSpy = sinon.spy()
     const completeSpy = sinon.spy()
 
@@ -138,7 +140,7 @@ describe('eventSubject', () => {
     const eventsSpy = sinon.spy()
     const enhancerMapStub = sinon
       .stub()
-      .callsFake(event => ({ ...event, payload: 'enhanced payload' }))
+      .callsFake((event) => ({ ...event, payload: 'enhanced payload' }))
     const enhancer = map(enhancerMapStub)
 
     const eventSubject = createEventSubject(undefined, undefined, enhancer)
@@ -170,7 +172,7 @@ describe('eventSubject', () => {
     const logSpy = sinon.spy()
     const enhancerStub = sinon
       .stub()
-      .callsFake(map(event => ({ ...event, payload: 'enhanced payload' })))
+      .callsFake(map((event) => ({ ...event, payload: 'enhanced payload' })))
 
     const eventSubject = createEventSubject(undefined, logSpy, enhancerStub)
 

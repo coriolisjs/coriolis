@@ -19,7 +19,7 @@ const createReducerAggregator = (reducer, initialState) => {
   let lastEvent
   let lastState = initialState
 
-  const aggregator = event => {
+  const aggregator = (event) => {
     if (!event) {
       throw new Error('Aggregator called with no event')
     }
@@ -38,7 +38,7 @@ const createReducerAggregator = (reducer, initialState) => {
   return withValueGetter(aggregator, () => lastState)
 }
 
-const throwUnexpectedScope = funcName => () => {
+const throwUnexpectedScope = (funcName) => () => {
   throw new Error(`Unexpected out-of-scope usage of function ${funcName}`)
 }
 
@@ -53,7 +53,7 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     name: undefined,
   }
 
-  const useState = initialValue => {
+  const useState = (initialValue) => {
     if (using.stateIndex !== undefined) {
       throw new Error(
         'useState should be used only once in an projection definition setup',
@@ -72,22 +72,23 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     }
     // flag true if catching all events (means skip filtering interesting events)
     using.allEvents = !eventTypes.length
-    using.eventTypes = eventTypes.map(eventType => eventType.toString())
+    using.eventTypes = eventTypes.map((eventType) => eventType.toString())
 
     using.aggregators.push(identity)
   }
 
-  const useProjection = projection =>
+  const useProjection = (projection) =>
     using.aggregators.push(getAggregator(projection))
 
-  const lazyProjection = projection => {
+  const lazyProjection = (projection) => {
     using.skipIndexes.push(using.aggregators.length)
     using.aggregators.push(getAggregator(projection))
   }
 
-  const useValue = value => using.aggregators.push(withValueGetter(() => value))
+  const useValue = (value) =>
+    using.aggregators.push(withValueGetter(() => value))
 
-  const setName = name => {
+  const setName = (name) => {
     using.name = name
   }
 
@@ -113,7 +114,7 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
   const isNullSetup = () => using.aggregators.length === 0
 
   const getLastValues = () =>
-    using.aggregators.map(aggregator => aggregator.value)
+    using.aggregators.map((aggregator) => aggregator.value)
 
   const usesEvents = () => using.eventTypes !== undefined
 
@@ -122,14 +123,14 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
   const getName = () => using.name
 
   const createValuesGetter = () => {
-    const processAggregators = event =>
-      using.aggregators.map(aggregator => aggregator(event))
+    const processAggregators = (event) =>
+      using.aggregators.map((aggregator) => aggregator(event))
 
     if (using.eventTypes) {
       if (using.allEvents) {
         return processAggregators
       }
-      return event => {
+      return (event) => {
         // values must be generated every time to ensure each aggregator gets all events
         // So even if we return nothing, we have to process this
         const values = processAggregators(event)
@@ -145,7 +146,7 @@ const createProjectionSetupAPI = (getLastState, getAggregator) => {
     }
 
     let lastValues = getLastValues()
-    return event => {
+    return (event) => {
       const values = processAggregators(event)
 
       const anyChange = values.some(
@@ -246,7 +247,7 @@ export const createAggregator = (
 export const createAggregatorFactory = (
   aggregatorBuilder = createAggregator,
 ) => {
-  const factory = createIndex(projection =>
+  const factory = createIndex((projection) =>
     projection === snapshot
       ? getSnapshot
       : aggregatorBuilder(projection, factory.get),
@@ -268,6 +269,6 @@ export const createAggregatorFactory = (
   return factory.get
 }
 
-export const fromReducer = createIndex(reducer => ({ useState, useEvent }) => (
-  useState(), useEvent(), reducer
-)).get
+export const fromReducer = createIndex(
+  (reducer) => ({ useState, useEvent }) => (useState(), useEvent(), reducer),
+).get

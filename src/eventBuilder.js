@@ -1,4 +1,4 @@
-const identity = arg => arg
+const identity = (arg) => arg
 
 const stringifyTo = (type, obj) => {
   obj.toString = () => type

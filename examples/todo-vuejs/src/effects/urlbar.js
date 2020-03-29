@@ -1,3 +1,4 @@
+import { fromReducer } from '@coriolis/coriolis'
 import { subscribeEvent } from '../libs/browser/subscribeEvent'
 
 import { currentView } from '../projections/currentView'
@@ -10,7 +11,7 @@ const getCurrentUrlView = () => location.pathname.replace(/^\//, '')
 export const urlbar = viewNames => ({ addSource, dispatch, withProjection }) => {
   const removeSource = addSource([changed({ view: getCurrentUrlView() || viewNames[0] || UNDEFINED_VIEW_NAME })])
 
-  const projectionSubscription = withProjection(currentView)
+  const projectionSubscription = withProjection(fromReducer(currentView))
     .subscribe(newView => {
       if (newView === getCurrentUrlView()) {
         // view already in url bar, no need to push it

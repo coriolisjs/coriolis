@@ -11,7 +11,7 @@ commands:
 `)
 }
 
-const isHelpParam = param => param === '--help' || param === '-h'
+const isHelpParam = (param) => param === '--help' || param === '-h'
 
 const commands = {
   events: exposeSimpleEvents,

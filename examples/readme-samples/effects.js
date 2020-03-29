@@ -4,7 +4,7 @@ import { double } from './commands'
 
 export const myDisplayEffect = ({ withProjection }) => {
   withProjection(currentCount).subscribe(
-    count => console.log('Current count', count),
+    (count) => console.log('Current count', count),
     // Immediately logs "Current count 0", than other count values on each change
   )
 }
