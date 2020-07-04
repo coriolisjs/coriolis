@@ -1,6 +1,6 @@
 {
   "name": "@coriolis/coriolis",
-  "version": "1.0.0-alpha4",
+  "version": "1.0.0-alpha5",
   "description": "Event sourced effect management",
   "license": "GPL-3.0",
   "author": "Nicolas Deveaud",
