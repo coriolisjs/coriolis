@@ -54,7 +54,7 @@ export const createEventSubject = (
 
   const event$ = pastSource.pipe(
     // in case an past events source provides not-timestamped events, we add
-    // a timestamp here to be sure every event have one
+    // a timestamp here to be sure every event has one
     map(stampEvent),
     eventEnhancer,
     concat(startoverNewevent$),
