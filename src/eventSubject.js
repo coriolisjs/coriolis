@@ -3,39 +3,9 @@ import { concat, map, tap, mergeMap } from 'rxjs/operators'
 
 import { lossless } from './lib/rx/operator/lossless'
 import { throwFalsy } from './lib/function/throwFalsy'
-import { uniqSymbol } from './lib/symbol/uniqSymbol'
 import { isValidEvent, isCommand } from './lib/event/isValidEvent'
-import { getTimestamp } from './lib/time/timestamp'
-
-/*
-Adding a uniq property in every event's metadata, we can ensure each events enters only once
-*/
-const preventLoops = (secretKey = uniqSymbol()) => (event) => {
-  if (event.meta && event.meta[secretKey]) {
-    throw new Error('Event coming back to source detected')
-  }
-
-  return {
-    ...event,
-    meta: Object.defineProperty({ ...event.meta }, secretKey, {
-      configurable: false,
-      enumerable: true,
-      writable: false,
-      value: true,
-    }),
-  }
-}
-
-/*
-Adding a time reference for each event helps keeping an accurate view on events flow
-*/
-const stampEvent = (event) => ({
-  ...event,
-  meta: {
-    timestamp: getTimestamp(),
-    ...event.meta,
-  },
-})
+import { stampEvent } from './lib/event/stampEvent'
+import { preventEventLoops } from './lib/event/preventEventLoops'
 
 /*
 eventSubject behaviour:
@@ -71,7 +41,7 @@ export const createEventSubject = (
 
     // Ensuring event's shape helps keeping control
     tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
-    map(preventLoops()),
+    map(preventEventLoops()),
 
     // stampEvent and eventEnhancer are both included after lossless operator
     // to ensure it executes after all past events are done
