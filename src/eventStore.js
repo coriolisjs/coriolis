@@ -48,11 +48,20 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     isFirstEvent,
   } = createExtensibleEventSubject()
 
+  const addAllEventsEnhancer = (enhancer) => {
+    const removePastEventEnhancer = addPastEventEnhancer(enhancer)
+    const removeEventEnhancer = addEventEnhancer(enhancer)
+
+    return () => {
+      removePastEventEnhancer()
+      removeEventEnhancer()
+    }
+  }
+
   // DEPRECATED: This option is no longer a good way to define an event enhancer
   // prefer using an effect to define enhancers
   if (options.eventEnhancer) {
-    addEventEnhancer(options.eventEnhancer)
-    addPastEventEnhancer(options.eventEnhancer)
+    addAllEventsEnhancer(options.eventEnhancer)
   }
 
   // Use subjects to have single subscription points to connect all together (one for input, one for output)
@@ -119,6 +128,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         addLogger,
         addEventEnhancer,
         addPastEventEnhancer,
+        addAllEventsEnhancer,
         pastEvent$,
         event$,
         dispatch,
