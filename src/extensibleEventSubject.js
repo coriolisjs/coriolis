@@ -34,6 +34,11 @@ export const createExtensibleEventSubject = () => {
     add: addEventEnhancer,
   } = createExtensibleOperator()
 
+  const {
+    operator: pastEventEnhancer,
+    add: addPastEventEnhancer,
+  } = createExtensibleOperator()
+
   const addAnyAsPastSource = (source) => addPastSource(from(source))
 
   const {
@@ -57,6 +62,7 @@ export const createExtensibleEventSubject = () => {
     pastSource.pipe(endWith(firstEvent)),
     logger,
     eventEnhancer,
+    pastEventEnhancer,
   )
 
   return {
@@ -64,6 +70,7 @@ export const createExtensibleEventSubject = () => {
     addLogger,
     addSource: fusableAddPastSource,
     addEventEnhancer,
+    addPastEventEnhancer,
     disableAddSource: disableAddPastSource,
     isFirstEvent,
   }

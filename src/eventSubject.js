@@ -21,6 +21,7 @@ export const createEventSubject = (
   pastSource = EMPTY,
   logObserver = noop,
   eventEnhancer = identity,
+  pastEventEnhancer = identity,
 ) => {
   let newevent$
   const neweventSubject = (newevent$ = new Subject())
@@ -56,7 +57,7 @@ export const createEventSubject = (
     // in case an past events source provides not-timestamped events, we add
     // a timestamp here to be sure every event has one
     map(stampEvent),
-    eventEnhancer,
+    pastEventEnhancer,
     concat(startoverNewevent$),
   )
 
