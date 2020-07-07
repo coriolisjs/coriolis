@@ -3,6 +3,7 @@ import { endWith } from 'rxjs/operators'
 
 import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
+import { createExtensibleOperator } from './lib/rx/operator/extensibleOperator'
 import { variableFunction } from './lib/function/variableFunction'
 import { payloadEquals } from './lib/event/payloadEquals'
 
@@ -16,9 +17,8 @@ const buildFirstEvent = () => ({
   payload: {},
 })
 
-// An extensible eventSubject is an eventSubject with additional functions to add sources and loggers
-// TODO: maybe it could be usefull to be able to add eventEnhancers too
-export const createExtensibleEventSubject = (eventEnhancer) => {
+// An extensible eventSubject is an eventSubject with additional functions to add sources, loggers and eventEnhancers
+export const createExtensibleEventSubject = () => {
   const {
     broadcastSubject: logger,
     addTarget: addLogger,
@@ -29,10 +29,12 @@ export const createExtensibleEventSubject = (eventEnhancer) => {
     add: addPastSource,
   } = createExtensibleObservable()
 
-  const addAnyAsPastSource = (source) => addPastSource(from(source))
+  const {
+    operator: eventEnhancer,
+    add: addEventEnhancer,
+  } = createExtensibleOperator()
 
-  const firstEvent = buildFirstEvent()
-  const isFirstEvent = payloadEquals(firstEvent.payload)
+  const addAnyAsPastSource = (source) => addPastSource(from(source))
 
   const {
     func: fusableAddPastSource,
@@ -43,6 +45,11 @@ export const createExtensibleEventSubject = (eventEnhancer) => {
     changeFusableAddPastSource(() => {
       throw new Error('addSource must be called before all sources completed')
     })
+
+  const firstEvent = buildFirstEvent()
+  // Check is done on payload value, event object itself
+  // would have been changed (adding meta-data for example)
+  const isFirstEvent = payloadEquals(firstEvent.payload)
 
   // From the moment this event source is created, it starts buffering all events it receives
   // until it gets a subscription and passes them
@@ -56,6 +63,7 @@ export const createExtensibleEventSubject = (eventEnhancer) => {
     eventSubject,
     addLogger,
     addSource: fusableAddPastSource,
+    addEventEnhancer,
     disableAddSource: disableAddPastSource,
     isFirstEvent,
   }
