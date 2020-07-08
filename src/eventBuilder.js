@@ -1,4 +1,4 @@
-const identity = (arg) => arg
+import { identity } from './lib/function/identity'
 
 const stringifyTo = (type, obj) => {
   obj.toString = () => type
