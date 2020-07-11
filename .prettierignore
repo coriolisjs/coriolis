@@ -1,4 +1,4 @@
 dist
-examples
 coverage
 .nyc_output
+examples/todo-svelte/public

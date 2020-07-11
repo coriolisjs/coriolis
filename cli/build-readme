@@ -49,8 +49,8 @@ const main = async ({ sourcePath, onInsert, onNoChange }) => {
 console.log(`Re-building ${sourcePath} file\n`)
 main({
   sourcePath,
-  onInsert: file => console.log(`  + insert content from ./${file}`),
+  onInsert: (file) => console.log(`  + insert content from ./${file}`),
   onNoChange: () => console.log('  no changes'),
 })
   .then(() => console.log('\ndone'))
-  .catch(error => console.error(error))
+  .catch((error) => console.error(error))
