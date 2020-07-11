@@ -1,25 +1,33 @@
 import { findAndReplace } from '../libs/array/findAndReplace'
 import { not } from '../libs/function/not'
 
-import { added, removed, done, reset, edited, filter, filters } from '../events/todo'
+import {
+  added,
+  removed,
+  done,
+  reset,
+  edited,
+  filter,
+  filters,
+} from '../events/todo'
 
-const setTodoText = text => item => ({
+const setTodoText = (text) => (item) => ({
   ...item,
-  text
+  text,
 })
 
-const setTodoDone = done => item => ({
+const setTodoDone = (done) => (item) => ({
   ...item,
-  done
+  done,
 })
 
 let nextItemId = 1
-const newTodoItem = item => ({
+const newTodoItem = (item) => ({
   ...item,
-  id: nextItemId++
+  id: nextItemId++,
 })
 
-const hasId = id => item => item.id === id
+const hasId = (id) => (item) => item.id === id
 
 export const todolist = ({ useState, useEvent }) => (
   useState([]),
@@ -31,16 +39,13 @@ export const todolist = ({ useState, useEvent }) => (
 
     switch (type) {
       case added.toString():
-        return [
-          ...state,
-          newTodoItem(payload)
-        ]
+        return [...state, newTodoItem(payload)]
 
       case edited.toString():
         return findAndReplace(
           state,
           hasId(payload.id),
-          setTodoText(payload.text)
+          setTodoText(payload.text),
         )
 
       case done.toString():
@@ -48,7 +53,7 @@ export const todolist = ({ useState, useEvent }) => (
         return findAndReplace(
           state,
           hasId(payload),
-          setTodoDone(type === done.toString())
+          setTodoDone(type === done.toString()),
         )
 
       case removed.toString():

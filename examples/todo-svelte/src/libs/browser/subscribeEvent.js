@@ -1,4 +1,3 @@
-
 export const subscribeEvent = (node, eventName, listener, capture = false) => {
   node.addEventListener(eventName, listener, capture)
 

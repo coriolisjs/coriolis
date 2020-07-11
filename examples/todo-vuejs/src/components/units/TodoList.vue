@@ -20,16 +20,16 @@ import { filteredTodolist } from '../../projections/todo'
 const TodoList = {
   name: 'TodoList',
   components: {
-    TodoItem
+    TodoItem,
   },
   data: () => ({
-    todolist: []
-  })
+    todolist: [],
+  }),
 }
 
 export default connect({
   mapProtectedProjection: {
-    todolist: filteredTodolist
-  }
+    todolist: filteredTodolist,
+  },
 })(TodoList)
 </script>

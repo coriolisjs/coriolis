@@ -13,7 +13,7 @@ export default {
   name: 'About',
   components: {
     AppContainer,
-    ViewLink
-  }
+    ViewLink,
+  },
 }
 </script>

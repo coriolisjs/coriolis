@@ -7,7 +7,7 @@ import { todolist, todolistFilterName } from '../projections/todo'
 
 const views = {
   TodoApp,
-  About
+  About,
 }
 
 const viewNames = Object.keys(views)
@@ -22,8 +22,8 @@ export const createUi = () => ({ dispatch, withProjection, addEffect }) => {
   const app = new Entry({
     target: document.body,
     props: {
-      views
-    }
+      views,
+    },
   })
 
   return () => {

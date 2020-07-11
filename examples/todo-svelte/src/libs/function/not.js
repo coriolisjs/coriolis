@@ -1,2 +1,1 @@
-
-export const not = func => (...args) => !func(...args)
+export const not = (func) => (...args) => !func(...args)

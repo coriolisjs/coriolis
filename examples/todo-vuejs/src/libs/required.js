@@ -1,2 +1,3 @@
-
-export const required = message => { throw new Error(message) }
+export const required = (message) => {
+  throw new Error(message)
+}
