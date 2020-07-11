@@ -1,4 +1,4 @@
-import { Subject, noop, of } from 'rxjs'
+import { Subject, of } from 'rxjs'
 import {
   filter,
   shareReplay,
@@ -13,6 +13,7 @@ import { asObservable } from './lib/rx/asObservable'
 import { promiseObservable } from './lib/rx/promiseObservable'
 import { payloadEquals } from './lib/event/payloadEquals'
 import { isCommand } from './lib/event/isValidEvent'
+import { noop } from './lib/function/noop'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'

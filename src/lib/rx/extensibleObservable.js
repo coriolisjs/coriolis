@@ -1,4 +1,6 @@
-import { Observable, Subject, noop } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
+
+import { noop } from '../function/noop'
 
 export const createExtensibleObservable = () => {
   let sources = []

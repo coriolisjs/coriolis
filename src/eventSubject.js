@@ -1,6 +1,8 @@
-import { Subject, merge, noop, identity, EMPTY, of } from 'rxjs'
+import { Subject, merge, EMPTY, of } from 'rxjs'
 import { concat, map, tap, mergeMap } from 'rxjs/operators'
 
+import { noop } from './lib/function/noop'
+import { identity } from './lib/function/identity'
 import { lossless } from './lib/rx/operator/lossless'
 import { throwFalsy } from './lib/function/throwFalsy'
 import { uniqSymbol } from './lib/symbol/uniqSymbol'
