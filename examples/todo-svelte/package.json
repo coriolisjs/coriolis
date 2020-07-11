@@ -17,6 +17,7 @@
     "@coriolis/coriolis": "*",
     "@coriolis/dev-tools": "*",
     "@coriolis/parametered-projection": "*",
+    "@coriolis/coriolis-svelte": "*",
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "immer": "^6.0.2",
     "sirv-cli": "^0.4.4"
