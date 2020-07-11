@@ -2,7 +2,7 @@
   "name": "coriolis-count-esmodule-example",
   "version": "1.0.0",
   "dependencies": {
-    "@coriolis/coriolis": "^1.0.0-alpha4"
+    "@coriolis/coriolis": "*"
   },
   "scripts": {
     "start": "node -r @babel/register entry.js"

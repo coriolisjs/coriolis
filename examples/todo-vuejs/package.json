@@ -8,8 +8,8 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@coriolis/coriolis": "^1.0.0-alpha4",
-    "@coriolis/dev-tools": "^1.0.0-alpha1",
+    "@coriolis/coriolis": "*",
+    "@coriolis/dev-tools": "*",
     "core-js": "^3.6.3",
     "vue": "^2.6.11"
   },
