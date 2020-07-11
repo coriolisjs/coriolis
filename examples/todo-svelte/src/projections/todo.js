@@ -12,11 +12,11 @@ import {
 } from '../events/todo'
 
 let nextItemId = 1
-const newTodoItem = produce(item => {
+const newTodoItem = produce((item) => {
   item.id = nextItemId++
 })
 
-const hasId = id => item => item.id === id
+const hasId = (id) => (item) => item.id === id
 
 export const todolist = ({ useState, useEvent }) => (
   useState([]),
@@ -31,23 +31,23 @@ export const todolist = ({ useState, useEvent }) => (
         listDraft.push(newTodoItem(payload))
         break
 
-      case edited.toString():
+      case edited.toString(): {
         const editedItem = listDraft.find(hasId(payload.id))
 
         if (editedItem) {
           editedItem.text = payload.text
         }
         break
-
+      }
       case done.toString():
-      case reset.toString():
+      case reset.toString(): {
         const changedItem = listDraft.find(hasId(payload))
 
         if (changedItem) {
           changedItem.done = type === done.toString()
         }
         break
-
+      }
       case removed.toString():
         return listDraft.filter(not(hasId(payload)))
 

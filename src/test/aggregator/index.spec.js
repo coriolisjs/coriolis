@@ -1,4 +1,4 @@
-// import { createAggregator, createAggregatorFactory } from '../aggregator'
+// import { createAggregator } from '../aggregator'
 
 describe('aggregator', () => {
   describe('useState', () => {
@@ -30,12 +30,5 @@ describe('aggregator', () => {
 
   describe('getValue', () => {
     it("Gets agregator's last result value")
-  })
-})
-
-describe('aggregatorFactory', () => {
-  describe('get', () => {
-    it("Creates aggregators with it's own get function")
-    it('handles specific projection snapshot')
   })
 })

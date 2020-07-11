@@ -1,6 +1,6 @@
 import { localStoredArray } from '../libs/browser/localStorage'
 
-export const localStorage = storageKey => {
+export const localStorage = (storageKey) => {
   const storage = localStoredArray(storageKey)
 
   return ({ addSource, addLogger }) => {

@@ -1,9 +1,6 @@
 export { FIRST_EVENT_TYPE } from './extensibleEventSubject'
 export { createStore, withSimpleStoreSignature } from './eventStore'
 export { createEventBuilder } from './eventBuilder'
-export {
-  createAggregator,
-  createAggregatorFactory,
-  snapshot,
-  fromReducer,
-} from './aggregator'
+export { createAggregator } from './aggregator/index'
+export { createAggregatorFactory, snapshot } from './aggregator/factory'
+export { fromReducer } from './aggregator/fromReducer'

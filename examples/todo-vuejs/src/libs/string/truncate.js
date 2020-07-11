@@ -1,6 +1,6 @@
-export const truncate = size => {
+export const truncate = (size) => {
   const short = size - 4
-  return str => {
+  return (str) => {
     if (str.length > short) {
       return `${str.slice(0, short)}... `
     }

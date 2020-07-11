@@ -1,4 +1,4 @@
-const noop = () => {}
+import { noop } from './noop'
 
 export const chain = (...funcs) =>
   funcs.reduce(

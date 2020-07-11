@@ -3,7 +3,7 @@ import { take } from 'rxjs/operators'
 
 import { createExtensibleObservable } from '../../../lib/rx/extensibleObservable'
 
-xdescribe('extensibleObservable', () => {
+describe('extensibleObservable', () => {
   it('should behave as expected 1', () => {
     const eventSpy = sinon.spy()
     const errorSpy = sinon.spy()
@@ -34,30 +34,36 @@ xdescribe('extensibleObservable', () => {
     expect(completeSpy).to.have.been.calledOnce()
   })
 
-  it('should behave as expected', () => {
-    const eventBeforeAddSpy = sinon.spy(() =>
-      console.log('spy eventBeforeAddSpy'),
+  xit('should behave as expected', (done) => {
+    const eventBeforeAddSpy = sinon.spy((...args) =>
+      console.log('spy eventBeforeAddSpy', args),
     )
-    const errorBeforeAddSpy = sinon.spy(() =>
-      console.log('spy errorBeforeAddSpy'),
+    const errorBeforeAddSpy = sinon.spy((...args) =>
+      console.log('spy errorBeforeAddSpy', args),
     )
-    const completeBeforeAddSpy = sinon.spy(() =>
-      console.log('spy completeBeforeAddSpy'),
-    )
-
-    const eventAfterAddSpy = sinon.spy(() =>
-      console.log('spy eventAfterAddSpy'),
-    )
-    const errorAfterAddSpy = sinon.spy(() =>
-      console.log('spy errorAfterAddSpy'),
-    )
-    const completeAfterAddSpy = sinon.spy(() =>
-      console.log('spy completeAfterAddSpy'),
+    const completeBeforeAddSpy = sinon.spy((...args) =>
+      console.log('spy completeBeforeAddSpy', args),
     )
 
-    const eventLastSpy = sinon.spy(() => console.log('spy eventLastSpy'))
-    const errorLastSpy = sinon.spy(() => console.log('spy errorLastSpy'))
-    const completeLastSpy = sinon.spy(() => console.log('spy completeLastSpy'))
+    const eventAfterAddSpy = sinon.spy((...args) =>
+      console.log('spy eventAfterAddSpy', args),
+    )
+    const errorAfterAddSpy = sinon.spy((...args) =>
+      console.log('spy errorAfterAddSpy', args),
+    )
+    const completeAfterAddSpy = sinon.spy((...args) =>
+      console.log('spy completeAfterAddSpy', args),
+    )
+
+    const eventLastSpy = sinon.spy((...args) =>
+      console.log('spy eventLastSpy', args),
+    )
+    const errorLastSpy = sinon.spy((...args) =>
+      console.log('spy errorLastSpy', args),
+    )
+    const completeLastSpy = sinon.spy((...args) =>
+      console.log('spy completeLastSpy', args),
+    )
 
     const { observable, add } = createExtensibleObservable()
 
@@ -89,5 +95,7 @@ xdescribe('extensibleObservable', () => {
         }, 20)
       }, 20)
     }, 20)
+
+    setTimeout(done, 1000)
   })
 })

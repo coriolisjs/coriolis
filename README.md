@@ -1,4 +1,4 @@
-# Coriolis
+# <img src='https://user-images.githubusercontent.com/67515/79127184-b6e6b100-7da1-11ea-96c7-c6e17e152ede.png' height='40' alt='Coriolis logo' aria-label='Coriolis' /> Coriolis
 
 ![latest version](https://img.shields.io/npm/v/@coriolis/coriolis?style=flat-square)
 ![license](https://img.shields.io/npm/l/@coriolis/coriolis?style=flat-square)
@@ -338,6 +338,9 @@ Un effet est défini par une fonction recevant en paramètre les outils suivant:
 
 - addSource
 - addLogger
+- addEventEnhancer
+- addPastEventEnhancer
+- addAllEventsEnhancer
 - pastEvent\$
 - event\$
 - dispatch
@@ -386,145 +389,7 @@ Une motivation majeur avec Coriolis est d'aider à construire un code d'applicat
 
 - La définition d'un effet a accès directement à toute projection et tout event (passé ou nouveau), et peut invoquer des events passés, déclarer de nouveaux events, appliquer des stratégies de stockage d'events et ajouter d'autres effets
 
-## A la suite, un ensemble de brouillon qu'il reste à clarifier (coming as soon as possible)
 
-## API documentation
+## Crédits
 
-## Plus en détails
-
-### Projection
-
-Pour expliquer le fonctionnement des projection:
-
-Coriolis construira à partir de la définition d'une projection un
-"aggrégateur" qui pourra être alimenté par les events de l'eventSubject.
-
-### Some rules about Coriolis
-
-- Un event doit avoir un format standard:
-
-  - un type
-  - optionnel: un payload
-  - des meta-données (optionnel mais coriolis va systématiquement en ajouter certaines)
-  - si c'est une erreur, error: true et payload le detail de l'erreur
-
-- Events du passé
-
-  - Event du passé, joués à l'initialisation du store et alimentant les projections mais sans alimenter leurs
-    abonnements ni les effets
-
-- EventSubject
-
-  - Entité interne à Coriolis accessible uniquement indirectement via l'API Effect
-  - C'est un Subject selon la terminologie RxJS: entité pouvant à la fois recevoir et émettre des événements
-  - Émet un ensemble d'events du passé, PUIS retransmet les events qu'il reçoit
-  - Transmet également tous les events qu'il reçoit aux loggers
-  - Assure que les events sont valide
-  - Assure une protection contre les boucles d'events
-  - Assure que chaque event dispose d'un timestamp en meta
-  - Fait passer tous les évents par un enhancer (si défini)
-
-- On ne défini pas une projection global unique regroupant l'ensemble des projections (à la redux).
-  Pour accéder au contenu d'une projection, on utilise une référence à la définition de cette projection.
-  Pour qu'une projection soit alimenté il faut, soit que sa définition est été "connectée", soit
-  qu'il y ait des abonements à cette projection.
-
-- Une définition de projection se fait par l'intermediaire d'une API dédiée
-
-- EventStore
-  Un eventStore met en relation un eventSubject et des effets
-
-- Définition d'un effet
-
-  - Un effet peut :
-
-    - Ajouter d'autres effets
-    - Ajouter une source d'events du passé
-    - Ajouter un logger d'events
-    - S'abonner aux events du passé
-    - S'abonner aux nouveaux events
-    - Émettre des events
-      - Émission d'event invalide -> erreur générale
-      - Émission d'erreur -> erreur générale
-      - Émission d'une complétion de stream rx -> complétion générale, fin du process // WE HAVE TO CHECK IF WE ARE REALLY EXPECTING THIS...
-    - S'abonner à une projection
-    - Connecter une projection
-    - Accéder au contenu d'une projection
-    - Récupérer des snapshots (contenu de l'ensemble des projections)
-
-  - Un effet doit retourner une fonction de désactivation
-
-- Définition d'un logger
-
-  - reçoit des events via une méthode next
-  - peut être un observable d'event
-  - erreur émise par logger -> erreur de eventSubject -> erreur générale
-
-- Définition d'une source d'event du passé
-
-  - peut être un array d'events
-  - peut être un observable d'events
-
-  - Doit se compléter pour que le store puisse passer à la suite (le passé est fini)
-  - Erreur sur une source -> erreur générale
-  - Lorsque toutes les sources d'events du passées sont complétées la relecture du passé est finie
-    - Il n'est pas possible de définir une source d'events du passé après que toutes les sources d'events du passé aient étés complétées
-
-- L'instanciation d'un store suit la procédure suivante:
-
-  - mise en cache du premier event non passé
-  - mise en cache de tout event émit dans un premier temps
-  - diffusion aux projections et aux effets (via l'observable pastEvent\$) des "events du passé"
-  - log puis transmission (aux projections et aux effets) des events buffurisés
-  - log puis transmission (aux projections et aux effet) des nouveaux events
-
-  - les projections voient passer tous les events, même les "passés"
-
-- La ré-émition tel-quel d'un event cause une erreur (prévention de boucle)
-
-- EventBuilder
-  - metaBuilder est optionnel
-  - payloadBuilder est optionnel, on peut uniquement définir un type
-  - payloadBuilder par défaut est identity
-
-### Définition de projection sous forme de reducer:
-
-Pour cette forme, on défini la nouvelle valeur de la projection (nouvel état) à partir de:
-
-- state: dernière valeur de cette projection
-- event: dernier evenement emit
-
-Pour ce faire, il faut utiliser un helper "fromReducer" permettant de
-
-#### Pour une meilleur compréhension du fonctionnement
-
-Chaque définition de projection peut être transformée en une définition de projection de type reducer
-
-Ce reducer operera en deux étapes:
-
-- premièrement il collectera les données d'input attendues en fonction de l'event, ce qui revient à exécuter un
-  aggregateur de projection pour chaque input
-- ensuite, si les données d'input ainsi obtenu sont différentes de la précédente itération, il exécutera la fonction
-  de projection avec ces inputs.
-
-## Aggrégateur
-
-Un aggrégateur est une fonction qui reçoit un événement et retourne une valeure de projection selon cet événement et
-les précédents reçu
-
-Les aggrégateurs ne sont normalement pas manipulés lors de l'usage de Coriolis. Ils sont utilisés en interne par
-la librairie, mais cette définition apporte une meilleure compréhension du fonctionnement global.
-
-Chaque Projection est converti en interne par Coriolis en aggregateur, auquel sera
-transmi chaque event traité par Coriolis
-
-Chaque aggrégateur expose sont état courant par le biais d'une méthode "getValue" et également d'un getter "value"
-
-### memoization
-
-Si l'aggrégateur est appelé plusieurs fois de suite avec strictement le même événement, seul le premier appel
-aura un effet sur la valeur de la projection. Les appels suivant retourneront directement la valeur de
-la projection sans la modifier.
-
-Cette spécificité permet d'utiliser les aggregateurs dans de multiples usages, sans pour autant multiplié
-l'exécution des processus de projection
+[Icon made by Freepik from www.flaticon.com](https://www.flaticon.com/authors/freepik)

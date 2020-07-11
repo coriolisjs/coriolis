@@ -6,7 +6,7 @@ import { setValueGetter } from './lib/object/valueGetter'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { ensureInitial } from './lib/rx/operator/ensureInitial'
 
-import { createAggregatorFactory } from './aggregator'
+import { createAggregatorFactory } from './aggregator/factory'
 
 export const createProjectionWrapperFactory = (
   event$,
