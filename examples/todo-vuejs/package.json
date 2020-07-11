@@ -8,16 +8,16 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@coriolis/coriolis": "^1.0.0-alpha4",
-    "@coriolis/dev-tools": "^1.0.0-alpha1",
-    "core-js": "^3.6.3",
+    "@coriolis/coriolis": "*",
+    "@coriolis/dev-tools": "*",
+    "core-js": "^3.6.5",
     "vue": "^2.6.11"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.2.3",
-    "@vue/cli-service": "^4.2.3",
-    "node-sass": "^4.12.0",
-    "sass-loader": "^8.0.1",
+    "@vue/cli-plugin-babel": "^4.4.6",
+    "@vue/cli-service": "^4.4.6",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^9.0.2",
     "vue-template-compiler": "^2.6.11"
   }
 }

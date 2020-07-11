@@ -11,7 +11,6 @@ import {
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { asObservable } from './lib/rx/asObservable'
 import { promiseObservable } from './lib/rx/promiseObservable'
-import { payloadEquals } from './lib/event/payloadEquals'
 import { isCommand } from './lib/event/isValidEvent'
 import { noop } from './lib/function/noop'
 
@@ -44,9 +43,27 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     eventSubject,
     addLogger,
     addSource,
+    addEventEnhancer,
+    addPastEventEnhancer,
     disableAddSource,
-    firstEvent,
-  } = createExtensibleEventSubject(options.eventEnhancer)
+    isFirstEvent,
+  } = createExtensibleEventSubject()
+
+  const addAllEventsEnhancer = (enhancer) => {
+    const removePastEventEnhancer = addPastEventEnhancer(enhancer)
+    const removeEventEnhancer = addEventEnhancer(enhancer)
+
+    return () => {
+      removePastEventEnhancer()
+      removeEventEnhancer()
+    }
+  }
+
+  // DEPRECATED: This option is no longer a good way to define an event enhancer
+  // prefer using an effect to define enhancers
+  if (options.eventEnhancer) {
+    addAllEventsEnhancer(options.eventEnhancer)
+  }
 
   // Use subjects to have single subscription points to connect all together (one for input, one for output)
   // eventCaster will handle events coming from eventSubject to aggregators and effects
@@ -55,9 +72,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   const eventCatcher = new Subject()
 
   const initDone = eventCaster.pipe(
-    // Check is done on payload value, event object itself
-    // would have been changed (adding meta-data for example)
-    filter(payloadEquals(firstEvent.payload)),
+    filter(isFirstEvent),
     take(1),
     shareReplay(1),
   )
@@ -112,6 +127,9 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
         addEffect,
         addSource,
         addLogger,
+        addEventEnhancer,
+        addPastEventEnhancer,
+        addAllEventsEnhancer,
         pastEvent$,
         event$,
         dispatch,

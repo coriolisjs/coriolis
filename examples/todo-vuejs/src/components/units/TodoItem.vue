@@ -16,20 +16,20 @@ const TodoItem = {
   props: {
     id: Number,
     text: String,
-    done: Boolean
+    done: Boolean,
   },
   methods: {
-    removeItem () {
+    removeItem() {
       this.$emit('removed', { id: this.id })
     },
-    editItem () {
+    editItem() {
       this.$emit('edited', { id: this.id, text: this.$refs.textInput.value })
     },
-    checkItem () {
+    checkItem() {
       const eventName = this.$refs.doneCheckbox.checked ? 'done' : 'reset'
       this.$emit(eventName, { id: this.id })
-    }
-  }
+    },
+  },
 }
 
 export default connect({
@@ -37,8 +37,8 @@ export default connect({
     removed,
     edited,
     done,
-    reset
-  }
+    reset,
+  },
 })(TodoItem)
 
 </script>

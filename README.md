@@ -338,6 +338,9 @@ Un effet est défini par une fonction recevant en paramètre les outils suivant:
 
 - addSource
 - addLogger
+- addEventEnhancer
+- addPastEventEnhancer
+- addAllEventsEnhancer
 - pastEvent\$
 - event\$
 - dispatch

@@ -29,10 +29,10 @@ const TodoControl = {
   data: () => ({
     filters: filters.slice(),
     filterName: undefined,
-    textInputValue: ''
+    textInputValue: '',
   }),
   methods: {
-    addItem () {
+    addItem() {
       if (!this.textInputValue) {
         return
       }
@@ -40,23 +40,23 @@ const TodoControl = {
       this.textInputValue = ''
       this.$refs.textInput.focus()
     },
-    setFilter (filterName) {
+    setFilter(filterName) {
       this.$emit('filter', { filterName })
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.$refs.textInput.focus()
-  }
+  },
 }
 
 export default connect({
   mapProjection: {
-    filterName: todolistFilterName
+    filterName: todolistFilterName,
   },
   eventDispatch: {
     added,
-    filter
-  }
+    filter,
+  },
 })(TodoControl)
 
 </script>

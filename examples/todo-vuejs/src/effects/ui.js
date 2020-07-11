@@ -10,7 +10,7 @@ import { todolist, todolistFilterName } from '../projections/todo'
 
 const views = {
   TodoApp,
-  About
+  About,
 }
 
 const viewNames = Object.keys(views)
@@ -26,11 +26,11 @@ export const createUi = () => {
     const vue = new Vue({
       provide: {
         dispatch,
-        withProjection
+        withProjection,
       },
-      render: createElement => createElement(ViewSwitch, { props: { views } })
-    })
-      .$mount('#app')
+      render: (createElement) =>
+        createElement(ViewSwitch, { props: { views } }),
+    }).$mount('#app')
 
     return () => {
       const node = vue.$el

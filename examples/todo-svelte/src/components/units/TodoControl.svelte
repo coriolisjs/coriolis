@@ -18,9 +18,9 @@
     textInput.focus()
   }
 
-  const setFilter = filterName => dispatchFilter({ filterName })
+  const setFilter = (filterName) => dispatchFilter({ filterName })
 
-  const focus = el => el.focus()
+  const focus = (el) => el.focus()
 </script>
 
 <style lang="scss">

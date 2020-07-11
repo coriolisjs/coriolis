@@ -6,9 +6,4 @@ import { wrapCoriolisOptions } from '@coriolis/dev-tools'
 
 const storageKey = 'storedEventsForTodoListApp'
 
-createStore(
-  wrapCoriolisOptions(
-    localStorage(storageKey),
-    createUi()
-  )
-)
+createStore(wrapCoriolisOptions(localStorage(storageKey), createUi()))

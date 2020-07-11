@@ -21,8 +21,8 @@ export default {
     AppContainer,
     TodoControl,
     TodoList,
-    ViewLink
-  }
+    ViewLink,
+  },
 }
 </script>
 

@@ -1,80 +1,84 @@
 import { map } from 'rxjs/operators'
 
-const createStreamBinder = vm => (key, stream) =>
-  stream.subscribe(data => vm.$set(vm, key, data))
+const createStreamBinder = (vm) => (key, stream) =>
+  stream.subscribe((data) => vm.$set(vm, key, data))
 
-const createEventSubscriber = vm => (eventName, listener) => {
+const createEventSubscriber = (vm) => (eventName, listener) => {
   vm.$on(eventName, listener)
 
   return {
-    unsubscribe: () => vm.$off(eventName, listener)
+    unsubscribe: () => vm.$off(eventName, listener),
   }
 }
 
-const protect = data => {
+const protect = (data) => {
   if (Array.isArray(data)) {
     return data.map(protect)
   }
 
   if (typeof data === 'object') {
-    return Object.entries(data)
-      .reduce((acc, [key, value]) => ({
+    return Object.entries(data).reduce(
+      (acc, [key, value]) => ({
         ...acc,
-        [key]: protect(value)
-      }), {})
+        [key]: protect(value),
+      }),
+      {},
+    )
   }
 
   return data
 }
 
-export const connect = ({ mapProjection = {}, mapProtectedProjection = {}, eventDispatch = {} }) => {
+export const connect = ({
+  mapProjection = {},
+  mapProtectedProjection = {},
+  eventDispatch = {},
+}) => {
   const initialData = {
     ...Object.keys({
       ...mapProjection,
-      ...mapProtectedProjection
-    }).reduce((acc, key) => ({ ...acc, [key]: undefined }), {})
+      ...mapProtectedProjection,
+    }).reduce((acc, key) => ({ ...acc, [key]: undefined }), {}),
   }
 
-  return component => ({
+  return (component) => ({
     name: `connected-${component.name}`,
     mixins: [component],
-    inject: [
-      'dispatch',
-      'withProjection'
-    ],
+    inject: ['dispatch', 'withProjection'],
     data: () => initialData,
-    created () {
+    created() {
       const bindStream = createStreamBinder(this)
       const subscribeEvent = createEventSubscriber(this)
       this.subscriptions = []
 
       if (mapProjection) {
         this.subscriptions.push(
-          ...Object.entries(mapProjection)
-            .map(([key, source]) => bindStream(key, this.withProjection(source)))
+          ...Object.entries(mapProjection).map(([key, source]) =>
+            bindStream(key, this.withProjection(source)),
+          ),
         )
       }
 
       if (mapProtectedProjection) {
         this.subscriptions.push(
-          ...Object.entries(mapProtectedProjection)
-            .map(([key, source]) => bindStream(
-              key,
-              this.withProjection(source).pipe(map(protect))
-            ))
+          ...Object.entries(mapProtectedProjection).map(([key, source]) =>
+            bindStream(key, this.withProjection(source).pipe(map(protect))),
+          ),
         )
       }
 
       if (eventDispatch) {
         this.subscriptions.push(
-          ...Object.entries(eventDispatch)
-            .map(([eventName, eventBuilder]) =>
-              subscribeEvent(eventName, (...args) => this.dispatch(eventBuilder(...args))))
+          ...Object.entries(eventDispatch).map(([eventName, eventBuilder]) =>
+            subscribeEvent(eventName, (...args) =>
+              this.dispatch(eventBuilder(...args)),
+            ),
+          ),
         )
       }
     },
-    beforeDestroy () {
-      this.subscriptions.forEach(subscription => subscription.unsubscribe())
-    }
+    beforeDestroy() {
+      this.subscriptions.forEach((subscription) => subscription.unsubscribe())
+    },
   })
 }
