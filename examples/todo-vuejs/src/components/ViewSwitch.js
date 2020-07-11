@@ -6,24 +6,24 @@ import { currentView } from '../projections/currentView'
 const ViewSwitch = {
   name: 'ViewSwitch',
   data: () => ({
-    viewName: undefined
+    viewName: undefined,
   }),
   props: {
     views: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  render (createElement) {
+  render(createElement) {
     if (!this.viewName) {
       return
     }
     return createElement(this.views[this.viewName])
-  }
+  },
 }
 
 export default connect({
   mapProjection: {
-    viewName: fromReducer(currentView)
-  }
+    viewName: fromReducer(currentView),
+  },
 })(ViewSwitch)

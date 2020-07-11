@@ -10,19 +10,19 @@ import { changed } from '../../events/view'
 const ViewLink = {
   name: 'ViewLink',
   props: {
-    view: String
+    view: String,
   },
   methods: {
-    trigger () {
+    trigger() {
       this.$emit('switch', { view: this.view })
-    }
-  }
+    },
+  },
 }
 
 export default connect({
   eventDispatch: {
-    switch: changed
-  }
+    switch: changed,
+  },
 })(ViewLink)
 
 </script>

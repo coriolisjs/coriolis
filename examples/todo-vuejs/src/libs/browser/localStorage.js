@@ -1,18 +1,20 @@
 export const getLocalStorageJSON = (key, defaultValue = {}) => {
   try {
-    return JSON.parse(localStorage.getItem(key)) || defaultValue
+    return JSON.parse(window.localStorage.getItem(key)) || defaultValue
   } catch (error) {
     return defaultValue
   }
 }
 
 export const setLocalStorageJSON = (key, value) =>
-  localStorage.setItem(key, JSON.stringify(value))
+  window.localStorage.setItem(key, JSON.stringify(value))
 
-export const localStoredArray = key => {
+export const localStoredArray = (key) => {
   let stored
 
-  const init = () => { stored = [].concat(getLocalStorageJSON(key, [])) }
+  const init = () => {
+    stored = [].concat(getLocalStorageJSON(key, []))
+  }
   const simplyGet = () => stored
 
   let initOrGet = () => {
@@ -23,7 +25,7 @@ export const localStoredArray = key => {
 
   const get = () => initOrGet()
 
-  const append = value => {
+  const append = (value) => {
     if (!stored) {
       initOrGet()
     }
@@ -35,6 +37,6 @@ export const localStoredArray = key => {
 
   return {
     get,
-    append
+    append,
   }
 }
