@@ -1,4 +1,4 @@
-import { Subject, of } from 'rxjs'
+import { Subject, of, Observable } from 'rxjs'
 import {
   filter,
   shareReplay,
@@ -87,25 +87,30 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
-  const commandRunner = (command, removeSubject) => () =>
-    asObservable(
-      command({
-        // FIXME: How one would remove an effect added this way ?
-        addEffect: (effect) => {
-          const removeEffect = addEffect(effect)
+  const commandRunner = (command, removeSubject) => () => {
+    try {
+      return asObservable(
+        command({
+          // FIXME: How one would remove an effect added this way ?
+          addEffect: (effect) => {
+            const removeEffect = addEffect(effect)
 
-          removeSubject.next(removeEffect)
+            removeSubject.next(removeEffect)
 
-          return removeEffect
-        },
-        getProjectionValue: (projection) =>
-          withProjection(projection).getValue(),
-      }),
-    ).pipe(
-      mergeMap((event) =>
-        isCommand(event) ? commandRunner(event, removeSubject)() : of(event),
-      ),
-    )
+            return removeEffect
+          },
+          getProjectionValue: (projection) =>
+            withProjection(projection).getValue(),
+        }),
+      ).pipe(
+        mergeMap((event) =>
+          isCommand(event) ? commandRunner(event, removeSubject)() : of(event),
+        ),
+      )
+    } catch (error) {
+      return new Observable((observer) => observer.error(error))
+    }
+  }
 
   const dispatch = (event) => {
     if (isCommand(event)) {
@@ -115,10 +120,16 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
       )
 
       eventCatcher.next(command)
-      return executionPromise.then(() => removeSubject)
+      return (
+        executionPromise
+          .then(() => removeSubject)
+          // any error would cause global system error. Sending back error also on this
+          // promise would just cause confusion
+          .catch(noop)
+      )
     }
 
-    return eventCatcher.next(event)
+    return Promise.resolve(eventCatcher.next(event))
   }
 
   const addEffect = (effect) =>
@@ -148,13 +159,29 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     .map(addEffect)
     .reduce((prev, removeEffect) => () => (prev(), removeEffect()), noop)
 
-  // Once everything is pieced together, subscribe it to event source to start the process
-  const eventCasterSubscription = eventSubject.subscribe(eventCaster)
+  const handleError =
+    options.errorHandler ||
+    ((error) => {
+      throw error
+    })
 
-  return () => {
+  // Once everything is pieced together, subscribe it to event source to start the process
+  const eventCasterSubscription = eventSubject.subscribe(
+    (value) => eventCaster.next(value),
+    (error) => {
+      unsubscribe()
+      handleError(error)
+    },
+    () => unsubscribe(),
+  )
+
+  const unsubscribe = () => {
     initDoneSubscription.unsubscribe()
     eventCatcherSubscription.unsubscribe()
     eventCasterSubscription.unsubscribe()
+    eventCaster.complete()
     removeEffects()
   }
+
+  return unsubscribe
 })
