@@ -14,7 +14,7 @@
 
   const removeItem = () => dispatchRemoved({ id })
   const editItem = () => dispatchEdited({ id, text })
-  const checkItem = () => dispatchToggleDone(id, isDone)
+  const checkItem = () => dispatchToggleDone(id)
 </script>
 
 <style>

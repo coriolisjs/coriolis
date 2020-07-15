@@ -9,7 +9,8 @@
 <script>
 import { connect } from '../../libs/vuejs/connect'
 
-import { edited, removed, done, reset } from '../../todo-core/events/todo'
+import { toggleDone } from '../../todo-core/commands/todo'
+import { edited, removed } from '../../todo-core/events/todo'
 
 const TodoItem = {
   name: 'TodoItem',
@@ -26,8 +27,7 @@ const TodoItem = {
       this.$emit('edited', { id: this.id, text: this.$refs.textInput.value })
     },
     checkItem() {
-      const eventName = this.$refs.doneCheckbox.checked ? 'done' : 'reset'
-      this.$emit(eventName, { id: this.id })
+      this.$emit('toggleDone', this.id)
     },
   },
 }
@@ -36,8 +36,7 @@ export default connect({
   eventDispatch: {
     removed,
     edited,
-    done,
-    reset,
+    toggleDone,
   },
 })(TodoItem)
 
