@@ -5,7 +5,7 @@ export const createExtensibleOperator = () => {
   let updators = []
 
   const operator = (source) =>
-    Observable.create((observer) => {
+    new Observable((observer) => {
       const inputSubject = new Subject()
       let observerSubscription
 

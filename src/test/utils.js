@@ -37,7 +37,7 @@ export const createTrackedObservable = (observable) => {
   const unsubscribeSpy = sinon.spy()
   const subscribeSpy = sinon.stub().returns(unsubscribeSpy)
 
-  const spyObservable = merge(observable, Observable.create(subscribeSpy))
+  const spyObservable = merge(observable, new Observable(subscribeSpy))
 
   return {
     spyObservable,
@@ -46,7 +46,7 @@ export const createTrackedObservable = (observable) => {
   }
 }
 
-export const randomEventsObservable = Observable.create((observer) => {
+export const randomEventsObservable = new Observable((observer) => {
   let timeout
   const next = () => {
     observer.next({

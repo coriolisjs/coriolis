@@ -21,7 +21,7 @@ export const lossless = (source) => {
 
   bufferize()
 
-  return Observable.create((observer) => {
+  return new Observable((observer) => {
     let subscription
 
     if (error) {
