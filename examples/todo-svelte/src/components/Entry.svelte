@@ -1,28 +1,21 @@
 <script context="module">
-  import { withProjection, createStoreAPIProvider } from '@coriolis/coriolis-svelte'
+  import { createStoreAPIProvider } from '@coriolis/coriolis-svelte'
 
   const {
     setStoreAPI,
-    shareStoreAPI
+    shareStoreAPI,
+    whenStoreAPIShared,
   } = createStoreAPIProvider()
 
   export { setStoreAPI }
 </script>
 <script>
-  import { currentView } from '../todo-core/projections/currentView'
+  export let Root
+  export let props
 
   shareStoreAPI()
-
-  export let views
-
-  const viewName$ = withProjection(currentView)
-
-  let CurrentView
-  $: CurrentView = views[$viewName$]
 </script>
 
-{#if CurrentView}
-  <svelte:component this={CurrentView}/>
-{:else}
-  <div>... Routing Error ...</div>
-{/if}
+{#await whenStoreAPIShared then ready}
+  <svelte:component this={Root} {...props} />
+{/await}

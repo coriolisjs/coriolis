@@ -1,6 +1,8 @@
-import Entry, { setStoreAPI } from '../components/Entry.svelte'
+import { createCoriolisSvelteApp } from './createCoriolisSvelte'
+
 import TodoApp from '../components/views/TodoApp.svelte'
 import About from '../components/views/About.svelte'
+import Router from '../components/Router.svelte'
 
 import { createUrlbarEffect } from '../todo-core/effects/urlbar'
 import { todolist, todolistFilterName } from '../todo-core/projections/todo'
@@ -14,14 +16,15 @@ const viewNames = Object.keys(views)
 
 export const createUIEffect = () => {
   return function userInterface({ dispatch, withProjection, addEffect }) {
-    setStoreAPI({ dispatch, withProjection })
-
     addEffect(createUrlbarEffect(viewNames))
     withProjection(todolist).connect()
     withProjection(todolistFilterName).connect()
 
-    const app = new Entry({
+    const app = createCoriolisSvelteApp({
+      dispatch,
+      withProjection,
       target: document.body,
+      Root: Router,
       props: {
         views,
       },
