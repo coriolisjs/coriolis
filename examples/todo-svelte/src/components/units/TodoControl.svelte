@@ -1,12 +1,14 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { addItem } from '../../todo-core/commands/todo'
-  import { filter, filters } from '../../todo-core/events/todo'
+  import { addItem } from '../../todo-core/commands/todo/addItem'
+  import { filters } from '../../todo-core/data/filters'
+  import { setFilter } from '../../todo-core/commands/todo/setFilter'
+
   import { todolistFilterName } from '../../todo-core/projections/todo'
 
   const dispatchAddItem = createDispatch(addItem)
-  const dispatchFilter = createDispatch(filter)
+  const dispatchFilter = createDispatch(setFilter)
 
   let filterName$ = withProjection(todolistFilterName)
   let textInput
@@ -17,8 +19,6 @@
     textInputValue = ''
     textInput.focus()
   }
-
-  const setFilter = (filterName) => dispatchFilter({ filterName })
 
   const focus = (el) => el.focus()
 </script>
@@ -53,13 +53,13 @@
   </form>
   <div>
     Show :
-    {#each filters as filter (filter)}
+    {#each filters as filterName (filterName)}
     <button
       class="filter"
-      on:click|preventDefault={() => setFilter(filter)}
-      disabled={filter === $filterName$}
+      on:click|preventDefault={() => dispatchFilter(filterName)}
+      disabled={filterName === $filterName$}
     >
-      {filter}
+      {filterName}
     </button>
     {/each}
   </div>

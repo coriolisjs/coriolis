@@ -5,7 +5,7 @@
 <script>
 import { connect } from '../../libs/vuejs/connect'
 
-import { changed } from '../../todo-core/events/view'
+import { changeView } from '../../todo-core/commands/changeView'
 
 const ViewLink = {
   name: 'ViewLink',
@@ -14,14 +14,14 @@ const ViewLink = {
   },
   methods: {
     trigger() {
-      this.$emit('switch', { view: this.view })
+      this.$emit('switch', this.view)
     },
   },
 }
 
 export default connect({
   eventDispatch: {
-    switch: changed,
+    switch: changeView,
   },
 })(ViewLink)
 

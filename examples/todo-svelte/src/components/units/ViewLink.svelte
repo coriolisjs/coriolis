@@ -1,13 +1,13 @@
 <script>
   import { createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { changed } from '../../todo-core/events/view'
+  import { changeView } from '../../todo-core/commands/changeView'
 
-  const dispatchChanged = createDispatch(changed)
+  const dispatchChange = createDispatch(changeView)
 
   export let view
 
-  const trigger = () => dispatchChanged({ view })
+  const trigger = () => dispatchChange(view)
 </script>
 
 <a href={view} on:click|preventDefault={trigger}><slot /></a>

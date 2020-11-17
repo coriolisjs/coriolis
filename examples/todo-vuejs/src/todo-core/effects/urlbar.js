@@ -22,8 +22,7 @@ export const urlbar = (viewNames) => ({
     (newView) => {
       if (newView === getCurrentUrlView()) {
         // view already in url bar, no need to push it
-        // if this happens, there's probably a view configuration problem
-        // maybe a warning would be something to do here ?
+        // This can happen in case user uses any history manipulation interface (back/forward buttons...)
         return
       }
 

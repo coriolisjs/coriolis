@@ -21,8 +21,10 @@
 <script>
 import { connect } from '../../libs/vuejs/connect'
 
-import { addItem } from '../../todo-core/commands/todo'
-import { filter, filters } from '../../todo-core/events/todo'
+import { addItem } from '../../todo-core/commands/todo/addItem'
+import { filters } from '../../todo-core/data/filters'
+import { setFilter } from '../../todo-core/commands/todo/setFilter'
+
 import { todolistFilterName } from '../../todo-core/projections/todo'
 
 const TodoControl = {
@@ -42,7 +44,7 @@ const TodoControl = {
       this.$refs.textInput.focus()
     },
     setFilter(filterName) {
-      this.$emit('filter', { filterName })
+      this.$emit('filter', filterName)
     },
   },
   mounted() {
@@ -56,7 +58,7 @@ export default connect({
   },
   eventDispatch: {
     addItem,
-    filter,
+    filter: setFilter,
   },
 })(TodoControl)
 

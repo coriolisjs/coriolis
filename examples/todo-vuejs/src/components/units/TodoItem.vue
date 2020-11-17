@@ -9,8 +9,9 @@
 <script>
 import { connect } from '../../libs/vuejs/connect'
 
-import { toggleDone } from '../../todo-core/commands/todo'
-import { edited, removed } from '../../todo-core/events/todo'
+import { removeItem } from '../../todo-core/commands/todo/removeItem'
+import { editItem } from '../../todo-core/commands/todo/editItem'
+import { toggleDone } from '../../todo-core/commands/todo/toggleDone'
 
 const TodoItem = {
   name: 'TodoItem',
@@ -21,10 +22,10 @@ const TodoItem = {
   },
   methods: {
     removeItem() {
-      this.$emit('removed', { id: this.id })
+      this.$emit('removed', this.id)
     },
     editItem() {
-      this.$emit('edited', { id: this.id, text: this.$refs.textInput.value })
+      this.$emit('edited', this.id, this.$refs.textInput.value)
     },
     checkItem() {
       this.$emit('toggleDone', this.id)
@@ -34,8 +35,8 @@ const TodoItem = {
 
 export default connect({
   eventDispatch: {
-    removed,
-    edited,
+    removed: removeItem,
+    edited: editItem,
     toggleDone,
   },
 })(TodoItem)
