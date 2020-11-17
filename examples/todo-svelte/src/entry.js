@@ -5,7 +5,7 @@ import { createStore } from '@coriolis/coriolis'
 import { wrapCoriolisOptions } from '@coriolis/dev-tools'
 
 import { createUi } from './effects/ui'
-import { localStorage } from './effects/localStorage'
+import { localStorage } from './todo-core/effects/localStorage'
 
 const storageKey = 'storedEventsForTodoListApp'
 

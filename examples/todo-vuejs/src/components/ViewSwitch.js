@@ -1,7 +1,6 @@
-import { fromReducer } from '@coriolis/coriolis'
 import { connect } from '../libs/vuejs/connect'
 
-import { currentView } from '../projections/currentView'
+import { currentView } from '../todo-core/projections/currentView'
 
 const ViewSwitch = {
   name: 'ViewSwitch',
@@ -24,6 +23,6 @@ const ViewSwitch = {
 
 export default connect({
   mapProjection: {
-    viewName: fromReducer(currentView),
+    viewName: currentView,
   },
 })(ViewSwitch)

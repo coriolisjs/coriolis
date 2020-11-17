@@ -1,4 +1,3 @@
-import { fromReducer } from '@coriolis/coriolis'
 import { subscribeEvent } from '../libs/browser/subscribeEvent'
 
 import { currentView } from '../projections/currentView'
@@ -19,18 +18,18 @@ export const urlbar = (viewNames) => ({
     }),
   ])
 
-  const projectionSubscription = withProjection(
-    fromReducer(currentView),
-  ).subscribe((newView) => {
-    if (newView === getCurrentUrlView()) {
-      // view already in url bar, no need to push it
-      // if this happens, there's probably a view configuration problem
-      // maybe a warning would be something to do here ?
-      return
-    }
+  const projectionSubscription = withProjection(currentView).subscribe(
+    (newView) => {
+      if (newView === getCurrentUrlView()) {
+        // view already in url bar, no need to push it
+        // if this happens, there's probably a view configuration problem
+        // maybe a warning would be something to do here ?
+        return
+      }
 
-    window.history.pushState({ view: newView }, newView, newView)
-  })
+      window.history.pushState({ view: newView }, newView, newView)
+    },
+  )
 
   const popstateUnsubscribe = subscribeEvent(window, 'popstate', () =>
     dispatch(changed({ view: getCurrentUrlView() })),

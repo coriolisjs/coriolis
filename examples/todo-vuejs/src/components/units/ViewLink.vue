@@ -5,7 +5,7 @@
 <script>
 import { connect } from '../../libs/vuejs/connect'
 
-import { changed } from '../../events/view'
+import { changed } from '../../todo-core/events/view'
 
 const ViewLink = {
   name: 'ViewLink',

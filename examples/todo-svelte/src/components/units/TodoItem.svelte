@@ -1,8 +1,8 @@
 <script>
   import { createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { edited, removed, done, reset } from '../../events/todo'
-  import { toggleDone } from '../../commands/todo'
+  import { edited, removed, done, reset } from '../../todo-core/events/todo'
+  import { toggleDone } from '../../todo-core/commands/todo'
 
   const dispatchRemoved = createDispatch(removed)
   const dispatchEdited = createDispatch(edited)

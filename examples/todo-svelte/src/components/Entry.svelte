@@ -11,7 +11,7 @@
 <script>
   import { setContext } from 'svelte'
 
-  import { currentView } from '../projections/currentView'
+  import { currentView } from '../todo-core/projections/currentView'
 
   shareStoreAPI()
 

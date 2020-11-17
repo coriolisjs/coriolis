@@ -5,8 +5,8 @@ import About from '../components/views/About.vue'
 
 import ViewSwitch from '../components/ViewSwitch'
 
-import { urlbar } from '../effects/urlbar'
-import { todolist, todolistFilterName } from '../projections/todo'
+import { urlbar } from '../todo-core/effects/urlbar'
+import { todolist, todolistFilterName } from '../todo-core/projections/todo'
 
 const views = {
   TodoApp,

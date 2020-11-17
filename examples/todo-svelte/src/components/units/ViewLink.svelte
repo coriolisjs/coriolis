@@ -1,7 +1,7 @@
 <script>
   import { createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { changed } from '../../events/view'
+  import { changed } from '../../todo-core/events/view'
 
   const dispatchChanged = createDispatch(changed)
 

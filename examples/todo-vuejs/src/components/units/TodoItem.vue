@@ -9,7 +9,7 @@
 <script>
 import { connect } from '../../libs/vuejs/connect'
 
-import { edited, removed, done, reset } from '../../events/todo'
+import { edited, removed, done, reset } from '../../todo-core/events/todo'
 
 const TodoItem = {
   name: 'TodoItem',

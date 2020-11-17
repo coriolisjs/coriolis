@@ -1,9 +1,9 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { addItem } from '../../commands/todo'
-  import { filter, filters } from '../../events/todo'
-  import { todolistFilterName } from '../../projections/todo'
+  import { addItem } from '../../todo-core/commands/todo'
+  import { filter, filters } from '../../todo-core/events/todo'
+  import { todolistFilterName } from '../../todo-core/projections/todo'
 
   const dispatchAddItem = createDispatch(addItem)
   const dispatchFilter = createDispatch(filter)

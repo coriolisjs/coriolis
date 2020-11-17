@@ -2,8 +2,8 @@ import Entry, { setStoreAPI } from '../components/Entry.svelte'
 import TodoApp from '../components/views/TodoApp.svelte'
 import About from '../components/views/About.svelte'
 
-import { urlbar } from '../effects/urlbar'
-import { todolist, todolistFilterName } from '../projections/todo'
+import { urlbar } from '../todo-core/effects/urlbar'
+import { todolist, todolistFilterName } from '../todo-core/projections/todo'
 
 const views = {
   TodoApp,
