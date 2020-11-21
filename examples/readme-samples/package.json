@@ -10,15 +10,15 @@
     "start": "node -r @babel/register cli.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@babel/preset-env": "^7.10.4",
-    "@babel/register": "^7.10.4",
+    "@babel/core": "^7.12.7",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/register": "^7.12.1",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.4.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-config-standard": "^14.1.1",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-config-standard": "^16.0.2",
     "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-standard": "^4.0.1",
-    "prettier": "^2.0.5"
+    "eslint-plugin-standard": "^4.1.0",
+    "prettier": "^2.2.0"
   }
 }
