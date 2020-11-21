@@ -1,5 +1,5 @@
-import { Subject, merge, EMPTY, of } from 'rxjs'
-import { concat, map, tap, mergeMap } from 'rxjs/operators'
+import { Subject, merge, EMPTY, of, concat } from 'rxjs'
+import { map, tap, mergeMap } from 'rxjs/operators'
 
 import { noop } from './lib/function/noop'
 import { identity } from './lib/function/identity'
@@ -55,12 +55,14 @@ export const createEventSubject = (
     tap(logObserver),
   )
 
-  const event$ = pastSource.pipe(
-    // in case an past events source provides not-timestamped events, we add
-    // a timestamp here to be sure every event has one
-    map(stampEvent),
-    pastEventEnhancer,
-    concat(startoverNewevent$),
+  const event$ = concat(
+    pastSource.pipe(
+      // in case an past events source provides not-timestamped events, we add
+      // a timestamp here to be sure every event has one
+      map(stampEvent),
+      pastEventEnhancer,
+    ),
+    startoverNewevent$,
   )
 
   return Subject.create(neweventSubject, event$)
