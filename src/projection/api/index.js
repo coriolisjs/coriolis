@@ -85,6 +85,10 @@ const getPostTreatmentData = (settings) => (
       }
     }
 
+    if (Array.isArray(source)) {
+      return getStateFlow(...source)
+    }
+
     return getStateFlow(source)
   })
 

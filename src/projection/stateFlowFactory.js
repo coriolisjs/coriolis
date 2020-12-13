@@ -15,17 +15,19 @@ const getInitialState = (projection, getStateFlow) => {
   return createReducerState(reducer, initialState)
 }
 
-const createInternalGetter = (factoryGet) => (projection) =>
-  factoryGet(projection).internal
+const createInternalGetter = (factoryGet) => (...args) =>
+  factoryGet(...args).internal
 
-const createExternalGetter = (factoryGet) => (projection) =>
-  factoryGet(projection).external
+const createExternalGetter = (factoryGet) => (...args) =>
+  factoryGet(...args).external
 
 export const createStateFlowFactory = (event$, skipUntil$) => {
-  const factory = createIndex((projection) =>
+  const factory = createIndex((projection, reducer, initialState) =>
     createStateFlow(
       projection === snapshot
         ? snapshotInitialState
+        : projection === 'reducer'
+        ? createReducerState(reducer, initialState)
         : getInitialState(projection, createInternalGetter(factory.get)),
       event$,
       skipUntil$,
