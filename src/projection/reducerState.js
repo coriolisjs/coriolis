@@ -16,6 +16,7 @@ export const createReducerState = (reducer, value, event) => {
   }
 
   const reducerState = {
+    name: reducer.name,
     getNextState,
     value,
   }

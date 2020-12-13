@@ -34,6 +34,7 @@ export const createStateFlow = (reducerState, event$, skipUntil$) => {
   setValueGetter(state$, getValue)
 
   return {
+    name: reducerState.name,
     internal: {
       withEvent: (event) => getStateValue(memoState(getNextState(event))),
       getValue,

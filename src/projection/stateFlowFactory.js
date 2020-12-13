@@ -38,8 +38,8 @@ export const createStateFlowFactory = (event$, skipUntil$) => {
         .list()
         // we don't want to list snapshot aggregator's state as it would cause a recursive loop
         .filter(([projection]) => projection !== snapshot)
-        .map(([projection, stateFlow]) => [
-          projection.name,
+        .map(([, stateFlow]) => [
+          stateFlow.name,
           stateFlow.internal.getValue(),
         ]),
     ),

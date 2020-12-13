@@ -43,8 +43,12 @@ export const compileProjection = (projection, getStateFlow) => {
     return projectionBehavior(...inputs)
   }
 
+  Object.defineProperty(reducer, 'name', {
+    value: name || projection.name,
+    writable: false,
+  })
+
   return {
-    name,
     initialState,
     reducer,
   }
