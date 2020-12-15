@@ -3,7 +3,7 @@ import { objectFrom } from '../lib/object/objectFrom'
 
 import { compileProjection } from './compile'
 import { createReducerState } from './reducerState'
-import { createStateFlow } from './stateFlow'
+import { createStateFlow as defaultCreateStateFlow } from './stateFlow'
 
 // snapshot is a unique projection that will return every indexed projections' last state
 // this function must be an unique reference, so as an example we must not use rxjs' noop here
@@ -21,7 +21,11 @@ const createInternalGetter = (factoryGet) => (...args) =>
 const createExternalGetter = (factoryGet) => (...args) =>
   factoryGet(...args).external
 
-export const createStateFlowFactory = (event$, skipUntil$) => {
+export const createStateFlowFactory = (
+  event$,
+  skipUntil$,
+  createStateFlow = defaultCreateStateFlow,
+) => {
   const factory = createIndex((projection, reducer, initialState) =>
     createStateFlow(
       projection === snapshot
