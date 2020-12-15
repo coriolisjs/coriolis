@@ -24,7 +24,7 @@ const createInputsGetter = (
 ) => {
   const processInputs = (currentState, event) =>
     stateFlows.map((stateFlow, idx) =>
-      idx === stateIndex ? currentState : stateFlow.withEvent(event),
+      idx === stateIndex ? currentState : stateFlow.getNextValue(event),
     )
 
   if (allEvents) {
@@ -71,17 +71,18 @@ const getPostTreatmentData = (settings) => (
 ) => {
   const stateFlows = settings.sources.map((source) => {
     if (source === sourceState) {
-      return { getValue: noop, withEvent: noop }
+      return { getValue: noop, getNextValue: noop }
     }
 
     if (source === sourceEvent) {
-      return { getValue: noop, withEvent: identity }
+      return { getValue: noop, getNextValue: identity }
     }
 
     if (typeof source !== 'function') {
+      const getValue = () => source.value
       return {
-        getValue: source.value,
-        withEvent: () => source.value,
+        getValue,
+        getNextValue: getValue,
       }
     }
 

@@ -5,19 +5,25 @@ import { simpleUnsub } from '../lib/rx/simpleUnsub'
 
 import { getStateValue } from './reducerState'
 
+const useState = (initialState) => {
+  let state = initialState
+
+  return {
+    getState: () => state,
+    setState: (newState) => (state = newState),
+  }
+}
+
 export const createStateFlow = (reducerState, event$, skipUntil$) => {
-  let currentState = reducerState
+  const { getState, setState } = useState(reducerState)
 
-  const memoState = (state) => (currentState = state)
-
-  // Those two functions must use closure to currentState to be sure to
-  // get the right state value when currentState value changes
-  const getValue = () => getStateValue(currentState)
-  const getNextState = (event) => currentState.getNextState(event)
+  const getValue = () => getStateValue(getState())
+  const getNextState = (event) => getState().getNextState(event)
+  const getNextValue = (event) => getStateValue(setState(getNextState(event)))
 
   const state$ = event$.pipe(
     map(getNextState),
-    tap(memoState),
+    tap(setState),
 
     // while init is not finished (past events replaying), we expect projections to
     // get all events, but we don't want any new state emited (it's not new states, it's past state rebuilding)
@@ -36,8 +42,8 @@ export const createStateFlow = (reducerState, event$, skipUntil$) => {
   return {
     name: reducerState.name,
     internal: {
-      withEvent: (event) => getStateValue(memoState(getNextState(event))),
       getValue,
+      getNextValue,
     },
     external: state$,
   }
