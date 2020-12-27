@@ -1,4 +1,4 @@
-export const createReducerState = (reducer, value, event) => {
+export const createReducedProjection = (reducer, value, event) => {
   if (typeof reducer !== 'function') {
     throw new TypeError('reducer must be a function')
   }
@@ -9,19 +9,23 @@ export const createReducerState = (reducer, value, event) => {
     }
 
     if (nextEvent === event) {
-      return reducerState
+      return reducedProjection
     }
 
-    return createReducerState(reducer, reducer(value, nextEvent), nextEvent)
+    return createReducedProjection(
+      reducer,
+      reducer(value, nextEvent),
+      nextEvent,
+    )
   }
 
-  const reducerState = {
+  const reducedProjection = {
     name: reducer.name,
     getNextState,
     value,
   }
 
-  return reducerState
+  return reducedProjection
 }
 
 export const getStateValue = (state) => state.value

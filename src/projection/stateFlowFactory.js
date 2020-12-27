@@ -2,7 +2,7 @@ import { createIndex } from '../lib/map/objectIndex'
 import { objectFrom } from '../lib/object/objectFrom'
 
 import { compileProjection } from './compile'
-import { createReducerState } from './reducerState'
+import { createReducedProjection } from './reducedProjection'
 import { createStateFlow as defaultCreateStateFlow } from './stateFlow'
 
 // snapshot is a unique projection that will return every indexed projections' last state
@@ -12,7 +12,7 @@ export const snapshot = () => {}
 const getInitialState = (projection, getStateFlow) => {
   const { reducer, initialState } = compileProjection(projection, getStateFlow)
 
-  return createReducerState(reducer, initialState)
+  return createReducedProjection(reducer, initialState)
 }
 
 const createInternalGetter = (factoryGet) => (...args) =>
@@ -31,14 +31,14 @@ export const createStateFlowFactory = (
       projection === snapshot
         ? snapshotInitialState
         : projection === 'reducer'
-        ? createReducerState(reducer, initialState)
+        ? createReducedProjection(reducer, initialState)
         : getInitialState(projection, createInternalGetter(factory.get)),
       event$,
       skipUntil$,
     ),
   )
 
-  const snapshotInitialState = createReducerState(() =>
+  const snapshotReducer = () =>
     objectFrom(
       factory
         .list()
@@ -48,8 +48,11 @@ export const createStateFlowFactory = (
           stateFlow.name,
           stateFlow.internal.getValue(),
         ]),
-    ),
-  )
+    )
+
+  snapshotReducer.name = 'snapshot'
+
+  const snapshotInitialState = createReducedProjection(snapshotReducer)
 
   return createExternalGetter(factory.get)
 }

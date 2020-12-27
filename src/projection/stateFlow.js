@@ -3,7 +3,7 @@ import { distinctUntilChanged, map, skipUntil, tap } from 'rxjs/operators'
 import { setValueGetter } from '../lib/object/valueGetter'
 import { simpleUnsub } from '../lib/rx/simpleUnsub'
 
-import { getStateValue } from './reducerState'
+import { getStateValue } from './reducedProjection'
 
 const useState = (initialState) => {
   let state = initialState
@@ -14,8 +14,8 @@ const useState = (initialState) => {
   }
 }
 
-export const createStateFlow = (reducerState, event$, skipUntil$) => {
-  const { getState, setState } = useState(reducerState)
+export const createStateFlow = (reducedProjection, event$, skipUntil$) => {
+  const { getState, setState } = useState(reducedProjection)
 
   const getValue = () => getStateValue(getState())
   const getNextState = (event) => getState().getNextState(event)
@@ -34,13 +34,13 @@ export const createStateFlow = (reducerState, event$, skipUntil$) => {
   )
 
   // We don't return directly subscription because user is not aware it's an observable under the hood
-  // For user, the request is to connect an aggregator, it should return a function to disconnect it
+  // For user, the request is to connect a stateFlow, it should return a function to disconnect it
   state$.connect = () => simpleUnsub(state$.subscribe())
 
   setValueGetter(state$, getValue)
 
   return {
-    name: reducerState.name,
+    name: reducedProjection.name,
     internal: {
       getValue,
       getNextValue,
