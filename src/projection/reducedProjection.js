@@ -21,6 +21,7 @@ export const createReducedProjection = (reducer, value, event) => {
 
   const reducedProjection = {
     name: reducer.name,
+    stateless: !!reducer.stateless,
     getNextState,
     value,
   }

@@ -2,6 +2,7 @@ import { distinctUntilChanged, map, skipUntil, tap } from 'rxjs/operators'
 
 import { setValueGetter } from '../lib/object/valueGetter'
 import { simpleUnsub } from '../lib/rx/simpleUnsub'
+import { noop } from '../lib/function/noop'
 
 import { getStateValue } from './reducedProjection'
 
@@ -35,7 +36,12 @@ export const createStateFlow = (reducedProjection, event$, skipUntil$) => {
 
   // We don't return directly subscription because user is not aware it's an observable under the hood
   // For user, the request is to connect a stateFlow, it should return a function to disconnect it
-  state$.connect = () => simpleUnsub(state$.subscribe())
+  state$.connect = () =>
+    !reducedProjection.stateless
+      ? simpleUnsub(state$.subscribe())
+      : // for stateless reducedProjection, connect or disconnect is useless
+        // TODO: Maybe a warning in this case could be a good idea ?
+        noop
 
   setValueGetter(state$, getValue)
 

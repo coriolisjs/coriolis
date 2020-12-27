@@ -112,11 +112,14 @@ const getPostTreatmentData = (settings) => (
     settings.skipIndexes,
   )
 
+  const stateless = settings.stateIndex !== undefined
+
   return {
     name: settings.name,
     isNullSetup: settings.sources.length === 0,
     initialState,
     getInputs,
+    stateless,
   }
 }
 

@@ -51,6 +51,7 @@ export const createStateFlowFactory = (
     )
 
   snapshotReducer.name = 'snapshot'
+  snapshotReducer.stateless = true
 
   const snapshotInitialState = createReducedProjection(snapshotReducer)
 

@@ -28,7 +28,7 @@ export const compileProjection = (projection, getStateFlow) => {
 
   preventOutOfScopeUsage()
 
-  const { name, initialState, getInputs } = getPostTreatmentData(
+  const { name, initialState, getInputs, stateless } = getPostTreatmentData(
     projectionBehavior,
     getStateFlow,
   )
@@ -45,6 +45,11 @@ export const compileProjection = (projection, getStateFlow) => {
 
   Object.defineProperty(reducer, 'name', {
     value: name || projection.name,
+    writable: false,
+  })
+
+  Object.defineProperty(reducer, 'stateless', {
+    value: stateless,
     writable: false,
   })
 
