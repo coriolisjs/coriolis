@@ -42,7 +42,7 @@ export const createStateFlowFactory = (
     objectFrom(
       factory
         .list()
-        // we don't want to list snapshot aggregator's state as it would cause a recursive loop
+        // we don't want to list snapshot projection as it would cause a recursive loop
         .filter(([projection]) => projection !== snapshot)
         .map(([, stateFlow]) => [
           stateFlow.name,
@@ -50,8 +50,15 @@ export const createStateFlowFactory = (
         ]),
     )
 
-  snapshotReducer.name = 'snapshot'
-  snapshotReducer.stateless = true
+  Object.defineProperty(snapshotReducer, 'name', {
+    value: 'snapshot',
+    writable: false,
+  })
+
+  Object.defineProperty(snapshotReducer, 'stateless', {
+    value: true,
+    writable: false,
+  })
 
   const snapshotInitialState = createReducedProjection(snapshotReducer)
 

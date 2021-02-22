@@ -33,12 +33,12 @@ const createInputsGetter = (
 
   if (eventTypes) {
     return (state, event) => {
-      // inputs must be generated every time to ensure each projection gets all events
+      // inputs must be generated every time to ensure every projection process each event
       // So even if we return nothing, we have to process this
       const inputs = processInputs(state, event)
 
-      // we had to execute aggregators and get values, but if the event is not of an interesting
-      // type, we just return nothing: this aggregator has nothing to do with this event
+      // we had to process inputs, but if the event is not of an interesting
+      // type, we just return nothing: this projection has nothing to output with this event
       if (!eventTypes.includes(event.type)) {
         return
       }
