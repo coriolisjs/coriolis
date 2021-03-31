@@ -112,7 +112,7 @@ const getPostTreatmentData = (settings) => (
     settings.skipIndexes,
   )
 
-  const stateless = settings.stateIndex !== undefined
+  const stateless = settings.stateIndex === undefined
 
   return {
     name: settings.name,
