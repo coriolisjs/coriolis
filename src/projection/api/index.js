@@ -78,19 +78,24 @@ const getPostTreatmentData = (settings) => (
       return { getValue: noop, getNextValue: identity }
     }
 
-    if (typeof source !== 'function') {
-      const getValue = () => source.value
-      return {
-        getValue,
-        getNextValue: getValue,
-      }
+    // Two possible projection definition types :
+    // - ['reducer', (state, event) => newstate, initialState]
+    // - projection
+    // a third valid solution is [projection], but it seems useless
+    if (typeof source === 'function') {
+      return getStateFlow(source)
     }
 
     if (Array.isArray(source)) {
       return getStateFlow(...source)
     }
 
-    return getStateFlow(source)
+    // last possible solution: a static value
+    const getValue = () => source.value
+    return {
+      getValue,
+      getNextValue: getValue,
+    }
   })
 
   const initialInputs =
