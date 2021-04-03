@@ -7,9 +7,11 @@ import { createStateFlow as defaultCreateStateFlow } from './stateFlow'
 
 // snapshot is a unique projection that will return every indexed projections' last state
 // this function must be an unique reference, so as an example we must not use rxjs' noop here
-export const snapshot = () => {}
+export const snapshot = () => {
+  /* this is not a usual noop function */
+}
 
-const getInitialState = (projection, getStateFlow) => {
+const compileToReducedProjection = (projection, getStateFlow) => {
   const { reducer, initialState } = compileProjection(projection, getStateFlow)
 
   return createReducedProjection(reducer, initialState)
@@ -26,13 +28,20 @@ export const createStateFlowFactory = (
   skipUntil$,
   createStateFlow = defaultCreateStateFlow,
 ) => {
-  const factory = createIndex((projection, reducer, initialState) =>
+  const factory = createIndex(
+    // Two possible signatures :
+    //     (projection) => stateFlow
+    //     ('reducer', reducer, initialState) => stateFlow
+    (projection, reducer, initialState) =>
     createStateFlow(
-      projection === snapshot
-        ? snapshotInitialState
-        : projection === 'reducer'
+        projection === 'reducer'
         ? createReducedProjection(reducer, initialState)
-        : getInitialState(projection, createInternalGetter(factory.get)),
+          : projection === snapshot
+          ? snapshotReducedProjection
+          : compileToReducedProjection(
+              projection,
+              createInternalGetter(factory.get),
+            ),
       event$,
       skipUntil$,
     ),
@@ -60,7 +69,7 @@ export const createStateFlowFactory = (
     writable: false,
   })
 
-  const snapshotInitialState = createReducedProjection(snapshotReducer)
+  const snapshotReducedProjection = createReducedProjection(snapshotReducer)
 
   return createExternalGetter(factory.get)
 }
