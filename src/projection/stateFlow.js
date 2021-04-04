@@ -41,7 +41,7 @@ export const createStateFlow = (reducedProjection, event$, skipUntil$) => {
       // TODO: Maybe a warning in this case could be a good idea ?
       () =>
         console.warn(
-          `connecting a stateless projection (${
+          `Connecting a stateless projection (${
             reducedProjection.name || 'unnamed'
           }) is useless.
 Maybe you intended to connect a statefull projection this one depends on ?`,
@@ -56,5 +56,6 @@ Maybe you intended to connect a statefull projection this one depends on ?`,
       getNextValue,
     },
     external: state$,
+    stateless: reducedProjection.stateless,
   }
 }

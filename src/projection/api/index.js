@@ -117,7 +117,9 @@ const getPostTreatmentData = (settings) => (
     settings.skipIndexes,
   )
 
-  const stateless = settings.stateIndex === undefined
+  // projection using any event is statefull:
+  //   Value can not be defined without the previous event, this is a kind of state
+  const stateless = settings.stateIndex === undefined && !settings.eventTypes
 
   return {
     name: settings.name,
