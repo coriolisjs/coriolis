@@ -33,18 +33,18 @@ export const createStateFlowFactory = (
     //     (projection) => stateFlow
     //     ('reducer', reducer, initialState) => stateFlow
     (projection, reducer, initialState) =>
-    createStateFlow(
+      createStateFlow(
         projection === 'reducer'
-        ? createReducedProjection(reducer, initialState)
+          ? createReducedProjection(reducer, initialState)
           : projection === snapshot
           ? snapshotReducedProjection
           : compileToReducedProjection(
               projection,
               createInternalGetter(factory.get),
             ),
-      event$,
-      skipUntil$,
-    ),
+        event$,
+        skipUntil$,
+      ),
   )
 
   const snapshotReducer = () =>
@@ -53,6 +53,7 @@ export const createStateFlowFactory = (
         .list()
         // we don't want to list snapshot projection as it would cause a recursive loop
         .filter(([projection]) => projection !== snapshot)
+        .filter(([, stateFlow]) => !stateFlow.stateless)
         .map(([, stateFlow]) => [
           stateFlow.name,
           stateFlow.internal.getValue(),
