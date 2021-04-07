@@ -1,21 +1,13 @@
-import { Subject, of, Observable } from 'rxjs'
-import {
-  filter,
-  shareReplay,
-  skipUntil,
-  take,
-  takeUntil,
-  mergeMap,
-} from 'rxjs/operators'
+import { Subject } from 'rxjs'
+import { filter, shareReplay, skipUntil, take, takeUntil } from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
-import { asObservable } from './lib/rx/asObservable'
-import { promiseObservable } from './lib/rx/promiseObservable'
 import { isCommand } from './lib/event/isValidEvent'
 import { noop } from './lib/function/noop'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
+import { commandRunner } from './commandRunner'
 
 export const withSimpleStoreSignature = (callback) => (_options, ...rest) => {
   let options = _options
@@ -87,46 +79,12 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
-  const commandRunner = (command, removeSubject) => () => {
-    try {
-      return asObservable(
-        command({
-          // FIXME: How one would remove an effect added this way ? is there a missing element here ?
-          addEffect: (effect) => {
-            const removeEffect = effectAPI.addEffect(effect)
-
-            removeSubject.next(removeEffect)
-
-            return removeEffect
-          },
-          getProjectionValue: (projection) =>
-            effectAPI.withProjection(projection).getValue(),
-        }),
-      ).pipe(
-        mergeMap((event) =>
-          isCommand(event) ? commandRunner(event, removeSubject)() : of(event),
-        ),
-      )
-    } catch (error) {
-      return new Observable((observer) => observer.error(error))
-    }
-  }
-
   const dispatch = (event) => {
     if (isCommand(event)) {
-      const removeSubject = new Subject()
-      const { execute: command, executionPromise } = promiseObservable(
-        commandRunner(event, removeSubject),
-      )
+      const { command, executionPromise } = commandRunner(event, effectAPI)
 
       eventCatcher.next(command)
-      return (
-        executionPromise
-          .then(() => removeSubject)
-          // any error would cause global system error. Sending back error also on this
-          // promise would just cause confusion
-          .catch(noop)
-      )
+      return executionPromise
     }
 
     // TODO: add a comment here explaining why we need this resolved promise here
