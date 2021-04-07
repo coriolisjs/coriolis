@@ -91,16 +91,16 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     try {
       return asObservable(
         command({
-          // FIXME: How one would remove an effect added this way ?
+          // FIXME: How one would remove an effect added this way ? is there a missing element here ?
           addEffect: (effect) => {
-            const removeEffect = addEffect(effect)
+            const removeEffect = effectAPI.addEffect(effect)
 
             removeSubject.next(removeEffect)
 
             return removeEffect
           },
           getProjectionValue: (projection) =>
-            withProjection(projection).getValue(),
+            effectAPI.withProjection(projection).getValue(),
         }),
       ).pipe(
         mergeMap((event) =>
@@ -129,24 +129,28 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
       )
     }
 
+    // TODO: add a comment here explaining why we need this resolved promise here
     return Promise.resolve(eventCatcher.next(event))
   }
 
-  const addEffect = (effect) =>
-    simpleUnsub(
-      effect({
-        addEffect,
-        addSource,
-        addLogger,
-        addEventEnhancer,
-        addPastEventEnhancer,
-        addAllEventsEnhancer,
-        pastEvent$,
-        event$,
-        dispatch,
-        withProjection,
-      }),
-    )
+  const effectAPI = {
+    addEffect: (effect) =>
+      simpleUnsub(
+        effect({
+          // destructuring here prevents mutations on effectAPI from effect
+          ...effectAPI,
+        }),
+      ),
+    addSource,
+    addLogger,
+    addEventEnhancer,
+    addPastEventEnhancer,
+    addAllEventsEnhancer,
+    pastEvent$,
+    event$,
+    dispatch,
+    withProjection,
+  }
 
   const initDoneSubscription = initDone.subscribe(disableAddSource)
 
@@ -156,7 +160,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   // connect each defined effect and buid a disconnect function that disconnect all effects
   const removeEffects = effects
-    .map(addEffect)
+    .map(effectAPI.addEffect)
     .reduce((prev, removeEffect) => () => (prev(), removeEffect()), noop)
 
   const handleError =
