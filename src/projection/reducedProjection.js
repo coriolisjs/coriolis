@@ -29,4 +29,5 @@ export const createReducedProjection = (reducer, value, event) => {
   return reducedProjection
 }
 
-export const getStateValue = (state) => state.value
+export const getReducedProjectionValue = (reducedProjection) =>
+  reducedProjection.value

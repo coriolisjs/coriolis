@@ -2,24 +2,20 @@ import { distinctUntilChanged, map, skipUntil, tap } from 'rxjs/operators'
 
 import { setValueGetter } from '../lib/object/valueGetter'
 import { simpleUnsub } from '../lib/rx/simpleUnsub'
+import { countSubscriptions } from '../lib/rx/operator/countSubscriptions'
+import { noop } from '../lib/function/noop'
+import { useState } from '../lib/var/useState'
 
-import { getStateValue } from './reducedProjection'
-
-const useState = (initialState) => {
-  let state = initialState
-
-  return {
-    getState: () => state,
-    setState: (newState) => (state = newState),
-  }
-}
+import { getReducedProjectionValue } from './reducedProjection'
 
 export const createStateFlow = (reducedProjection, event$, skipUntil$) => {
   const { getState, setState } = useState(reducedProjection)
 
-  const getValue = () => getStateValue(getState())
+  const getValue = () => getReducedProjectionValue(getState())
+
   const getNextState = (event) => getState().getNextState(event)
-  const getNextValue = (event) => getStateValue(setState(getNextState(event)))
+  const getNextValue = (event) =>
+    getReducedProjectionValue(setState(getNextState(event)))
 
   const state$ = event$.pipe(
     map(getNextState),
@@ -29,23 +25,21 @@ export const createStateFlow = (reducedProjection, event$, skipUntil$) => {
     // get all events, but we don't want any new state emited (it's not new states, it's past state rebuilding)
     skipUntil(skipUntil$),
 
-    map(getStateValue),
+    map(getReducedProjectionValue),
     distinctUntilChanged(),
+  )
+
+  let connectionCount = 0
+  const connectionState$ = state$.pipe(
+    countSubscriptions((count) => (connectionCount = count)),
   )
 
   // We don't return directly subscription because user is not aware it's an observable under the hood
   // For user, the request is to connect a stateFlow, it should return a function to disconnect it
   state$.connect = !reducedProjection.stateless
-    ? () => simpleUnsub(state$.subscribe())
+    ? () => simpleUnsub(connectionState$.subscribe())
     : // for stateless reducedProjection, connect or disconnect is useless
-      // TODO: Maybe a warning in this case could be a good idea ?
-      () =>
-        console.warn(
-          `Connecting a stateless projection (${
-            reducedProjection.name || 'unnamed'
-          }) is useless.
-Maybe you intended to connect a statefull projection this one depends on ?`,
-        )
+      () => noop
 
   setValueGetter(state$, getValue)
 
@@ -57,5 +51,6 @@ Maybe you intended to connect a statefull projection this one depends on ?`,
     },
     external: state$,
     stateless: reducedProjection.stateless,
+    isConnected: () => connectionCount > 0,
   }
 }
