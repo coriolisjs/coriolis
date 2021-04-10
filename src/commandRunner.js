@@ -4,7 +4,6 @@ import { mergeMap } from 'rxjs/operators'
 import { asObservable } from './lib/rx/asObservable'
 import { promiseObservable } from './lib/rx/promiseObservable'
 import { isCommand } from './lib/event/isValidEvent'
-import { noop } from './lib/function/noop'
 
 export const commandRunner = (commandCore, effectAPI) => {
   const { execute: command, executionPromise } = promiseObservable(() => {
@@ -34,8 +33,11 @@ export const commandRunner = (commandCore, effectAPI) => {
   return {
     command,
     executionPromise: executionPromise
-      // any error would (and should) cause global system error. Sending back error also on this
-      // promise would just cause confusion
-      .catch(noop),
+      // any error would cause global system error via observable emited error.
+      // Sending back error also on this promise could cause confusion so we wrap error message
+      .catch((error) => {
+        error.message = `Command execution caused global error: ${error.message}`
+        throw error
+      }),
   }
 }
