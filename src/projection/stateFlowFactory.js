@@ -5,10 +5,35 @@ import { compileProjection } from './compile'
 import { createReducedProjection } from './reducedProjection'
 import { createStateFlow as defaultCreateStateFlow } from './stateFlow'
 
-// snapshot is a unique projection that will return every indexed projections' last state
+// snapshot is a unique projection that will return every indexed statefull projections' last state
 // this function must be an unique reference, so as an example we must not use rxjs' noop here
-export const snapshot = () => {
-  /* this is not a usual noop function */
+export const snapshot = () => 'this is not a usual noop function'
+
+const createSnapshotReducedProjection = (factory) => {
+  const snapshotReducer = () =>
+    objectFrom(
+      factory
+        .list()
+        // we don't want to list snapshot projection as it would cause a recursive loop
+        .filter(([projection]) => projection !== snapshot)
+        .filter(([, stateFlow]) => !stateFlow.stateless)
+        .map(([, stateFlow]) => [
+          stateFlow.name,
+          stateFlow.internal.getValue(),
+        ]),
+    )
+
+  Object.defineProperty(snapshotReducer, 'name', {
+    value: 'snapshot',
+    writable: false,
+  })
+
+  Object.defineProperty(snapshotReducer, 'stateless', {
+    value: true,
+    writable: false,
+  })
+
+  return createReducedProjection(snapshotReducer)
 }
 
 const compileToReducedProjection = (projection, getStateFlow) => {
@@ -47,30 +72,7 @@ export const createStateFlowFactory = (
       ),
   )
 
-  const snapshotReducer = () =>
-    objectFrom(
-      factory
-        .list()
-        // we don't want to list snapshot projection as it would cause a recursive loop
-        .filter(([projection]) => projection !== snapshot)
-        .filter(([, stateFlow]) => !stateFlow.stateless)
-        .map(([, stateFlow]) => [
-          stateFlow.name,
-          stateFlow.internal.getValue(),
-        ]),
-    )
-
-  Object.defineProperty(snapshotReducer, 'name', {
-    value: 'snapshot',
-    writable: false,
-  })
-
-  Object.defineProperty(snapshotReducer, 'stateless', {
-    value: true,
-    writable: false,
-  })
-
-  const snapshotReducedProjection = createReducedProjection(snapshotReducer)
+  const snapshotReducedProjection = createSnapshotReducedProjection(factory)
 
   return createExternalGetter(factory.get)
 }
