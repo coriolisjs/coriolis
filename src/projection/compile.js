@@ -4,7 +4,7 @@ const tryProjection = (projection, params) => {
   try {
     return projection(params)
   } catch (error) {
-    error.message = `Projection execution error: ${error.message}`
+    error.message = `Projection setup error: ${error.message}`
     throw error
   }
 }
@@ -22,16 +22,15 @@ export const compileProjection = (projection, getStateFlow) => {
 
   const projectionBehavior = tryProjection(projection, setupAPI)
 
-  if (typeof projectionBehavior !== 'function') {
-    throw new TypeError('Given projection is not working')
-  }
-
   preventOutOfScopeUsage()
 
-  const { name, initialState, getInputs, stateless } = getPostTreatmentData(
-    projectionBehavior,
-    getStateFlow,
-  )
+  const {
+    name,
+    initialState,
+    getInputs,
+    stateless,
+    finalProjectionBehavior,
+  } = getPostTreatmentData(projection.name, projectionBehavior, getStateFlow)
 
   const reducer = (lastState, event) => {
     const inputs = getInputs(lastState, event)
@@ -40,11 +39,11 @@ export const compileProjection = (projection, getStateFlow) => {
       return lastState
     }
 
-    return projectionBehavior(...inputs)
+    return finalProjectionBehavior(...inputs)
   }
 
   Object.defineProperty(reducer, 'name', {
-    value: name || projection.name,
+    value: name,
     writable: false,
   })
 

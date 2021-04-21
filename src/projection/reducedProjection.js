@@ -1,4 +1,4 @@
-export const createReducedProjection = (reducer, value, event) => {
+export const createReducedProjection = (reducer, value, event, error) => {
   if (typeof reducer !== 'function') {
     throw new TypeError('reducer must be a function')
   }
@@ -8,15 +8,23 @@ export const createReducedProjection = (reducer, value, event) => {
       throw new Error('Needs an event to get a new state')
     }
 
+    if (error) {
+      return reducedProjection
+    }
+
     if (nextEvent === event) {
       return reducedProjection
     }
 
-    return createReducedProjection(
-      reducer,
-      reducer(value, nextEvent),
-      nextEvent,
-    )
+    try {
+      return createReducedProjection(
+        reducer,
+        reducer(value, nextEvent),
+        nextEvent,
+      )
+    } catch (error) {
+      return createReducedProjection(reducer, value, nextEvent, error)
+    }
   }
 
   const reducedProjection = {
@@ -24,10 +32,16 @@ export const createReducedProjection = (reducer, value, event) => {
     stateless: !!reducer.stateless,
     getNextState,
     value,
+    ...(error && { error }),
   }
 
   return reducedProjection
 }
 
-export const getReducedProjectionValue = (reducedProjection) =>
-  reducedProjection.value
+export const getReducedProjectionValue = (reducedProjection) => {
+  if (reducedProjection.error) {
+    throw reducedProjection.error
+  }
+
+  return reducedProjection.value
+}

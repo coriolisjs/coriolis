@@ -66,9 +66,25 @@ const createInputsGetter = (
 }
 
 const getPostTreatmentData = (settings) => (
+  name,
   projectionBehavior,
   getStateFlow,
 ) => {
+  if (typeof projectionBehavior !== 'function') {
+    throw new TypeError('Given projection is not working')
+  }
+
+  const finalName = settings.name || name
+
+  const finalProjectionBehavior = (...args) => {
+    try {
+      return projectionBehavior(...args)
+    } catch (error) {
+      error.message = `Projection "${finalName}" execution error: ${error.message}`
+      throw error
+    }
+  }
+
   const stateFlows = settings.sources.map((source) => {
     if (source === sourceState) {
       return { getValue: noop, getNextValue: noop }
@@ -105,7 +121,7 @@ const getPostTreatmentData = (settings) => (
     settings.initialState !== undefined
       ? settings.initialState
       : !settings.eventTypes
-      ? projectionBehavior(...initialInputs)
+      ? finalProjectionBehavior(...initialInputs)
       : undefined
 
   const getInputs = createInputsGetter(
@@ -122,11 +138,12 @@ const getPostTreatmentData = (settings) => (
   const stateless = settings.stateIndex === undefined && !settings.eventTypes
 
   return {
-    name: settings.name,
+    name: finalName,
     isNullSetup: settings.sources.length === 0,
     initialState,
     getInputs,
     stateless,
+    finalProjectionBehavior,
   }
 }
 
