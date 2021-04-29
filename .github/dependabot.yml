@@ -1,0 +1,28 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 1
+  versioning-strategy: widen
+  ignore:
+  - dependency-name: "@babel/core"
+    versions:
+    - 7.12.10
+    - 7.12.13
+    - 7.12.16
+    - 7.12.17
+    - 7.13.1
+    - 7.13.10
+    - 7.13.13
+    - 7.13.14
+    - 7.13.15
+    - 7.13.8
+  - dependency-name: y18n
+    versions:
+    - 4.0.1
+    - 4.0.2
+  - dependency-name: lodash
+    versions:
+    - 4.17.20
