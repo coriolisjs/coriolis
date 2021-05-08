@@ -1,21 +1,9 @@
-<script context="module">
-  import { createStoreAPIProvider } from '@coriolis/coriolis-svelte'
-
-  const {
-    setStoreAPI,
-    shareStoreAPI,
-    whenStoreAPIShared,
-  } = createStoreAPIProvider()
-
-  export { setStoreAPI }
-</script>
 <script>
-  export let Root
-  export let props
+  import { setStoreAPI } from './provideStore'
 
-  shareStoreAPI()
+  const { Root, dispatch, withProjection, ...props } = $$props
+
+  setStoreAPI({ dispatch, withProjection })
 </script>
 
-{#await whenStoreAPIShared then ready}
-  <svelte:component this={Root} {...props} />
-{/await}
+<svelte:component this={Root} {...props} />
