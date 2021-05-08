@@ -4,8 +4,8 @@ import { produce } from 'immer'
 import { createStore } from '@coriolis/coriolis'
 import { wrapCoriolisOptions } from '@coriolis/dev-tools'
 
-import { createUi } from './effects/ui'
-import { localStorage } from './todo-core/effects/localStorage'
+import { createUIEffect } from './effects/ui'
+import { createLocalStorageEffect } from './todo-core/effects/localStorage'
 
 const storageKey = 'storedEventsForTodoListApp'
 
@@ -15,7 +15,7 @@ createStore(
       storeName: 'todo-svelte',
       eventEnhancer: map(produce(identity)),
     },
-    localStorage(storageKey),
-    createUi(),
+    createLocalStorageEffect(storageKey),
+    createUIEffect(),
   ),
 )

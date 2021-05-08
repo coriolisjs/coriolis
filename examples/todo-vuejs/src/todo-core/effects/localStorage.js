@@ -1,11 +1,18 @@
 import { localStoredArray } from '../libs/browser/localStorage'
 
-export const localStorage = (storageKey) => {
+export const createLocalStorageEffect = (storageKey) => {
   const storage = localStoredArray(storageKey)
 
-  return ({ addSource, addLogger }) => {
+  return function localStorage({ addSource, addLogger }) {
     const removeSource = addSource(storage.get())
-    const removeLogger = addLogger(storage.append)
+    const removeLogger = addLogger((event) => {
+      // removes useless fromCommand prop from event before storage
+      const { fromCommand, ...meta } = event.meta
+      storage.append({
+        ...event,
+        meta,
+      })
+    })
 
     return () => {
       removeSource()
