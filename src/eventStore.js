@@ -1,36 +1,14 @@
-import { Subject, of } from 'rxjs'
-import {
-  filter,
-  shareReplay,
-  skipUntil,
-  take,
-  takeUntil,
-  mergeMap,
-} from 'rxjs/operators'
+import { Subject } from 'rxjs'
+import { filter, shareReplay, skipUntil, take, takeUntil } from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
-import { asObservable } from './lib/rx/asObservable'
-import { promiseObservable } from './lib/rx/promiseObservable'
 import { isCommand } from './lib/event/isValidEvent'
 import { noop } from './lib/function/noop'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
-
-export const withSimpleStoreSignature = (callback) => (_options, ...rest) => {
-  let options = _options
-  let effects
-  if (typeof options === 'function') {
-    effects = [options, ...rest]
-    options = {}
-  } else if (options.effects && Array.isArray(options.effects)) {
-    effects = [...options.effects, ...rest]
-  } else {
-    effects = rest
-  }
-
-  return callback(options, ...effects)
-}
+import { commandRunner } from './commandRunner'
+import { withSimpleStoreSignature } from './withSimpleStoreSignature'
 
 export const createStore = withSimpleStoreSignature((options, ...effects) => {
   if (!effects.length) {
@@ -87,55 +65,36 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   const event$ = eventCaster.pipe(skipUntil(initDone))
 
-  const commandRunner = (command, removeSubject) => () =>
-    asObservable(
-      command({
-        // FIXME: How one would remove an effect added this way ?
-        addEffect: (effect) => {
-          const removeEffect = addEffect(effect)
-
-          removeSubject.next(removeEffect)
-
-          return removeEffect
-        },
-        getProjectionValue: (projection) =>
-          withProjection(projection).getValue(),
-      }),
-    ).pipe(
-      mergeMap((event) =>
-        isCommand(event) ? commandRunner(event, removeSubject)() : of(event),
-      ),
-    )
-
   const dispatch = (event) => {
     if (isCommand(event)) {
-      const removeSubject = new Subject()
-      const { execute: command, executionPromise } = promiseObservable(
-        commandRunner(event, removeSubject),
-      )
+      const { command, executionPromise } = commandRunner(event, effectAPI)
 
       eventCatcher.next(command)
-      return executionPromise.then(() => removeSubject)
+      return executionPromise
     }
 
-    return eventCatcher.next(event)
+    // TODO: add a comment here explaining why we need this resolved promise here
+    return Promise.resolve(eventCatcher.next(event))
   }
 
-  const addEffect = (effect) =>
-    simpleUnsub(
-      effect({
-        addEffect,
-        addSource,
-        addLogger,
-        addEventEnhancer,
-        addPastEventEnhancer,
-        addAllEventsEnhancer,
-        pastEvent$,
-        event$,
-        dispatch,
-        withProjection,
-      }),
-    )
+  const effectAPI = {
+    addEffect: (effect) =>
+      simpleUnsub(
+        effect({
+          // destructuring here prevents mutations on effectAPI from effect
+          ...effectAPI,
+        }),
+      ),
+    addSource,
+    addLogger,
+    addEventEnhancer,
+    addPastEventEnhancer,
+    addAllEventsEnhancer,
+    pastEvent$,
+    event$,
+    dispatch,
+    withProjection,
+  }
 
   const initDoneSubscription = initDone.subscribe(disableAddSource)
 
@@ -145,16 +104,32 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
 
   // connect each defined effect and buid a disconnect function that disconnect all effects
   const removeEffects = effects
-    .map(addEffect)
+    .map(effectAPI.addEffect)
     .reduce((prev, removeEffect) => () => (prev(), removeEffect()), noop)
 
-  // Once everything is pieced together, subscribe it to event source to start the process
-  const eventCasterSubscription = eventSubject.subscribe(eventCaster)
+  const handleError =
+    options.errorHandler ||
+    ((error) => {
+      throw error
+    })
 
-  return () => {
+  // Once everything is pieced together, subscribe it to event source to start the process
+  const eventCasterSubscription = eventSubject.subscribe(
+    (value) => eventCaster.next(value),
+    (error) => {
+      unsubscribe()
+      handleError(error)
+    },
+    () => unsubscribe(),
+  )
+
+  const unsubscribe = () => {
     initDoneSubscription.unsubscribe()
     eventCatcherSubscription.unsubscribe()
     eventCasterSubscription.unsubscribe()
+    eventCaster.complete()
     removeEffects()
   }
+
+  return unsubscribe
 })
