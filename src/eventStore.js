@@ -74,10 +74,12 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   const initDone = eventCaster.pipe(
     filter(isFirstEvent),
     take(1),
+    // TODO: with rxjs7, should we use share instead of shareReplay ?
     shareReplay(1),
   )
 
   const withProjection = createProjectionWrapperFactory(
+    // TODO: with rxjs7, should we use share instead of shareReplay ?
     eventCaster.pipe(shareReplay(1)),
     initDone,
     options.aggregatorFactory,
