@@ -7,9 +7,10 @@ import {
   done,
   reset,
   edited,
-  filter,
-  filters,
+  filterChanged,
 } from '../events/todo'
+
+import { filters } from '../data/filters'
 
 let nextItemId = 1
 const newTodoItem = produce((item) => {
@@ -59,7 +60,7 @@ export const todolist = ({ useState, useEvent }) => (
 
 export const todolistFilterName = ({ useState, useEvent }) => (
   useState(filters[0]),
-  useEvent(filter),
+  useEvent(filterChanged),
   (filterName, { payload, error }) => (error ? filterName : payload)
 )
 

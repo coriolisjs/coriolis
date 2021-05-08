@@ -1,20 +1,21 @@
 <script>
   import { createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { edited, removed, done, reset } from '../../events/todo'
-  import { toggleDone } from '../../commands/todo'
+  import { removeItem } from '../../todo-core/commands/todo/removeItem'
+  import { editItem } from '../../todo-core/commands/todo/editItem'
+  import { toggleDone } from '../../todo-core/commands/todo/toggleDone'
 
-  const dispatchRemoved = createDispatch(removed)
-  const dispatchEdited = createDispatch(edited)
+  const dispatchRemove = createDispatch(removeItem)
+  const dispatchEdit = createDispatch(editItem)
   const dispatchToggleDone = createDispatch(toggleDone)
 
   export let id
   export let text
   export let isDone
 
-  const removeItem = () => dispatchRemoved({ id })
-  const editItem = () => dispatchEdited({ id, text })
-  const checkItem = () => dispatchToggleDone(id, isDone)
+  const doRemoveItem = () => dispatchRemove(id)
+  const doEditItem = () => dispatchEdit(id, text)
+  const checkItem = () => dispatchToggleDone(id)
 </script>
 
 <style>
@@ -28,7 +29,7 @@
 </style>
 
 <li class:done={isDone}>
-  <input type="text" value={text} on:change|preventDefault={editItem} />
-  <input type="checkbox" checked={isDone} on:change|preventDefault={checkItem} />
-  <button on:click|preventDefault={removeItem}>Remove</button>
+  <input type="text" bind:value={text} on:change|preventDefault={doEditItem} />
+  <input type="checkbox" bind:checked={isDone} on:change|preventDefault={checkItem} />
+  <button on:click|preventDefault={doRemoveItem}>Remove</button>
 </li>

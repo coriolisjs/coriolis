@@ -3,7 +3,7 @@
 
   import TodoItem from './TodoItem.svelte'
 
-  import { filteredTodolist } from '../../projections/todo'
+  import { filteredTodolist } from '../../todo-core/projections/todo'
 
   let todolist$ = withProjection(filteredTodolist)
 </script>

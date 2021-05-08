@@ -11,6 +11,7 @@
     "@coriolis/coriolis": "*",
     "@coriolis/dev-tools": "*",
     "core-js": "^3.6.5",
+    "immer": "^8.0.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
