@@ -73,6 +73,6 @@
     "sinon-chai": "^3.5.0"
   },
   "dependencies": {
-    "rxjs": "^6.6.0"
+    "rxjs": "^6.6.7"
   }
 }
