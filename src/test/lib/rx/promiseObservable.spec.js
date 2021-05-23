@@ -1,4 +1,4 @@
-import { of, empty } from 'rxjs'
+import { of, EMPTY } from 'rxjs'
 
 import { promiseObservable } from '../../../lib/rx/promiseObservable'
 
@@ -13,7 +13,7 @@ describe('promiseObservable', () => {
   })
 
   it('should return an observable from a promise', () => {
-    const { execute, executionPromise } = promiseObservable(() => empty())
+    const { execute, executionPromise } = promiseObservable(() => EMPTY)
 
     execute().subscribe()
 
