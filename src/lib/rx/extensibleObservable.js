@@ -16,7 +16,7 @@ export const createExtensibleObservable = () => {
     }
   }
 
-  const observable = Observable.create((observer) => {
+  const observable = new Observable((observer) => {
     if (!sources.length) {
       observer.complete()
       return noop

@@ -9,7 +9,7 @@ const stringifyTo = (type, obj) => {
 export const createEventBuilder = (
   type,
   payloadBuilder = identity,
-  metaBuilder,
+  metaBuilder = null,
   empty = {},
 ) =>
   stringifyTo(type, (args = empty) => {
