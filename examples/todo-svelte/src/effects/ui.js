@@ -2,8 +2,8 @@ import Entry, { setStoreAPI } from '../components/Entry.svelte'
 import TodoApp from '../components/views/TodoApp.svelte'
 import About from '../components/views/About.svelte'
 
-import { urlbar } from '../effects/urlbar'
-import { todolist, todolistFilterName } from '../projections/todo'
+import { createUrlbarEffect } from '../todo-core/effects/urlbar'
+import { todolist, todolistFilterName } from '../todo-core/projections/todo'
 
 const views = {
   TodoApp,
@@ -12,21 +12,23 @@ const views = {
 
 const viewNames = Object.keys(views)
 
-export const createUi = () => ({ dispatch, withProjection, addEffect }) => {
-  setStoreAPI({ dispatch, withProjection })
+export const createUIEffect = () => {
+  return function userInterface({ dispatch, withProjection, addEffect }) {
+    setStoreAPI({ dispatch, withProjection })
 
-  addEffect(urlbar(viewNames))
-  withProjection(todolist).connect()
-  withProjection(todolistFilterName).connect()
+    addEffect(createUrlbarEffect(viewNames))
+    withProjection(todolist).connect()
+    withProjection(todolistFilterName).connect()
 
-  const app = new Entry({
-    target: document.body,
-    props: {
-      views,
-    },
-  })
+    const app = new Entry({
+      target: document.body,
+      props: {
+        views,
+      },
+    })
 
-  return () => {
-    app.$destroy()
+    return () => {
+      app.$destroy()
+    }
   }
 }

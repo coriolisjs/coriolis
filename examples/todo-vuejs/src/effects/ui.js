@@ -5,8 +5,8 @@ import About from '../components/views/About.vue'
 
 import ViewSwitch from '../components/ViewSwitch'
 
-import { urlbar } from '../effects/urlbar'
-import { todolist, todolistFilterName } from '../projections/todo'
+import { createUrlbarEffect } from '../todo-core/effects/urlbar'
+import { todolist, todolistFilterName } from '../todo-core/projections/todo'
 
 const views = {
   TodoApp,
@@ -15,11 +15,11 @@ const views = {
 
 const viewNames = Object.keys(views)
 
-export const createUi = () => {
+export const createUIEffect = () => {
   Vue.config.productionTip = false
 
-  return ({ dispatch, withProjection, addEffect }) => {
-    addEffect(urlbar(viewNames))
+  return function userInterface({ dispatch, withProjection, addEffect }) {
+    addEffect(createUrlbarEffect(viewNames))
     withProjection(todolist).connect()
     withProjection(todolistFilterName).connect()
 
