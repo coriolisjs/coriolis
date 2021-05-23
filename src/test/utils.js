@@ -24,11 +24,10 @@ export const matchCoriolisEffectAPI = sinon.match({
   pastEvent$: matchObservable,
 })
 
-export const matchCoriolisAggregatorSetupAPI = sinon.match({
+export const matchCoriolisProjectionSetupAPI = sinon.match({
   useProjection: sinon.match.func,
   useEvent: sinon.match.func,
   useState: sinon.match.func,
-  lazyProjection: sinon.match.func,
   setName: sinon.match.func,
   useValue: sinon.match.func,
 })

@@ -6,7 +6,7 @@ import { isCommand } from './lib/event/isValidEvent'
 import { noop } from './lib/function/noop'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
-import { createProjectionWrapperFactory } from './projectionWrapper'
+import { createStateFlowFactory } from './projection/stateFlowFactory'
 import { commandRunner } from './commandRunner'
 import { withSimpleStoreSignature } from './withSimpleStoreSignature'
 
@@ -44,7 +44,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   }
 
   // Use subjects to have single subscription points to connect all together (one for input, one for output)
-  // eventCaster will handle events coming from eventSubject to aggregators and effects
+  // eventCaster will handle events coming from eventSubject to projections and effects
   const eventCaster = new Subject()
   // eventCatcher will handle events coming from effects to eventSubject
   const eventCatcher = new Subject()
@@ -56,11 +56,13 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     shareReplay(1),
   )
 
-  const withProjection = createProjectionWrapperFactory(
+  const stateFlowFactoryBuilder =
+    options.stateFlowFactoryBuilder || createStateFlowFactory
+
+  const withProjection = stateFlowFactoryBuilder(
     // TODO: with rxjs7, should we use share instead of shareReplay ?
     eventCaster.pipe(shareReplay(1)),
     initDone,
-    options.aggregatorFactory,
   )
 
   const pastEvent$ = eventCaster.pipe(takeUntil(initDone))
