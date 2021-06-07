@@ -5,11 +5,12 @@
   "scripts": {
     "clear": "rm -rf node_modules dist",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install"
   },
   "dependencies": {
-    "@coriolis/coriolis": "*",
-    "@coriolis/dev-tools": "*",
+    "@coriolis/coriolis": "file:../..",
+    "@coriolis/dev-tools": "file:../../../dev-tools",
     "core-js": "^3.6.5",
     "vue": "^2.6.11"
   },

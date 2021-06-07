@@ -1,13 +1,14 @@
 {
   "name": "coriolis-readme-samples",
   "version": "1.0.0",
-  "dependencies": {
-    "@coriolis/coriolis": "*"
-  },
   "scripts": {
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md},.*.{js?(on),md}}' --write && eslint . --fix",
-    "start": "node -r @babel/register cli.js"
+    "start": "node -r @babel/register cli.js",
+    "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install"
+  },
+  "dependencies": {
+    "@coriolis/coriolis": "file:../.."
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",

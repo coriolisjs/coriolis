@@ -14,10 +14,10 @@
     "svelte-preprocess": "^4.0.6"
   },
   "dependencies": {
-    "@coriolis/coriolis": "*",
-    "@coriolis/dev-tools": "*",
-    "@coriolis/parametered-projection": "*",
-    "@coriolis/coriolis-svelte": "*",
+    "@coriolis/coriolis": "file:../..",
+    "@coriolis/coriolis-svelte": "file:../../../coriolis-svelte",
+    "@coriolis/dev-tools": "file:../../../dev-tools",
+    "@coriolis/parametered-projection": "file:../../../parametered-projection",
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "immer": "^7.0.5",
     "sirv-cli": "^1.0.3"
@@ -30,6 +30,7 @@
     "dev:remote": "run-p start:dev:remote autobuild",
     "start": "sirv public --single",
     "start:dev": "sirv public --single --dev",
-    "start:dev:remote": "npm run -s start:dev -- --host 0.0.0.0"
+    "start:dev:remote": "npm run -s start:dev -- --host 0.0.0.0",
+    "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install"
   }
 }
