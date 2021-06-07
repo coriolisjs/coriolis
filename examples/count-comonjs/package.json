@@ -2,7 +2,7 @@
   "name": "coriolis-count-commonjs-example",
   "version": "1.0.0",
   "dependencies": {
-    "@coriolis/coriolis": "*"
+    "@coriolis/coriolis": "file:../.."
   },
   "scripts": {
     "start": "node entry.js"
