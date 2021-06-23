@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "devDependencies": {
     "npm-run-all": "^4.1.5",
-    "rollup": "^2.21.0",
+    "rollup": "^2.33.3",
     "rollup-plugin-commonjs": "^10.0.0",
-    "rollup-plugin-livereload": "^1.3.0",
+    "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-svelte": "^5.2.3",
-    "rollup-plugin-terser": "^6.1.0",
-    "sass": "^1.26.10",
-    "svelte": "^3.24.0",
-    "svelte-preprocess": "^4.0.6"
+    "rollup-plugin-svelte": "^7.1.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "sass": "^1.29.0",
+    "svelte": "^3.29.7",
+    "svelte-preprocess": "^4.6.1"
   },
   "dependencies": {
     "@coriolis/coriolis": "file:../..",
@@ -19,8 +19,8 @@
     "@coriolis/dev-tools": "file:../../../dev-tools",
     "@coriolis/parametered-projection": "file:../../../parametered-projection",
     "@sveltejs/svelte-virtual-list": "^3.0.1",
-    "immer": "^7.0.5",
-    "sirv-cli": "^1.0.3"
+    "immer": "^9.0.2",
+    "sirv-cli": "^1.0.8"
   },
   "scripts": {
     "clear": "rm -rf node_modules public/bundle.css public/*.js public/*.map",
