@@ -22,9 +22,21 @@
     "replay",
     "store"
   ],
-  "main": "dist/cjs/index.js",
   "sideEffects": false,
-  "module": "dist/esm/index.js",
+  "main": "dist/cjs.js",
+  "module": "dist/esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm.js",
+      "require": "./dist/cjs.js",
+      "default": "./dist/esm.js"
+    },
+    "./norx": {
+      "import": "./dist/esm-norx.js",
+      "require": "./dist/cjs-norx.js",
+      "default": "./dist/esm-norx.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -37,9 +49,13 @@
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
     "test:watch": "npm run -s test -- --watch",
     "test:cover": "nyc --reporter=html npm test",
-    "build": "rollup -c",
+    "build:esm": "esbuild src/index.js --bundle --outfile=dist/esm.js --platform=neutral",
+    "build:cjs": "esbuild src/index.js --bundle --outfile=dist/cjs.js --platform=node",
+    "build:iife": "esbuild src/index.js --bundle --outfile=dist/iife.js --platform=browser --global-name=coriolis --minify",
+    "build:norx:esm": "esbuild src/index.js --bundle --outfile=dist/esm-norx.js --external:rxjs --platform=neutral",
+    "build:norx:cjs": "esbuild src/index.js --bundle --outfile=dist/cjs-norx.js --external:rxjs --platform=node",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:iife && npm run build:norx:esm && npm run build:norx:cjs",
     "build:readme": "cli/build-readme",
-    "autobuild": "rollup -c -w",
     "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
     "prepublishOnly": "npm run lint && npm run test && npm outdated && npm run clear && npm run build && npm run build:readme && git tag ${VERSION} && git push origin ${VERSION}",
     "publish:local": "VERSION=${npm_package_version}-local npm publish --registry http://localhost:4873",
@@ -53,6 +69,7 @@
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
+    "esbuild": "^0.13.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.2",
