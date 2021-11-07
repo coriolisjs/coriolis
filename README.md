@@ -267,7 +267,7 @@ On défini dans un premier temps les sources de données nécessaires à la proj
 
 - useState: utiliser la dernière valeur obtenue par cette projection (on peut spécifier une valeur initiale)
 - useEvent: utiliser le dernier événement émit (on peut filtrer quels types d'événements on souhaite traiter)
-- useProjection/lazyProjection: utiliser la valeur obtenue d'une projection (voir détails plus loin)
+- useProjection: utiliser la valeur obtenue d'une projection (voir détails plus loin)
 - useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API, voir projections parametrées)
 - setName: Attribue un nom à la projection, dans un but de debug et de lisibilité
 

@@ -58,7 +58,7 @@ export const createIndex = (getNotYetIndexed) => {
     [...index].reduce(
       (list, [key, { subset, value }]) => [
         ...list,
-        ...(value ? [[key, value]] : []),
+        ...(value ? [[[key], value]] : []),
         ...(subset
           ? subset
               .list()
