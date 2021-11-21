@@ -1,3 +1,4 @@
 dist
 node_modules
-examples/todo-svelte/public
+examples/todo-svelte
+examples/todo-vuejs
