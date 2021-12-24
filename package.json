@@ -30,8 +30,8 @@
     "src"
   ],
   "scripts": {
-    "clear:all": "npm run clear && rm -rf node_modules",
-    "clear": "rm -rf dist .nyc_output coverage",
+    "clear:all": "npm run clear && rm -rf node_modules examples/*/node_modules",
+    "clear": "rm -rf dist .nyc_output coverage examples/todo/public/bundle.css examples/todo/public/*.js examples/todo/public/*.map",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md},.*.{js?(on),md}}' --write && eslint . --fix",
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
@@ -43,8 +43,7 @@
     "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
     "prepublishOnly": "npm run lint && npm run test && npm outdated && npm run clear && npm run build && npm run build:readme && git tag ${VERSION} && git push origin ${VERSION}",
     "publish:local": "VERSION=${npm_package_version}-local npm publish --registry http://localhost:4873",
-    "publish:npm": "VERSION=${npm_package_version} npm publish --registry https://registry.npmjs.org --access public",
-    "setup:exemples:todo-core": "sudo mount --bind examples/todo-svelte/src/todo-core examples/todo-vuejs/src/todo-core"
+    "publish:npm": "VERSION=${npm_package_version} npm publish --registry https://registry.npmjs.org --access public"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
