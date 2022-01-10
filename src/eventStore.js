@@ -2,15 +2,16 @@ import { Subject } from 'rxjs'
 import { filter, shareReplay, skipUntil, take, takeUntil } from 'rxjs/operators'
 
 import { chain } from './lib/function/chain'
+import { pipe } from './lib/function/pipe'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { isCommand } from './lib/event/isValidEvent'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
 import { commandRunner } from './commandRunner'
-import { withSimpleStoreSignature } from './withSimpleStoreSignature'
+import { parseStoreArgs } from './parseStoreArgs'
 
-export const createStore = withSimpleStoreSignature((options, ...effects) => {
+export const createStore = pipe(parseStoreArgs, (options) => {
   const {
     eventSubject,
     addLogger,
@@ -95,7 +96,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   const eventCatcherSubscription = eventCatcher.subscribe(eventSubject)
 
   // connect each defined effect and buid a disconnect function that disconnect all effects
-  const removeEffects = chain(...effects.map(effectAPI.addEffect))
+  const removeEffects = chain(...options.effects.map(effectAPI.addEffect))
 
   const handleError =
     options.errorHandler ||
