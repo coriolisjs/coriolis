@@ -31,8 +31,6 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
     }
   }
 
-  // DEPRECATED: This option is no longer a good way to define an event enhancer
-  // prefer using an effect to define enhancers
   if (options.eventEnhancer) {
     addAllEventsEnhancer(options.eventEnhancer)
   }
