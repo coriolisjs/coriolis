@@ -30,8 +30,8 @@
     "src"
   ],
   "scripts": {
-    "clear:all": "npm run clear && rm -rf node_modules",
-    "clear": "rm -rf dist .nyc_output coverage",
+    "clear:all": "npm run clear && rm -rf node_modules examples/*/node_modules",
+    "clear": "rm -rf dist .nyc_output coverage examples/todo/public/bundle.css examples/todo/public/*.js examples/todo/public/*.map",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md},.*.{js?(on),md}}' --write && eslint . --fix",
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
