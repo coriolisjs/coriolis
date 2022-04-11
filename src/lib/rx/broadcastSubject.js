@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs'
+import { Observable, Subject, noop } from 'rxjs'
 
 export const createBroadcastSubject = () => {
   const eventsEntry = new Subject()
@@ -7,22 +7,30 @@ export const createBroadcastSubject = () => {
   const broadcastSubject = Subject.create(eventsEntry, feedbacksEntry)
 
   const addTarget = (target) => {
-    const targetEvents = eventsEntry.subscribe(target)
+    const targetSubscription = eventsEntry.subscribe(
+      typeof target !== 'function'
+        ? target
+        : {
+            next: target,
+            error: noop,
+            complete: noop,
+          },
+    )
 
     if (target instanceof Observable) {
       // target's feedback completion should not complete feedback entry
-      const targetFeedback = target.subscribe(
+      const targetFeedbackSubscription = target.subscribe(
         (payload) => feedbacksEntry.next(payload),
         (error) => feedbacksEntry.error(error),
       )
 
       return () => {
-        targetEvents.unsubscribe()
-        targetFeedback.unsubscribe()
+        targetSubscription.unsubscribe()
+        targetFeedbackSubscription.unsubscribe()
       }
     }
 
-    return () => targetEvents.unsubscribe()
+    return () => targetSubscription.unsubscribe()
   }
 
   return {
