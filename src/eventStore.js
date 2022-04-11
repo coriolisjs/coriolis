@@ -1,11 +1,11 @@
-import { Subject, of } from 'rxjs'
+import { of, ReplaySubject, Subject } from 'rxjs'
 import {
   filter,
-  shareReplay,
+  mergeMap,
+  share,
   skipUntil,
   take,
   takeUntil,
-  mergeMap,
 } from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
@@ -76,13 +76,23 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   const initDone = eventCaster.pipe(
     filter(isFirstEvent),
     take(1),
-    // TODO: with rxjs7, should we use share instead of shareReplay ?
-    shareReplay(1),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: false,
+      resetOnComplete: false,
+      resetOnError: true,
+    }),
   )
 
   const withProjection = createProjectionWrapperFactory(
-    // TODO: with rxjs7, should we use share instead of shareReplay ?
-    eventCaster.pipe(shareReplay(1)),
+    eventCaster.pipe(
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: false,
+        resetOnComplete: true,
+        resetOnError: true,
+      }),
+    ),
     initDone,
     options.aggregatorFactory,
   )
