@@ -1,9 +1,9 @@
 import { Subject } from 'rxjs'
 import { filter, shareReplay, skipUntil, take, takeUntil } from 'rxjs/operators'
 
+import { chain } from './lib/function/chain'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { isCommand } from './lib/event/isValidEvent'
-import { noop } from './lib/function/noop'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
@@ -11,12 +11,6 @@ import { commandRunner } from './commandRunner'
 import { withSimpleStoreSignature } from './withSimpleStoreSignature'
 
 export const createStore = withSimpleStoreSignature((options, ...effects) => {
-  if (!effects.length) {
-    throw new Error(
-      "No effect defined. This app is useless, let's stop right now",
-    )
-  }
-
   const {
     eventSubject,
     addLogger,
@@ -103,9 +97,7 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   const eventCatcherSubscription = eventCatcher.subscribe(eventSubject)
 
   // connect each defined effect and buid a disconnect function that disconnect all effects
-  const removeEffects = effects
-    .map(effectAPI.addEffect)
-    .reduce((prev, removeEffect) => () => (prev(), removeEffect()), noop)
+  const removeEffects = chain(...effects.map(effectAPI.addEffect))
 
   const handleError =
     options.errorHandler ||
@@ -117,19 +109,22 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   const eventCasterSubscription = eventSubject.subscribe(
     (value) => eventCaster.next(value),
     (error) => {
-      unsubscribe()
+      destroyStore()
       handleError(error)
     },
-    () => unsubscribe(),
+    () => destroyStore(),
   )
 
-  const unsubscribe = () => {
-    initDoneSubscription.unsubscribe()
-    eventCatcherSubscription.unsubscribe()
-    eventCasterSubscription.unsubscribe()
-    eventCaster.complete()
-    removeEffects()
-  }
+  const destroyStore = chain(
+    simpleUnsub(initDoneSubscription),
+    simpleUnsub(eventCatcherSubscription),
+    simpleUnsub(eventCasterSubscription),
+    () => eventCaster.complete(),
+    removeEffects,
+  )
 
-  return unsubscribe
+  return {
+    destroyStore,
+    addEffect: effectAPI.addEffect,
+  }
 })
