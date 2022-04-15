@@ -1,4 +1,4 @@
-import { Subject, concat, merge, of, EMPTY } from 'rxjs'
+import { Subject, concat, isObservable, merge, of, EMPTY } from 'rxjs'
 import { map, mergeMap, tap } from 'rxjs/operators'
 
 import { isValidEvent } from './lib/event/isValidEvent'
@@ -31,7 +31,7 @@ export const createEventSubject = (
 
   // log observer could be a Subject that emits events about
   // log process (write error, log rotate events...)
-  if (logObserver && logObserver instanceof Subject) {
+  if (logObserver && isObservable(logObserver)) {
     newevent$ = merge(neweventSubject, logObserver)
   }
 
