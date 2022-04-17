@@ -72,8 +72,10 @@ export const createProjectionSetupAPI = (getLastState, getAggregator) => {
   )
 
   const preventOutOfScopeUsage = chain(
-    ...setupParamsRaw.map(([key, { setup }]) => () =>
-      setup(throwUnexpectedScope(key)),
+    ...setupParamsRaw.map(
+      ([key, { setup }]) =>
+        () =>
+          setup(throwUnexpectedScope(key)),
     ),
   )
 

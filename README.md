@@ -286,7 +286,6 @@ const projection = ({ setName, useState, useEvent, useProjection }) => (
   useState({}), // Using a state is not mandatory, but it is usually necessary
   useEvent(), // You'll need to get events in at least one projection
   useProjection(anyProjection), // other projections are aggregating great states, let's use those
-
   // Here comes the function that defines the projection
   // This function will receive all we defined above
   (state, event, anyProjectionCurrentValue) => {

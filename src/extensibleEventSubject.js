@@ -19,32 +19,22 @@ const buildFirstEvent = () => ({
 
 // An extensible eventSubject is an eventSubject with additional functions to add sources, loggers and eventEnhancers
 export const createExtensibleEventSubject = () => {
-  const {
-    broadcastSubject: logger,
-    addTarget: addLogger,
-  } = createBroadcastSubject()
+  const { broadcastSubject: logger, addTarget: addLogger } =
+    createBroadcastSubject()
 
-  const {
-    observable: pastSource,
-    add: addPastSource,
-  } = createExtensibleObservable()
+  const { observable: pastSource, add: addPastSource } =
+    createExtensibleObservable()
 
-  const {
-    operator: eventEnhancer,
-    add: addEventEnhancer,
-  } = createExtensibleOperator()
+  const { operator: eventEnhancer, add: addEventEnhancer } =
+    createExtensibleOperator()
 
-  const {
-    operator: pastEventEnhancer,
-    add: addPastEventEnhancer,
-  } = createExtensibleOperator()
+  const { operator: pastEventEnhancer, add: addPastEventEnhancer } =
+    createExtensibleOperator()
 
   const addAnyAsPastSource = (source) => addPastSource(from(source))
 
-  const {
-    func: fusableAddPastSource,
-    setup: changeFusableAddPastSource,
-  } = variableFunction(addAnyAsPastSource)
+  const { func: fusableAddPastSource, setup: changeFusableAddPastSource } =
+    variableFunction(addAnyAsPastSource)
 
   const disableAddPastSource = () =>
     changeFusableAddPastSource(() => {

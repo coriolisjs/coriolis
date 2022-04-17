@@ -5,11 +5,12 @@
     "@coriolis/coriolis": "file:../.."
   },
   "scripts": {
-    "start": "node -r @babel/register entry.js"
+    "start": "node -r @babel/register entry.js",
+    "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.7",
-    "@babel/preset-env": "^7.12.7",
-    "@babel/register": "^7.12.1"
+    "@babel/core": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "@babel/register": "^7.16.5"
   }
 }

@@ -17,20 +17,22 @@ import { noop } from './lib/function/noop'
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
 
-export const withSimpleStoreSignature = (callback) => (_options, ...rest) => {
-  let options = _options
-  let effects
-  if (typeof options === 'function') {
-    effects = [options, ...rest]
-    options = {}
-  } else if (options.effects && Array.isArray(options.effects)) {
-    effects = [...options.effects, ...rest]
-  } else {
-    effects = rest
-  }
+export const withSimpleStoreSignature =
+  (callback) =>
+  (_options, ...rest) => {
+    let options = _options
+    let effects
+    if (typeof options === 'function') {
+      effects = [options, ...rest]
+      options = {}
+    } else if (options.effects && Array.isArray(options.effects)) {
+      effects = [...options.effects, ...rest]
+    } else {
+      effects = rest
+    }
 
-  return callback(options, ...effects)
-}
+    return callback(options, ...effects)
+  }
 
 export const createStore = withSimpleStoreSignature((options, ...effects) => {
   if (!effects.length) {

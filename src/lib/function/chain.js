@@ -2,9 +2,10 @@ import { noop } from './noop'
 
 export const chain = (...funcs) =>
   funcs.reduce(
-    (acc, func) => (...args) => {
-      func(...args)
-      acc(...args)
-    },
+    (acc, func) =>
+      (...args) => {
+        func(...args)
+        acc(...args)
+      },
     noop,
   )
