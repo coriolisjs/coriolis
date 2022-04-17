@@ -42,8 +42,8 @@ describe('ObjectIndex', () => {
       expect(creator).to.have.been.calledTwice()
 
       expect(list()).to.deep.equal([
-        [obj1, resultObj1],
-        [obj2, resultObj2],
+        [[obj1], resultObj1],
+        [[obj2], resultObj2],
       ])
     })
   })
