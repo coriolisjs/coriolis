@@ -1,18 +1,13 @@
 import { identity } from './lib/function/identity'
 
-const stringifyTo = (type, obj) => {
-  obj.toString = () => type
-
-  return obj
-}
+const empty = {}
 
 export const createEventBuilder = (
   type,
   payloadBuilder = identity,
-  metaBuilder,
-  empty = {},
-) =>
-  stringifyTo(type, (args = empty) => {
+  metaBuilder = null,
+) => {
+  const eventBuilder = (args = empty) => {
     const event = { type }
     let payload
     let meta
@@ -46,4 +41,9 @@ export const createEventBuilder = (
     }
 
     return event
-  })
+  }
+
+  eventBuilder.toString = () => type
+
+  return eventBuilder
+}
