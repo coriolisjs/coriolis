@@ -5,10 +5,10 @@ import { chain } from './lib/function/chain'
 import { pipe } from './lib/function/pipe'
 import { simpleUnsub } from './lib/rx/simpleUnsub'
 
-import { createExtensibleEventSubject } from './extensibleEventSubject'
-import { createStateFlowFactory } from './projection/stateFlowFactory'
 import { commandMiddleware } from './commandMiddleware'
+import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { parseStoreArgs } from './parseStoreArgs'
+import { createStateFlowFactory } from './projection/stateFlowFactory'
 
 export const createStore = pipe(parseStoreArgs, (options) => {
   const {

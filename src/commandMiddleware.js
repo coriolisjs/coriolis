@@ -1,4 +1,4 @@
-import { EMPTY, of, throwError } from 'rxjs'
+import { of, throwError, EMPTY } from 'rxjs'
 import { isCommand } from './lib/event/isValidEvent'
 import { asObservable } from './lib/rx/asObservable'
 

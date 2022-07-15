@@ -1,11 +1,11 @@
 import { from, of } from 'rxjs'
 import { endWith, mergeMap } from 'rxjs/operators'
 
+import { payloadEquals } from './lib/event/payloadEquals'
+import { variableFunction } from './lib/function/variableFunction'
 import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { createExtensibleOperator } from './lib/rx/operator/extensibleOperator'
-import { variableFunction } from './lib/function/variableFunction'
-import { payloadEquals } from './lib/event/payloadEquals'
 
 import { createEventSubject } from './eventSubject'
 

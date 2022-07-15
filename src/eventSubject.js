@@ -1,13 +1,13 @@
-import { Subject, merge, EMPTY, of } from 'rxjs'
+import { Subject, merge, of, EMPTY } from 'rxjs'
 import { concat, map, mergeMap, tap } from 'rxjs/operators'
 
-import { noop } from './lib/function/noop'
-import { identity } from './lib/function/identity'
-import { lossless } from './lib/rx/operator/lossless'
-import { throwFalsy } from './lib/function/throwFalsy'
 import { isValidEvent } from './lib/event/isValidEvent'
-import { stampEvent } from './lib/event/stampEvent'
 import { preventEventLoops } from './lib/event/preventEventLoops'
+import { stampEvent } from './lib/event/stampEvent'
+import { identity } from './lib/function/identity'
+import { noop } from './lib/function/noop'
+import { throwFalsy } from './lib/function/throwFalsy'
+import { lossless } from './lib/rx/operator/lossless'
 
 /*
 eventSubject behaviour:
