@@ -57,7 +57,8 @@
     "build:norx:cjs": "esbuild src/index.js --bundle --outfile=dist/cjs-norx.js --external:rxjs --platform=node",
     "build": "npm run build:esm && npm run build:cjs && npm run build:iife && npm run build:norx:esm && npm run build:norx:cjs",
     "build:readme": "cli/build-readme",
-    "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
+    "upgrade": "ncu -u && npm install",
+    "upgrade:noncu": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
     "prepublishOnly": "npm run lint && npm run test && npm outdated && npm run clear && npm run build && npm run build:readme && git tag ${VERSION} && git push origin ${VERSION}",
     "publish:local": "VERSION=${npm_package_version}-local npm publish --registry http://localhost:4873",
     "publish:npm": "VERSION=${npm_package_version} npm publish --registry https://registry.npmjs.org --access public"
