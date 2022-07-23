@@ -1,13 +1,13 @@
-import { Subject, merge, EMPTY, of, concat } from 'rxjs'
-import { map, tap, mergeMap } from 'rxjs/operators'
+import { Subject, concat, merge, of, EMPTY } from 'rxjs'
+import { map, mergeMap, tap } from 'rxjs/operators'
 
-import { noop } from './lib/function/noop'
-import { identity } from './lib/function/identity'
-import { lossless } from './lib/rx/operator/lossless'
-import { throwFalsy } from './lib/function/throwFalsy'
-import { isValidEvent, isCommand } from './lib/event/isValidEvent'
-import { stampEvent } from './lib/event/stampEvent'
+import { isValidEvent } from './lib/event/isValidEvent'
 import { preventEventLoops } from './lib/event/preventEventLoops'
+import { stampEvent } from './lib/event/stampEvent'
+import { identity } from './lib/function/identity'
+import { noop } from './lib/function/noop'
+import { throwFalsy } from './lib/function/throwFalsy'
+import { lossless } from './lib/rx/operator/lossless'
 
 /*
 eventSubject behaviour:
@@ -24,6 +24,7 @@ export const createEventSubject = (
   logObserver = noop,
   eventEnhancer = identity,
   pastEventEnhancer = identity,
+  eventMiddleware = (event) => of(event),
 ) => {
   let newevent$
   const neweventSubject = (newevent$ = new Subject())
@@ -37,10 +38,9 @@ export const createEventSubject = (
   const startoverNewevent$ = newevent$.pipe(
     lossless,
 
-    // commands are functions returning an observable of events
-    // those events will be sent on newevent$ so they gets through the complet event handling process
-    // command execution must be done after lossless bufferisation to keep chronology
-    mergeMap((event) => (isCommand(event) ? event() : of(event))),
+    // eventMiddleware is a function returning an observable of events
+    // it must be piped after lossless bufferisation
+    mergeMap(eventMiddleware),
 
     // Ensuring event's shape helps keeping control
     tap(throwFalsy(isValidEvent, new TypeError('Invalid event'))),
@@ -57,7 +57,7 @@ export const createEventSubject = (
 
   const event$ = concat(
     pastSource.pipe(
-      // in case an past events source provides not-timestamped events, we add
+      // in case a past events source provides not-timestamped events, we add
       // a timestamp here to be sure every event has one
       map(stampEvent),
       pastEventEnhancer,

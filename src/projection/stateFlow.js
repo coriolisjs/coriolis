@@ -1,14 +1,14 @@
 import { distinctUntilChanged, map, skipUntil, tap } from 'rxjs/operators'
 
+import { noop } from '../lib/function/noop'
 import { setValueGetter } from '../lib/object/valueGetter'
 import { simpleUnsub } from '../lib/rx/simpleUnsub'
 import { countSubscriptions } from '../lib/rx/operator/countSubscriptions'
-import { noop } from '../lib/function/noop'
 
-import { createSnapshotReducer } from './snapshotReducer'
+import { compileProjection } from './compile'
 import { createReducedState, getReducedStateValue } from './reducedState'
 import { createReducedStateChain } from './reducedStateChain'
-import { compileProjection } from './compile'
+import { createSnapshotReducer } from './snapshotReducer'
 
 export const createStateFlow =
   (event$, skipUntil$, getStateFlow, getStateFlowList) =>

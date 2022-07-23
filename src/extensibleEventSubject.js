@@ -1,11 +1,11 @@
-import { from } from 'rxjs'
-import { endWith } from 'rxjs/operators'
+import { from, of } from 'rxjs'
+import { endWith, mergeMap } from 'rxjs/operators'
 
+import { payloadEquals } from './lib/event/payloadEquals'
+import { variableFunction } from './lib/function/variableFunction'
 import { createBroadcastSubject } from './lib/rx/broadcastSubject'
 import { createExtensibleObservable } from './lib/rx/extensibleObservable'
 import { createExtensibleOperator } from './lib/rx/operator/extensibleOperator'
-import { variableFunction } from './lib/function/variableFunction'
-import { payloadEquals } from './lib/event/payloadEquals'
 
 import { createEventSubject } from './eventSubject'
 
@@ -17,19 +17,31 @@ const buildFirstEvent = () => ({
   payload: {},
 })
 
+const createExtensibleEventMiddleware = () => {
+  const { operator, add } = createExtensibleOperator()
+
+  return {
+    eventMiddleware: (event) => of(event).pipe(operator),
+    addEventMiddleware: (middleware) => add(mergeMap(middleware)),
+  }
+}
+
 // An extensible eventSubject is an eventSubject with additional functions to add sources, loggers and eventEnhancers
 export const createExtensibleEventSubject = () => {
   const { broadcastSubject: logger, addTarget: addLogger } =
     createBroadcastSubject()
-
-  const { observable: pastSource, add: addPastSource } =
-    createExtensibleObservable()
 
   const { operator: eventEnhancer, add: addEventEnhancer } =
     createExtensibleOperator()
 
   const { operator: pastEventEnhancer, add: addPastEventEnhancer } =
     createExtensibleOperator()
+
+  const { eventMiddleware, addEventMiddleware } =
+    createExtensibleEventMiddleware()
+
+  const { observable: pastSource, add: addPastSource } =
+    createExtensibleObservable()
 
   const addAnyAsPastSource = (source) => addPastSource(from(source))
 
@@ -43,7 +55,7 @@ export const createExtensibleEventSubject = () => {
 
   const firstEvent = buildFirstEvent()
   // Check is done on payload value, event object itself
-  // would have been changed (adding meta-data for example)
+  // could have been changed (adding meta-data for example)
   const isFirstEvent = payloadEquals(firstEvent.payload)
 
   // From the moment this event source is created, it starts buffering all events it receives
@@ -53,14 +65,16 @@ export const createExtensibleEventSubject = () => {
     logger,
     eventEnhancer,
     pastEventEnhancer,
+    eventMiddleware,
   )
 
   return {
     eventSubject,
     addLogger,
-    addSource: fusableAddPastSource,
     addEventEnhancer,
     addPastEventEnhancer,
+    addEventMiddleware,
+    addSource: fusableAddPastSource,
     disableAddSource: disableAddPastSource,
     isFirstEvent,
   }

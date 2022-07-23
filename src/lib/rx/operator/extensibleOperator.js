@@ -37,12 +37,14 @@ export const createExtensibleOperator = () => {
       }
     })
 
-  const add = (newOperator) => {
-    operators.push(newOperator)
+  const add = (...newOperatorsList) => {
+    operators.push(...newOperatorsList)
     updators.forEach((updator) => updator())
 
     return () => {
-      operators = operators.filter((operator) => operator !== newOperator)
+      operators = operators.filter(
+        (operator) => !newOperatorsList.includes(operator),
+      )
       updators.forEach((updator) => updator())
     }
   }

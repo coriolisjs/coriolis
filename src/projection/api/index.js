@@ -1,14 +1,14 @@
-import { variableFunction } from '../../lib/function/variableFunction'
 import { chain } from '../../lib/function/chain'
-import { objectFrom } from '../../lib/object/objectFrom'
-import { noop } from '../../lib/function/noop'
 import { identity } from '../../lib/function/identity'
+import { noop } from '../../lib/function/noop'
+import { variableFunction } from '../../lib/function/variableFunction'
+import { objectFrom } from '../../lib/object/objectFrom'
 
-import { useState, sourceState } from './useState'
+import { setName } from './setName'
 import { useEvent, sourceEvent } from './useEvent'
 import { useProjection } from './useProjection'
+import { useState, sourceState } from './useState'
 import { useValue } from './useValue'
-import { setName } from './setName'
 
 const throwUnexpectedScope = (funcName) => () => {
   throw new Error(`Unexpected out-of-scope usage of function ${funcName}`)
