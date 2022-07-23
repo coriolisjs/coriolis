@@ -1,4 +1,4 @@
-export const withoutKeys = (obj, keys) => {
+export const omit = (obj, keys) => {
   const newObj = { ...obj }
 
   keys.forEach((key) => delete newObj[key])

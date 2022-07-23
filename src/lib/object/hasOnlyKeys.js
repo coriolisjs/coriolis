@@ -1,4 +1,4 @@
-import { withoutKeys } from './withoutKeys'
+import { omit } from './omit'
 
 export const hasOnlyKeys = (obj, allowed) =>
-  Object.keys(withoutKeys(obj, allowed)).length === 0
+  Object.keys(omit(obj, allowed)).length === 0

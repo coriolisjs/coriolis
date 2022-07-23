@@ -1,11 +1,11 @@
-import { Subject, of } from 'rxjs'
+import { of, ReplaySubject, Subject } from 'rxjs'
 import {
   filter,
-  shareReplay,
+  mergeMap,
+  share,
   skipUntil,
   take,
   takeUntil,
-  mergeMap,
 } from 'rxjs/operators'
 
 import { simpleUnsub } from './lib/rx/simpleUnsub'
@@ -17,20 +17,22 @@ import { noop } from './lib/function/noop'
 import { createExtensibleEventSubject } from './extensibleEventSubject'
 import { createProjectionWrapperFactory } from './projectionWrapper'
 
-export const withSimpleStoreSignature = (callback) => (_options, ...rest) => {
-  let options = _options
-  let effects
-  if (typeof options === 'function') {
-    effects = [options, ...rest]
-    options = {}
-  } else if (options.effects && Array.isArray(options.effects)) {
-    effects = [...options.effects, ...rest]
-  } else {
-    effects = rest
-  }
+export const withSimpleStoreSignature =
+  (callback) =>
+  (_options, ...rest) => {
+    let options = _options
+    let effects
+    if (typeof options === 'function') {
+      effects = [options, ...rest]
+      options = {}
+    } else if (options.effects && Array.isArray(options.effects)) {
+      effects = [...options.effects, ...rest]
+    } else {
+      effects = rest
+    }
 
-  return callback(options, ...effects)
-}
+    return callback(options, ...effects)
+  }
 
 export const createStore = withSimpleStoreSignature((options, ...effects) => {
   if (!effects.length) {
@@ -74,11 +76,23 @@ export const createStore = withSimpleStoreSignature((options, ...effects) => {
   const initDone = eventCaster.pipe(
     filter(isFirstEvent),
     take(1),
-    shareReplay(1),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: false,
+      resetOnComplete: false,
+      resetOnError: true,
+    }),
   )
 
   const withProjection = createProjectionWrapperFactory(
-    eventCaster.pipe(shareReplay(1)),
+    eventCaster.pipe(
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: false,
+        resetOnComplete: true,
+        resetOnError: true,
+      }),
+    ),
     initDone,
     options.aggregatorFactory,
   )

@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs'
 
 export const ensureInitial = (getInitialValue) => (source) => {
-  return Observable.create((observer) => {
+  return new Observable((observer) => {
     const finalNext = (event) => observer.next(event)
     const initialNext = (event) => {
       next = finalNext

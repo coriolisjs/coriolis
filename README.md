@@ -29,7 +29,7 @@ La conception de Coriolis a été inspirée par Redux, en cherchant à donner le
 
 ## Installation
 
-:information_source: Le cycle de vie respectera (dés la periode alpha finie) la [logique de version semver](https://semver.org/lang/fr/)
+:information_source: Le cycle de vie respectera (dès la période alpha finie) la [logique de version semver](https://semver.org/lang/fr/)
 
 Pour installer Coriolis:
 
@@ -123,7 +123,7 @@ createStore(({ withProjection, dispatch }) => {
 
 Un event doit représenter de manière factuelle une variation ayant eu lieu dans l'application. Ces informations factuelles sont donc immuables (ce fait a eu lieu, cela ne peut pas changer). L'accumulation de ces faits immuables sera la source de toute vérité dans notre application et garantira une lisibilité et une grande capacité d'évolution.
 
-:joke_icon: Un event pourrait aussi être désigné comme un fait. Event sourcing pourrait être traduit en français par programation par le fait.
+:joke_icon: Un event pourrait aussi être désigné comme un fait. Event sourcing pourrait être traduit en français par programation par les fait.
 
 Étant donné qu'un event représente une variation ayant eu lieu, il est préférable de toujours nommer les events sous forme d'un verbe au passé.
 
@@ -134,7 +134,7 @@ Un event est un simple objet respectant les critères suivant:
 - des méta-données (optionel)
 - un indicatif d'erreur booléen (si true, le payload devrait être l'erreur correspondant)
 
-Voici donc des events valide:
+Voici donc des events valides:
 
 ```javascript
 const minimum = { type: 'sent a minimal event' }
@@ -161,8 +161,8 @@ const withMeta = {
 
 ```
 
-Très simple. Mais il vous sera rapidement necessaire de créer des fonctions de création d'event, de pouvoir référencer les
-types de ces events, de parametrer la définition du payload ou des meta de ces events.
+Très simple. Mais il vous sera rapidement nécessaire de créer des fonctions de création d'event, de pouvoir référencer les
+types de ces events, de paramétrer la définition du payload ou des meta de ces events.
 
 Vous aurez donc besoin de `createEventBuilder`:
 
@@ -227,13 +227,13 @@ Les builder d'event créés par `createEventBuilder` exposent le type d'event as
 
 ### Définition d'une commande
 
-Nous avons vu la création d'objets events. Il faut maintenant s'interesser aux règles métier aboutissant à la création de ces events.
+Nous avons vu la création d'objets events. Il faut maintenant s'intéresser aux règles métier aboutissant à la création de ces events.
 
-L'exemple classique est lors d'une action utilisateur: Avant d'aboutir à un event, il est surement necessaire de faire quelques validations. Ces validations définissent les contraintes métier que vous souhaitez appliquer via votre application, c'est donc une part essentiel de votre code source.
+L'exemple classique est lors d'une action utilisateur: Avant d'aboutir à un event, il est sûrement nécessaire de faire quelques validations. Ces validations suivent des règles métier que votre application doit prendre en charge, c'est donc une part essentielle de votre code source.
 
-Il est important d'écrire ces règles de manière clair et isolé. C'est le rôle des commandes.
+Il est important d'écrire ces règles de manière claire et isolée. C'est le rôle des commandes.
 
-Une comande est une simple fonction destinée à créer (ou non) des events. Cette fonction peut être asynchrone (peut retourner une promesse ou un Observable) et abouti à un ou plusieurs event (ou commande).
+Une comande est une simple fonction destinée à créer (ou non) des events. Cette fonction peut être asynchrone (peut retourner une promesse ou un Observable) et aboutie à un ou plusieurs events (ou commandes).
 
 ```javascript
 // {!examples/readme-samples/commands.js}
@@ -257,23 +257,28 @@ Une commande sera exécutée en respectant l'ordre d'émission dans le flux d'ev
 Lors de son exécution, une commande recevra en paramètre les fonctions suivantes:
 
 - getProjectionValue(projection): cette fonction retourne la valeur courante de la projection donnée
-- addEffect(effect): cette fonction permet d'activer un effet par le biais d'une commande (voir definition des effets plus bas)
+- addEffect(effect): cette fonction permet d'activer un effet par le biais d'une commande (voir définition des effets plus bas)
+
+Une commande doit retourner un event, un tableau d'events, une promesse d'event ou un observable d'events.
+Dans tous ces cas il est également possible de retourner d'autres commandes plutôt que des events.
 
 ### Définition d'une projection
 
-Une projection permet de recueillir des données provenant des events afin de disposer de toutes les données nécessaire pour ensuite définir les comportements de votre application dans les effets.
+Une projection permet de construire un état (un jeu de données) collecté à partir des events d'un event store.
+Cet état pourra être utilisé dans des effets, des commandes, ou pour construire d'autres projections.
 
-On défini dans un premier temps les sources de données nécessaires à la projection:
+Pour définir une projection, on commence par préciser les sources de données nécessaires à la projection.
+Pour cela un ensemble d'outils est à notre disposition, nous permettant de définir les paramètres que la projection attend:
 
 - useState: utiliser la dernière valeur obtenue par cette projection (on peut spécifier une valeur initiale)
-- useEvent: utiliser le dernier événement émit (on peut filtrer quels types d'événements on souhaite traiter)
-- useProjection/lazyProjection: utiliser la valeur obtenue d'une projection (voir détails plus loin)
-- useValue: Utiliser une valeur static (cela est surtout utile pour étendre l'API, voir projections parametrées)
+- useEvent: utiliser le dernier événement émis (on peut filtrer quels types d'événements on souhaite traiter)
+- useProjection: utiliser la valeur obtenue d'une projection (voir détails plus loin)
+- useValue: Utiliser une valeur statique (cela est surtout utile pour étendre l'API, voir projections paramétrées)
 - setName: Attribue un nom à la projection, dans un but de debug et de lisibilité
 
 Ensuite on défini l'algorythme de rangement des données en utilisant ces sources de données.
 
-Ce code est incorrecte mais présente le format de définition d'une projection:
+Ce code est incomplet mais présente le format de définition d'une projection:
 
 ```javascript
 const projection = ({ setName, useState, useEvent, useProjection }) => (
@@ -330,11 +335,20 @@ export const moreComplexProjection = ({ useProjection }) => (
 )
 ```
 
-Il faudrait ici expliquer le choix du format de définition des fonctions de projection. Ça viendra bientôt.
+Vous noterez que dans la définition d'une projection on utilise une syntaxe un peu particulière utilisant le concept de séquence avec l'opérateur ",".
+
+Dans une séquence, un ensemble d'instruction est exécutée, mais seule la dernière est retournée. C'est exactement ce que nous souhaitons pour une projection: exécuter des instructions de configuration de la projection, mais ne retourner que la fonction définissant cette projection.
+
+Pour les utilisateurs d'eslint, il sera alors probablement nécessaire de désactiver la règle no-sequence quand vous utilisez coriolis.
+
+Pour résumer, lors de la définition d'une projection on commence par décrire les données dont on a besoin, et ensuite on définit la
+fonction qui, avec ces données, va construire un nouvel état.
+
+Il reste sûrement bien des choses à dire sur les fonctions de projection. Ça viendra bientôt.
 
 ### Définition d'un effet
 
-Un effet est défini par une fonction recevant en paramètre les outils suivant:
+Un effet est définit par une fonction recevant en paramètre les outils suivants :
 
 - addSource
 - addLogger
@@ -385,10 +399,11 @@ Une motivation majeur avec Coriolis est d'aider à construire un code d'applicat
 
 - La définition d'une projection est réduite à sa plus simple expression: de quoi elle a besoin et la logique de rangement des données.
 
+- La définition d'une commande permet de qualifier la logique de comportement d'une manière claire
+
 - La définition d'un effet peut faire appel à d'autres effets, favorisant ainsi une construction modulaire.
 
 - La définition d'un effet a accès directement à toute projection et tout event (passé ou nouveau), et peut invoquer des events passés, déclarer de nouveaux events, appliquer des stratégies de stockage d'events et ajouter d'autres effets
-
 
 ## Crédits
 

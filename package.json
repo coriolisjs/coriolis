@@ -1,6 +1,6 @@
 {
   "name": "@coriolis/coriolis",
-  "version": "1.0.0-alpha5",
+  "version": "1.0.0-alpha6",
   "description": "Event sourced effect management",
   "license": "GPL-3.0",
   "author": "Nicolas Deveaud",
@@ -22,57 +22,70 @@
     "replay",
     "store"
   ],
-  "main": "dist/cjs/index.js",
   "sideEffects": false,
-  "module": "dist/esm/index.js",
+  "main": "dist/cjs.js",
+  "module": "dist/esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm.js",
+      "require": "./dist/cjs.js",
+      "default": "./dist/esm.js"
+    },
+    "./norx": {
+      "import": "./dist/esm-norx.js",
+      "require": "./dist/cjs-norx.js",
+      "default": "./dist/esm-norx.js"
+    }
+  },
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
-    "clear:all": "npm run clear && rm -rf node_modules",
-    "clear": "rm -rf dist .nyc_output coverage",
+    "clear:all": "npm run clear && rm -rf node_modules examples/*/node_modules",
+    "clear": "rm -rf dist .nyc_output coverage examples/todo-svelte/public/bundle.css examples/todo-svelte/public/*.js examples/todo-svelte/public/*.map examples/todo-vuejs/dist",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md},.*.{js?(on),md}}' --write && eslint . --fix",
+    "dev": "esbuild src/index.js --bundle --outfile=dist/esm.js --platform=neutral --watch",
     "test": "mocha -r @babel/register -r src/test/init 'src/test/**/*.spec.js'",
     "test:watch": "npm run -s test -- --watch",
     "test:cover": "nyc --reporter=html npm test",
-    "build": "rollup -c",
+    "build:esm": "esbuild src/index.js --bundle --outfile=dist/esm.js --platform=neutral",
+    "build:cjs": "esbuild src/index.js --bundle --outfile=dist/cjs.js --platform=node",
+    "build:iife": "esbuild src/index.js --bundle --outfile=dist/iife.js --platform=browser --global-name=coriolis --minify",
+    "build:norx:esm": "esbuild src/index.js --bundle --outfile=dist/esm-norx.js --external:rxjs --platform=neutral",
+    "build:norx:cjs": "esbuild src/index.js --bundle --outfile=dist/cjs-norx.js --external:rxjs --platform=node",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:iife && npm run build:norx:esm && npm run build:norx:cjs",
     "build:readme": "cli/build-readme",
-    "autobuild": "rollup -c -w",
-    "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
+    "upgrade": "ncu -u && npm install",
+    "upgrade:noncu": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
     "prepublishOnly": "npm run lint && npm run test && npm outdated && npm run clear && npm run build && npm run build:readme && git tag ${VERSION} && git push origin ${VERSION}",
     "publish:local": "VERSION=${npm_package_version}-local npm publish --registry http://localhost:4873",
     "publish:npm": "VERSION=${npm_package_version} npm publish --registry https://registry.npmjs.org --access public"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@babel/preset-env": "^7.10.4",
-    "@babel/register": "^7.10.4",
-    "babel-eslint": "^10.1.0",
-    "chai": "^4.2.0",
+    "@babel/core": "^7.18.6",
+    "@babel/preset-env": "^7.18.6",
+    "@babel/register": "^7.18.6",
+    "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
-    "eslint": "^7.4.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-chai-expect": "^2.2.0",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^8.0.1",
+    "esbuild": "^0.14.49",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-chai-expect": "^3.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.4",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.0.0",
+    "mocha": "^10.0.0",
     "nyc": "^15.1.0",
-    "prettier": "^2.0.5",
-    "rollup": "^2.21.0",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-visualizer": "^4.0.4",
-    "sinon": "^9.0.2",
-    "sinon-chai": "^3.5.0"
+    "prettier": "^2.7.1",
+    "sinon": "^14.0.0",
+    "sinon-chai": "^3.7.0"
   },
   "dependencies": {
-    "rxjs": "^6.6.0"
+    "rxjs": "^7.5.6"
   }
 }

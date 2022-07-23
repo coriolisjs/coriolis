@@ -4,7 +4,7 @@ const {
   promises: { readFile, writeFile },
 } = require('fs')
 
-const codeSection = /```(?<body>(?:`{0,2}[^`]+|\s+)*)```/g
+const codeSection = /```(?<body>(?:`{0,2}[^`]+|\s)*)```/g
 const headSection = /^\w+\n\s*\/\/ *\{!(?<file>[^}]+)\}\n/
 
 const txtEncoding = 'utf-8'

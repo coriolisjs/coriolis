@@ -12,21 +12,23 @@ const views = {
 
 const viewNames = Object.keys(views)
 
-export const createUi = () => ({ dispatch, withProjection, addEffect }) => {
-  setStoreAPI({ dispatch, withProjection })
+export const createUi =
+  () =>
+  ({ dispatch, withProjection, addEffect }) => {
+    setStoreAPI({ dispatch, withProjection })
 
-  addEffect(urlbar(viewNames))
-  withProjection(todolist).connect()
-  withProjection(todolistFilterName).connect()
+    addEffect(urlbar(viewNames))
+    withProjection(todolist).connect()
+    withProjection(todolistFilterName).connect()
 
-  const app = new Entry({
-    target: document.body,
-    props: {
-      views,
-    },
-  })
+    const app = new Entry({
+      target: document.body,
+      props: {
+        views,
+      },
+    })
 
-  return () => {
-    app.$destroy()
+    return () => {
+      app.$destroy()
+    }
   }
-}
