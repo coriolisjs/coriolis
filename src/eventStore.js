@@ -7,7 +7,7 @@ import { simpleUnsub } from './lib/rx/simpleUnsub'
 import { isCommand } from './lib/event/isValidEvent'
 
 import { createExtensibleEventSubject } from './extensibleEventSubject'
-import { createProjectionWrapperFactory } from './projectionWrapper'
+import { createStateFlowFactory } from './projection/stateFlowFactory'
 import { commandRunner } from './commandRunner'
 import { parseStoreArgs } from './parseStoreArgs'
 
@@ -37,7 +37,7 @@ export const createStore = pipe(parseStoreArgs, (options) => {
   }
 
   // Use subjects to have single subscription points to connect all together (one for input, one for output)
-  // eventCaster will handle events coming from eventSubject to aggregators and effects
+  // eventCaster will handle events coming from eventSubject to projections and effects
   const eventCaster = new Subject()
   // eventCatcher will handle events coming from effects to eventSubject
   const eventCatcher = new Subject()
@@ -53,7 +53,10 @@ export const createStore = pipe(parseStoreArgs, (options) => {
     }),
   )
 
-  const withProjection = createProjectionWrapperFactory(
+  const stateFlowFactoryBuilder =
+    options.stateFlowFactoryBuilder || createStateFlowFactory
+
+  const withProjection = stateFlowFactoryBuilder(
     eventCaster.pipe(
       share({
         connector: () => new ReplaySubject(1),
@@ -63,7 +66,6 @@ export const createStore = pipe(parseStoreArgs, (options) => {
       }),
     ),
     initDone,
-    options.aggregatorFactory,
   )
 
   const pastEvent$ = eventCaster.pipe(takeUntil(initDone))
