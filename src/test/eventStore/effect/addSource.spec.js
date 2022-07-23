@@ -13,15 +13,15 @@ describe('Effect addSource', () => {
       pastEvent$.subscribe(spyPastEvents)
     })
 
-    const stopStore = createStore(spyEffect)
+    const { destroyStore } = createStore(spyEffect)
 
-    expect(stopStore).to.be.a('function')
+    expect(destroyStore).to.be.a('function')
     expect(spyEffect).to.have.been.calledOnce()
     expect(spyEffect).to.have.been.calledWith(matchCoriolisEffectAPI)
     expect(spyPastEvents).to.have.been.calledWith(
       sinon.match({ type: 'event' }),
     )
 
-    stopStore()
+    destroyStore()
   })
 })
