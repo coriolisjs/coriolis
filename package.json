@@ -43,7 +43,7 @@
   ],
   "scripts": {
     "clear:all": "npm run clear && rm -rf node_modules examples/*/node_modules",
-    "clear": "rm -rf dist .nyc_output coverage examples/todo-svelte/public/bundle.css examples/todo-svelte/public/*.js examples/todo-svelte/public/*.map examples/todo-vuejs/dist",
+    "clear": "rm -rf dist .nyc_output coverage examples/todo/public/bundle.css examples/todo/public/*.js examples/todo/public/*.map",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md},.*.{js?(on),md}}' --write && eslint . --fix",
     "dev": "esbuild src/index.js --bundle --outfile=dist/esm.js --platform=neutral --watch",

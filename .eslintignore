@@ -1,4 +1,3 @@
 dist
 node_modules
-examples/todo-svelte
-examples/todo-vuejs
+examples/todo
