@@ -118,14 +118,14 @@ export const createStore = pipe(parseStoreArgs, (options) => {
 
   dispatch = eventCatcher.next.bind(eventCatcher)
 
-  // connect each defined effect and buid a disconnect function that disconnect all effects
-  const removeEffects = chain(...options.effects.map(effectAPI.addEffect))
-
   const initDoneSubscription = initDone$.subscribe(disableAddSource)
 
   // EventCatcher must be connected to eventSubject before effects
   // are added, to be ready to catch all events
   const eventCatcherSubscription = eventCatcher.subscribe(eventSubject)
+
+  // connect each defined effect and buid a removeEffects function that disconnects all effects
+  const removeEffects = chain(...options.effects.map(effectAPI.addEffect))
 
   // Once everything is pieced together, subscribe it to event source to start the process
   const eventCasterSubscription = eventSubject.subscribe(
