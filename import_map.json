@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@7.5.7",
+    "rxjs/operators": "https://esm.sh/rxjs@7.5.7/operators",
+
+    "chai": "https://esm.sh/chai",
+    "dirty-chai": "https://esm.sh/dirty-chai",
+    "sinon": "https://esm.sh/sinon",
+    "sinon-chai": "https://esm.sh/sinon-chai",
+    "chai-as-promised": "https://esm.sh/chai-as-promised"
+  }
+}

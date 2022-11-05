@@ -1,0 +1,6 @@
+{
+  "importMap": "import_map.json",
+  "tasks": {
+    "bundle": "deno bundle ./src/index.js dist/coriolis.bundle.js"
+  }
+}
